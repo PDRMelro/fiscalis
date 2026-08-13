@@ -1,0 +1,63 @@
+"use client";
+
+import { Plus } from "lucide-react";
+import { ModalTrigger } from "@/components/ui/Modal";
+import { criarObra } from "@/lib/actions/obras";
+
+export function NovaObraModal() {
+  return (
+    <ModalTrigger label="Nova obra" icon={Plus}>
+      {() => (
+        <form action={criarObra} className="p-6 space-y-3">
+          <h2 className="text-[15px] font-semibold text-[#14283A] mb-1">Nova obra</h2>
+          <div>
+            <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Nome da obra</label>
+            <input
+              name="nome"
+              required
+              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] focus:outline-none focus:border-[#14283A]"
+            />
+          </div>
+          <div>
+            <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Cliente</label>
+            <input
+              name="cliente_nome"
+              required
+              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] focus:outline-none focus:border-[#14283A]"
+            />
+          </div>
+          <div>
+            <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Localização</label>
+            <input
+              name="local"
+              required
+              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] focus:outline-none focus:border-[#14283A]"
+            />
+          </div>
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Início</label>
+              <input
+                name="inicio"
+                type="date"
+                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] focus:outline-none focus:border-[#14283A]"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Honorário mensal (€)</label>
+              <input
+                name="honorario_mensal"
+                type="number"
+                step="0.01"
+                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] focus:outline-none focus:border-[#14283A]"
+              />
+            </div>
+          </div>
+          <button type="submit" className="w-full mt-2 py-2.5 rounded-lg bg-[#14283A] text-white text-[13px] font-medium">
+            Criar obra
+          </button>
+        </form>
+      )}
+    </ModalTrigger>
+  );
+}
