@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, StyleSheet, renderToBuffer, Image } from "@react-pdf/renderer";
+import { Document, Page, Text, StyleSheet, renderToBuffer, Image } from "@react-pdf/renderer";
 import type { ObraRow, PerfilFiscalRow } from "@/lib/supabase/types";
 import { LOGO_SRC } from "@/lib/branding";
 

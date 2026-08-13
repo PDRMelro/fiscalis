@@ -14,7 +14,7 @@ export default async function ObrasPage() {
 
       {(!obras || obras.length === 0) && (
         <div className="bg-white border border-dashed border-[#C7C3B6] rounded-xl p-8 text-center text-[13px] text-[#8A8578]">
-          Ainda sem obras. Cria a primeira com o botão "Nova obra".
+          Ainda sem obras. Cria a primeira com o botão &ldquo;Nova obra&rdquo;.
         </div>
       )}
 

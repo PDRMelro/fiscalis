@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { EstadoArea } from "@/lib/supabase/types";
+import type { EstadoArea, EstadoObra, EstadoAuto } from "@/lib/supabase/types";
 
 function str(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
@@ -57,7 +57,7 @@ export async function atualizarObra(obraId: string, formData: FormData) {
       cliente_nome: str(formData, "cliente_nome"),
       local: str(formData, "local"),
       inicio: str(formData, "inicio") || null,
-      estado: str(formData, "estado") as never,
+      estado: str(formData, "estado") as EstadoObra,
       termo_descricao_obra: str(formData, "termo_descricao_obra") || null,
       termo_freguesia: str(formData, "termo_freguesia") || null,
       termo_processo: str(formData, "termo_processo") || null,
@@ -146,7 +146,7 @@ export async function adicionarAuto(obraId: string, formData: FormData) {
     numero: str(formData, "numero"),
     data: str(formData, "data"),
     valor: num(formData, "valor"),
-    estado: str(formData, "estado") as never,
+    estado: str(formData, "estado") as EstadoAuto,
   });
   if (error) throw new Error(error.message);
   revalidatePath(`/obras/${obraId}`);
