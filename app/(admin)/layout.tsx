@@ -1,14 +1,13 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUserSafe(supabase);
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase

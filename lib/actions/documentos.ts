@@ -2,14 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { gerarPdfTermoResponsabilidade } from "@/lib/pdf/termoResponsabilidade";
 
 export type ResultadoAcao = { error: string | null };
 
 // Nota: em produção o Next.js esconde a mensagem real de qualquer erro
 // "atirado" (throw) por uma Server Action, por segurança — por isso estas
-// ações devolvem sempre { error } em vez de lançar, e quem as chama lê o
-// valor devolvido em vez de apanhar uma exceção.
+// ações devolvem sempre { error } em vez de lançar, e todo o corpo está
+// dentro de um try/catch para nunca deixar escapar uma exceção não tratada
+// (ex: o Supabase a limitar pedidos por instantes).
 
 export async function uploadDocumentos(
   obraId: string,
@@ -17,42 +19,44 @@ export async function uploadDocumentos(
   categoria: string | null,
   formData: FormData
 ): Promise<ResultadoAcao> {
-  const supabase = await createClient();
-  const ficheiros = formData.getAll("ficheiros").filter((f): f is File => f instanceof File && f.size > 0);
-  if (ficheiros.length === 0) return { error: "Escolhe pelo menos um ficheiro." };
+  try {
+    const supabase = await createClient();
+    const ficheiros = formData.getAll("ficheiros").filter((f): f is File => f instanceof File && f.size > 0);
+    if (ficheiros.length === 0) return { error: "Escolhe pelo menos um ficheiro." };
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    const user = await getUserSafe(supabase);
+    const erros: string[] = [];
 
-  const erros: string[] = [];
+    for (const ficheiro of ficheiros) {
+      const path = `${obraId}/${crypto.randomUUID()}-${ficheiro.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from("documentos")
+        .upload(path, ficheiro, { contentType: ficheiro.type || undefined });
+      if (uploadError) {
+        erros.push(`${ficheiro.name}: ${uploadError.message}`);
+        continue;
+      }
 
-  for (const ficheiro of ficheiros) {
-    const path = `${obraId}/${crypto.randomUUID()}-${ficheiro.name}`;
-    const { error: uploadError } = await supabase.storage
-      .from("documentos")
-      .upload(path, ficheiro, { contentType: ficheiro.type || undefined });
-    if (uploadError) {
-      erros.push(`${ficheiro.name}: ${uploadError.message}`);
-      continue;
+      const { error } = await supabase.from("documentos").insert({
+        obra_id: obraId,
+        direcao,
+        categoria,
+        nome_ficheiro: ficheiro.name,
+        storage_path: path,
+        tamanho_bytes: ficheiro.size,
+        created_by: user?.id ?? null,
+      });
+      if (error) erros.push(`${ficheiro.name}: ${error.message}`);
     }
 
-    const { error } = await supabase.from("documentos").insert({
-      obra_id: obraId,
-      direcao,
-      categoria,
-      nome_ficheiro: ficheiro.name,
-      storage_path: path,
-      tamanho_bytes: ficheiro.size,
-      created_by: user?.id ?? null,
-    });
-    if (error) erros.push(`${ficheiro.name}: ${error.message}`);
+    revalidatePath(`/obras/${obraId}`);
+    revalidatePath("/documentos");
+
+    return { error: erros.length > 0 ? erros.join(" · ") : null };
+  } catch (err) {
+    console.error("uploadDocumentos falhou", err);
+    return { error: "Não foi possível enviar agora — o Supabase pode estar temporariamente indisponível. Tenta outra vez." };
   }
-
-  revalidatePath(`/obras/${obraId}`);
-  revalidatePath("/documentos");
-
-  return { error: erros.length > 0 ? erros.join(" · ") : null };
 }
 
 export async function eliminarDocumento(obraId: string, documentoId: string) {
@@ -75,41 +79,44 @@ export async function eliminarDocumento(obraId: string, documentoId: string) {
 }
 
 export async function gerarTermoResponsabilidade(obraId: string): Promise<ResultadoAcao> {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-  const [{ data: obra, error: obraError }, { data: perfil, error: perfilError }] = await Promise.all([
-    supabase.from("obras").select("*").eq("id", obraId).single(),
-    supabase.from("perfil_fiscal").select("*").eq("id", true).single(),
-  ]);
-  if (obraError || !obra) return { error: "Obra não encontrada." };
-  if (perfilError || !perfil) return { error: "Configura primeiro o teu perfil fiscal em Configurações." };
+    const [{ data: obra, error: obraError }, { data: perfil, error: perfilError }] = await Promise.all([
+      supabase.from("obras").select("*").eq("id", obraId).single(),
+      supabase.from("perfil_fiscal").select("*").eq("id", true).single(),
+    ]);
+    if (obraError || !obra) return { error: "Obra não encontrada." };
+    if (perfilError || !perfil) return { error: "Configura primeiro o teu perfil fiscal em Configurações." };
 
-  const buffer = await gerarPdfTermoResponsabilidade(obra, perfil);
-  const nome = `Termo_Responsabilidade_${obra.nome.replace(/\s+/g, "")}.pdf`;
-  const path = `${obraId}/${crypto.randomUUID()}-${nome}`;
+    const buffer = await gerarPdfTermoResponsabilidade(obra, perfil);
+    const nome = `Termo_Responsabilidade_${obra.nome.replace(/\s+/g, "")}.pdf`;
+    const path = `${obraId}/${crypto.randomUUID()}-${nome}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from("documentos")
-    .upload(path, buffer, { contentType: "application/pdf" });
-  if (uploadError) return { error: uploadError.message };
+    const { error: uploadError } = await supabase.storage
+      .from("documentos")
+      .upload(path, buffer, { contentType: "application/pdf" });
+    if (uploadError) return { error: uploadError.message };
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    const user = await getUserSafe(supabase);
 
-  const { error } = await supabase.from("documentos").insert({
-    obra_id: obraId,
-    direcao: "enviado",
-    tipo: "Termo de Responsabilidade",
-    nome_ficheiro: nome,
-    storage_path: path,
-    tamanho_bytes: buffer.length,
-    gerado_automaticamente: true,
-    created_by: user?.id ?? null,
-  });
-  if (error) return { error: error.message };
+    const { error } = await supabase.from("documentos").insert({
+      obra_id: obraId,
+      direcao: "enviado",
+      tipo: "Termo de Responsabilidade",
+      nome_ficheiro: nome,
+      storage_path: path,
+      tamanho_bytes: buffer.length,
+      gerado_automaticamente: true,
+      created_by: user?.id ?? null,
+    });
+    if (error) return { error: error.message };
 
-  revalidatePath(`/obras/${obraId}`);
-  revalidatePath("/documentos");
-  return { error: null };
+    revalidatePath(`/obras/${obraId}`);
+    revalidatePath("/documentos");
+    return { error: null };
+  } catch (err) {
+    console.error("gerarTermoResponsabilidade falhou", err);
+    return { error: "Não foi possível gerar o documento agora. Tenta outra vez." };
+  }
 }

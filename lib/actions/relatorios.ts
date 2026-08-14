@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { gerarPdfRelatorioVisita } from "@/lib/pdf/relatorioVisita";
 
 export async function gerarRelatorio(visitaId: string) {
@@ -21,9 +22,7 @@ export async function gerarRelatorio(visitaId: string) {
     supabase.from("visita_fotos").select("*", { count: "exact", head: true }).eq("visita_id", visitaId),
   ]);
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUserSafe(supabase);
 
   const { data: relatorio, error } = await supabase
     .from("relatorios")

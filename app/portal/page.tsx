@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { MapPin, User, ExternalLink, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { LOGO_SRC } from "@/lib/branding";
 import { EstadoDot } from "@/components/ui/Tags";
 import { clientLogout } from "@/lib/actions/auth";
@@ -8,9 +9,7 @@ import { formatarData, formatarDinheiro } from "@/lib/format";
 
 export default async function PortalHomePage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getUserSafe(supabase);
   if (!user) redirect("/portal/login");
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
