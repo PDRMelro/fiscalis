@@ -2,8 +2,21 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import type { AuthError } from "@supabase/supabase-js";
 
 export type ActionResult = { error: string } | { error: null };
+
+function mensagemErroLogin(error: AuthError): string {
+  if (error.code === "over_request_rate_limit" || error.status === 429) {
+    return "Demasiadas tentativas seguidas — espera cerca de um minuto e tenta outra vez.";
+  }
+  if (error.code === "invalid_credentials") {
+    return "Email ou palavra-passe incorretos.";
+  }
+  // Erro inesperado (rede, configuração, etc.) — mostra a mensagem real em vez
+  // de a esconder, para não parecer sempre "password errada" quando não é.
+  return `Não foi possível entrar: ${error.message}`;
+}
 
 export async function adminLogin(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
   const email = String(formData.get("email") ?? "").trim();
@@ -11,7 +24,7 @@ export async function adminLogin(_prev: ActionResult, formData: FormData): Promi
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: "Email ou palavra-passe incorretos." };
+  if (error) return { error: mensagemErroLogin(error) };
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -98,7 +111,7 @@ export async function clientLogin(_prev: ActionResult, formData: FormData): Prom
     if (error.message.toLowerCase().includes("email not confirmed")) {
       redirect(`/portal/confirmar?email=${encodeURIComponent(email)}`);
     }
-    return { error: "Email ou palavra-passe incorretos." };
+    return { error: mensagemErroLogin(error) };
   }
 
   const { data: profile } = await supabase
