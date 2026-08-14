@@ -169,6 +169,7 @@ export type IntervenienteRow = {
   empresa: string | null;
   cedula_profissional: string | null;
   colegio: string | null;
+  ordem: number;
   created_at: string;
   updated_at: string;
 };

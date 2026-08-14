@@ -142,6 +142,7 @@ async function IntervenientesTabData({ obraId }: { obraId: string }) {
     .from("intervenientes")
     .select("*")
     .eq("obra_id", obraId)
+    .order("ordem", { ascending: true })
     .order("created_at", { ascending: true });
   return <IntervenientesTab obraId={obraId} itens={itens ?? []} />;
 }

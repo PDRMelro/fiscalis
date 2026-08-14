@@ -1,5 +1,5 @@
-import { Users, Trash2 } from "lucide-react";
-import { eliminarInterveniente } from "@/lib/actions/obras";
+import { Users, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { eliminarInterveniente, moverInterveniente } from "@/lib/actions/obras";
 import { NovoIntervenienteForm } from "@/components/obras/NovoIntervenienteForm";
 import type { IntervenienteRow } from "@/lib/supabase/types";
 
@@ -16,10 +16,30 @@ export function IntervenientesTab({ obraId, itens }: { obraId: string; itens: In
   return (
     <div className="max-w-2xl">
       <div className="bg-white border border-[#E4E1D6] rounded-xl divide-y divide-[#F2F0E8]">
-        {itens.map((p) => {
+        {itens.map((p, i) => {
           const detalhe = detalheInterveniente(p);
           return (
             <div key={p.id} className="flex items-center gap-3 px-5 py-3.5 group">
+              <div className="flex flex-col shrink-0 -my-1.5">
+                <form action={moverInterveniente.bind(null, obraId, p.id, "cima")}>
+                  <button
+                    type="submit"
+                    disabled={i === 0}
+                    className="text-[#8A8578] hover:text-[#14283A] disabled:opacity-20 disabled:cursor-not-allowed block"
+                  >
+                    <ChevronUp size={14} />
+                  </button>
+                </form>
+                <form action={moverInterveniente.bind(null, obraId, p.id, "baixo")}>
+                  <button
+                    type="submit"
+                    disabled={i === itens.length - 1}
+                    className="text-[#8A8578] hover:text-[#14283A] disabled:opacity-20 disabled:cursor-not-allowed block"
+                  >
+                    <ChevronDown size={14} />
+                  </button>
+                </form>
+              </div>
               <div className="w-9 h-9 rounded-full bg-[#F0EEE5] flex items-center justify-center text-[#8A8578] shrink-0">
                 <Users size={15} />
               </div>

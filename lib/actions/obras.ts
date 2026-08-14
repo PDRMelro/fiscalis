@@ -184,6 +184,43 @@ export async function adicionarInterveniente(obraId: string, formData: FormData)
     colegio: str(formData, "colegio") || null,
   });
   if (error) throw new Error(error.message);
+
+  // Normaliza a ordem (garante que o novo fica no fim, mesmo que dados
+  // antigos ainda tenham todos a mesma ordem por omissão).
+  await renumerarIntervenientes(supabase, obraId);
+
+  revalidatePath(`/obras/${obraId}`);
+}
+
+async function renumerarIntervenientes(supabase: Awaited<ReturnType<typeof createClient>>, obraId: string) {
+  const { data: itens } = await supabase
+    .from("intervenientes")
+    .select("id")
+    .eq("obra_id", obraId)
+    .order("ordem", { ascending: true })
+    .order("created_at", { ascending: true });
+  if (!itens) return;
+  await Promise.all(itens.map((item, i) => supabase.from("intervenientes").update({ ordem: i }).eq("id", item.id)));
+}
+
+export async function moverInterveniente(obraId: string, intervenienteId: string, direcao: "cima" | "baixo") {
+  const supabase = await createClient();
+  const { data: itens } = await supabase
+    .from("intervenientes")
+    .select("id")
+    .eq("obra_id", obraId)
+    .order("ordem", { ascending: true })
+    .order("created_at", { ascending: true });
+  if (!itens) return;
+
+  const idx = itens.findIndex((i) => i.id === intervenienteId);
+  const alvoIdx = direcao === "cima" ? idx - 1 : idx + 1;
+  if (idx === -1 || alvoIdx < 0 || alvoIdx >= itens.length) return;
+
+  const reordenado = [...itens];
+  [reordenado[idx], reordenado[alvoIdx]] = [reordenado[alvoIdx], reordenado[idx]];
+
+  await Promise.all(reordenado.map((item, i) => supabase.from("intervenientes").update({ ordem: i }).eq("id", item.id)));
   revalidatePath(`/obras/${obraId}`);
 }
 

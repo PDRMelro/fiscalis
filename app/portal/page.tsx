@@ -45,7 +45,12 @@ export default async function PortalHomePage() {
       supabase.from("orcamentos").select("*").eq("obra_id", obra.id),
       supabase.from("faturacao_autos").select("*").eq("obra_id", obra.id).order("data", { ascending: false }),
       // Idem para "Intervenientes" — só vem algo se pode_ver_intervenientes estiver ligado.
-      supabase.from("intervenientes").select("*").eq("obra_id", obra.id).order("created_at", { ascending: true }),
+      supabase
+        .from("intervenientes")
+        .select("*")
+        .eq("obra_id", obra.id)
+        .order("ordem", { ascending: true })
+        .order("created_at", { ascending: true }),
     ]);
 
   const temAcessoFinanceiro = (orcamentos && orcamentos.length > 0) || (autos && autos.length > 0);
