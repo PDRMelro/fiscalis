@@ -7,55 +7,46 @@ import { gerarPdfTermoResponsabilidade } from "@/lib/pdf/termoResponsabilidade";
 
 export type ResultadoAcao = { error: string | null };
 
+export type FicheiroEnviado = { nome: string; path: string; tamanho: number };
+
 // Nota: em produção o Next.js esconde a mensagem real de qualquer erro
 // "atirado" (throw) por uma Server Action, por segurança — por isso estas
 // ações devolvem sempre { error } em vez de lançar, e todo o corpo está
 // dentro de um try/catch para nunca deixar escapar uma exceção não tratada
 // (ex: o Supabase a limitar pedidos por instantes).
+//
+// O ficheiro em si NUNCA passa por aqui — vai diretamente do browser para o
+// Supabase Storage (o Vercel tem um limite rígido de ~4.5MB por pedido a uma
+// Server Action, insuficiente para plantas/fotos). Estas ações só gravam os
+// metadados (nome, caminho, tamanho) depois de o envio já ter terminado.
 
-export async function uploadDocumentos(
+export async function registarDocumento(
   obraId: string,
   direcao: "recebido" | "enviado",
   categoria: string | null,
-  formData: FormData
+  ficheiro: FicheiroEnviado
 ): Promise<ResultadoAcao> {
   try {
     const supabase = await createClient();
-    const ficheiros = formData.getAll("ficheiros").filter((f): f is File => f instanceof File && f.size > 0);
-    if (ficheiros.length === 0) return { error: "Escolhe pelo menos um ficheiro." };
-
     const user = await getUserSafe(supabase);
-    const erros: string[] = [];
 
-    for (const ficheiro of ficheiros) {
-      const path = `${obraId}/${crypto.randomUUID()}-${ficheiro.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from("documentos")
-        .upload(path, ficheiro, { contentType: ficheiro.type || undefined });
-      if (uploadError) {
-        erros.push(`${ficheiro.name}: ${uploadError.message}`);
-        continue;
-      }
-
-      const { error } = await supabase.from("documentos").insert({
-        obra_id: obraId,
-        direcao,
-        categoria,
-        nome_ficheiro: ficheiro.name,
-        storage_path: path,
-        tamanho_bytes: ficheiro.size,
-        created_by: user?.id ?? null,
-      });
-      if (error) erros.push(`${ficheiro.name}: ${error.message}`);
-    }
+    const { error } = await supabase.from("documentos").insert({
+      obra_id: obraId,
+      direcao,
+      categoria,
+      nome_ficheiro: ficheiro.nome,
+      storage_path: ficheiro.path,
+      tamanho_bytes: ficheiro.tamanho,
+      created_by: user?.id ?? null,
+    });
+    if (error) return { error: error.message };
 
     revalidatePath(`/obras/${obraId}`);
     revalidatePath("/documentos");
-
-    return { error: erros.length > 0 ? erros.join(" · ") : null };
+    return { error: null };
   } catch (err) {
-    console.error("uploadDocumentos falhou", err);
-    return { error: "Não foi possível enviar agora — o Supabase pode estar temporariamente indisponível. Tenta outra vez." };
+    console.error("registarDocumento falhou", err);
+    return { error: "Não foi possível guardar o documento. Tenta outra vez." };
   }
 }
 
@@ -64,7 +55,7 @@ export async function uploadDocumentos(
  * sessão iniciada (nunca de um parâmetro), e o envio é sempre "recebido",
  * para o cliente nunca conseguir escrever fora da sua própria obra.
  */
-export async function uploadDocumentoCliente(formData: FormData): Promise<ResultadoAcao> {
+export async function registarDocumentoCliente(ficheiro: FicheiroEnviado): Promise<ResultadoAcao> {
   try {
     const supabase = await createClient();
     const user = await getUserSafe(supabase);
@@ -80,41 +71,24 @@ export async function uploadDocumentoCliente(formData: FormData): Promise<Result
       return { error: "Não tens permissão para enviar documentos. Contacta o teu engenheiro fiscal." };
     }
 
-    const ficheiros = formData.getAll("ficheiros").filter((f): f is File => f instanceof File && f.size > 0);
-    if (ficheiros.length === 0) return { error: "Escolhe pelo menos um ficheiro." };
-
-    const erros: string[] = [];
-
-    for (const ficheiro of ficheiros) {
-      const path = `${profile.obra_id}/${crypto.randomUUID()}-${ficheiro.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from("documentos")
-        .upload(path, ficheiro, { contentType: ficheiro.type || undefined });
-      if (uploadError) {
-        erros.push(`${ficheiro.name}: ${uploadError.message}`);
-        continue;
-      }
-
-      const { error } = await supabase.from("documentos").insert({
-        obra_id: profile.obra_id,
-        direcao: "recebido",
-        categoria: null,
-        nome_ficheiro: ficheiro.name,
-        storage_path: path,
-        tamanho_bytes: ficheiro.size,
-        created_by: user.id,
-      });
-      if (error) erros.push(`${ficheiro.name}: ${error.message}`);
-    }
+    const { error } = await supabase.from("documentos").insert({
+      obra_id: profile.obra_id,
+      direcao: "recebido",
+      categoria: null,
+      nome_ficheiro: ficheiro.nome,
+      storage_path: ficheiro.path,
+      tamanho_bytes: ficheiro.tamanho,
+      created_by: user.id,
+    });
+    if (error) return { error: error.message };
 
     revalidatePath("/portal");
     revalidatePath(`/obras/${profile.obra_id}`);
     revalidatePath("/documentos");
-
-    return { error: erros.length > 0 ? erros.join(" · ") : null };
+    return { error: null };
   } catch (err) {
-    console.error("uploadDocumentoCliente falhou", err);
-    return { error: "Não foi possível enviar agora. Tenta outra vez." };
+    console.error("registarDocumentoCliente falhou", err);
+    return { error: "Não foi possível guardar o documento. Tenta outra vez." };
   }
 }
 

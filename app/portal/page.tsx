@@ -131,7 +131,7 @@ export default async function PortalHomePage() {
                 </a>
               ))}
             </div>
-            {profile.pode_ver_documentos && <DocumentoUploadCliente />}
+            {profile.pode_ver_documentos && <DocumentoUploadCliente obraId={obra.id} />}
           </div>
           {temAcessoFinanceiro && (
             <div className="mt-6">

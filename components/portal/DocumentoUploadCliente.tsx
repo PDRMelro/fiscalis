@@ -2,23 +2,44 @@
 
 import { useRef, useState, useTransition } from "react";
 import { Upload, Loader2 } from "lucide-react";
-import { uploadDocumentoCliente } from "@/lib/actions/documentos";
+import { createClient } from "@/lib/supabase/client";
+import { registarDocumentoCliente } from "@/lib/actions/documentos";
 
-export function DocumentoUploadCliente() {
+export function DocumentoUploadCliente({ obraId }: { obraId: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [arrastando, setArrastando] = useState(false);
   const [pending, startTransition] = useTransition();
+  const [progresso, setProgresso] = useState<string | null>(null);
   const [erro, setErro] = useState<string | null>(null);
 
   function enviar(files: FileList | File[]) {
     const lista = Array.from(files);
     if (lista.length === 0) return;
-    const fd = new FormData();
-    lista.forEach((f) => fd.append("ficheiros", f));
     setErro(null);
+
     startTransition(async () => {
-      const resultado = await uploadDocumentoCliente(fd);
-      if (resultado.error) setErro(resultado.error);
+      const supabase = createClient();
+      const erros: string[] = [];
+
+      for (let i = 0; i < lista.length; i++) {
+        const ficheiro = lista[i];
+        setProgresso(lista.length > 1 ? `A enviar ${i + 1}/${lista.length}...` : "A enviar...");
+
+        const path = `${obraId}/${crypto.randomUUID()}-${ficheiro.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from("documentos")
+          .upload(path, ficheiro, { contentType: ficheiro.type || undefined });
+        if (uploadError) {
+          erros.push(`${ficheiro.name}: ${uploadError.message}`);
+          continue;
+        }
+
+        const resultado = await registarDocumentoCliente({ nome: ficheiro.name, path, tamanho: ficheiro.size });
+        if (resultado.error) erros.push(`${ficheiro.name}: ${resultado.error}`);
+      }
+
+      setProgresso(null);
+      if (erros.length > 0) setErro(erros.join(" · "));
       if (inputRef.current) inputRef.current.value = "";
     });
   }
@@ -61,7 +82,7 @@ export function DocumentoUploadCliente() {
           <Upload size={15} className="text-[#8A8578] shrink-0" />
         )}
         <span className="text-[11px] text-[#8A8578] text-center">
-          {pending ? "A enviar..." : "Arrasta ficheiros para aqui ou clica para escolher"}
+          {progresso ?? "Arrasta ficheiros para aqui ou clica para escolher"}
         </span>
       </div>
       {erro && <p className="text-[11px] text-[#B0402F] mt-1">{erro}</p>}
