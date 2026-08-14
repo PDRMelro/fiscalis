@@ -79,7 +79,7 @@ export function IntervenienteCampos({
             placeholder="N.º cédula profissional"
             className="flex-1 min-w-[140px] text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5"
           />
-          {tipo === "Direção de Obra" && (
+          {(tipo === "Direção de Obra" || tipo === "Coordenador de Segurança") && (
             <input
               name="colegio"
               defaultValue={defaults?.colegio ?? undefined}

@@ -8,7 +8,10 @@ import type { IntervenienteRow, TipoInterveniente } from "@/lib/supabase/types";
 
 function detalheInterveniente(p: IntervenienteRow): string | null {
   if (p.tipo === "Construtora" && p.empresa) return p.empresa;
-  if ((p.tipo === "Direção de Obra" || p.tipo === "Arquitetura") && p.cedula_profissional) {
+  if (
+    (p.tipo === "Direção de Obra" || p.tipo === "Arquitetura" || p.tipo === "Coordenador de Segurança") &&
+    p.cedula_profissional
+  ) {
     const especialidade = p.colegio ? ` ${p.colegio}` : "";
     return `Cédula${especialidade} n.º ${p.cedula_profissional}`;
   }
