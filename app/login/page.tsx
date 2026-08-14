@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { LOGO_SRC } from "@/lib/branding";
 import { adminLogin, type ActionResult } from "@/lib/actions/auth";
 
 const initialState: ActionResult = { error: null };
@@ -14,12 +15,8 @@ export default function AdminLoginPage() {
       style={{ fontFamily: "Inter, system-ui, sans-serif" }}
     >
       <div className="w-full max-w-[380px]">
-        <div className="flex flex-col items-center gap-3 mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#1C374E] to-[#0A1520] border border-[#C9A050]/40 flex items-center justify-center shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
-            <span className="text-[#E9CE8F] text-[28px] font-semibold tracking-tight" style={{ fontFamily: "Georgia, serif" }}>
-              F
-            </span>
-          </div>
+        <div className="flex flex-col items-center gap-2 mb-8">
+          <img src={LOGO_SRC} alt="Fiscalis" className="h-12 w-auto" />
           <p className="text-white text-[15px] font-semibold tracking-wide">FISCALIS</p>
           <p className="text-[#C9A050] text-[10px] tracking-[0.15em] font-medium">ENGENHARIA</p>
         </div>
