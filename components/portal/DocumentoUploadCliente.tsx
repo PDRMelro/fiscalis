@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { Upload, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { registarDocumentoCliente } from "@/lib/actions/documentos";
+import { nomeSeguro } from "@/lib/nomeSeguro";
 
 export function DocumentoUploadCliente({
   obraId,
@@ -37,7 +38,7 @@ export function DocumentoUploadCliente({
           setProgresso(lista.length > 1 ? `A enviar ${i + 1}/${lista.length}...` : "A enviar...");
 
           try {
-            const path = `${obraId}/${crypto.randomUUID()}-${ficheiro.name}`;
+            const path = `${obraId}/${crypto.randomUUID()}-${nomeSeguro(ficheiro.name)}`;
             const { error: uploadError } = await supabase.storage
               .from("documentos")
               .upload(path, ficheiro, { contentType: ficheiro.type || undefined });

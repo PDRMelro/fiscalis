@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { Upload, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { registarDocumento } from "@/lib/actions/documentos";
+import { nomeSeguro } from "@/lib/nomeSeguro";
 import type { DirecaoDocumento } from "@/lib/supabase/types";
 
 export function DocumentoDropzone({
@@ -40,7 +41,7 @@ export function DocumentoDropzone({
           setProgresso(lista.length > 1 ? `A enviar ${i + 1}/${lista.length}...` : "A enviar...");
 
           try {
-            const path = `${obraId}/${crypto.randomUUID()}-${ficheiro.name}`;
+            const path = `${obraId}/${crypto.randomUUID()}-${nomeSeguro(ficheiro.name)}`;
             const { error: uploadError } = await supabase.storage
               .from("documentos")
               .upload(path, ficheiro, { contentType: ficheiro.type || undefined });

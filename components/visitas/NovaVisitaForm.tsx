@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { criarVisita, registarFotoVisita } from "@/lib/actions/visitas";
 import { FotoPicker, type FotoSelecionada } from "@/components/visitas/FotoPicker";
+import { nomeSeguro } from "@/lib/nomeSeguro";
 
 export function NovaVisitaForm({
   obras,
@@ -47,7 +48,7 @@ export function NovaVisitaForm({
           const foto = fotos[i];
           setProgresso(`A enviar foto ${i + 1}/${fotos.length}...`);
           try {
-            const path = `${obraId}/${visitaId}/${crypto.randomUUID()}-${foto.nome}`;
+            const path = `${obraId}/${visitaId}/${crypto.randomUUID()}-${nomeSeguro(foto.nome)}`;
             const { error: uploadError } = await supabase.storage
               .from("visita-fotos")
               .upload(path, foto.file, { contentType: foto.file.type || undefined });

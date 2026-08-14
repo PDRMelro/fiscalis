@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
+import { nomeSeguro } from "@/lib/nomeSeguro";
 import { gerarPdfTermoResponsabilidade } from "@/lib/pdf/termoResponsabilidade";
 
 export type ResultadoAcao = { error: string | null };
@@ -134,7 +135,7 @@ export async function gerarTermoResponsabilidade(obraId: string): Promise<Result
 
     const buffer = await gerarPdfTermoResponsabilidade(obra, perfil);
     const nome = `Termo_Responsabilidade_${obra.nome.replace(/\s+/g, "")}.pdf`;
-    const path = `${obraId}/${crypto.randomUUID()}-${nome}`;
+    const path = `${obraId}/${crypto.randomUUID()}-${nomeSeguro(nome)}`;
 
     const { error: uploadError } = await supabase.storage
       .from("documentos")
