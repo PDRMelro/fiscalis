@@ -2,6 +2,16 @@ export const CATEGORIAS_DOC = ["Arquitetura", "Especialidades"] as const;
 
 export type CategoriaDoc = (typeof CATEGORIAS_DOC)[number];
 
+export const CATEGORIAS_ENVIADO_DOC = [
+  "Declaração de competências profissionais",
+  "Termo de responsabilidade",
+  "Não conformidades",
+  "Relatórios",
+  "Faturas",
+] as const;
+
+export type CategoriaEnviadoDoc = (typeof CATEGORIAS_ENVIADO_DOC)[number];
+
 export function extensoesDeDocumentos(docs: { nome_ficheiro: string }[]): string {
   const exts = new Set(
     docs.map((d) => {
