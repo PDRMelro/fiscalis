@@ -5,7 +5,7 @@ import { GrupoDocumentosCard } from "@/components/obras/GrupoDocumentosCard";
 import { LinhaDocumento } from "@/components/obras/LinhaDocumento";
 import { GerarTermoButton } from "@/components/obras/GerarTermoButton";
 import { formatarData } from "@/lib/format";
-import { GRUPOS_DOC } from "@/lib/categoriasDocumento";
+import { CATEGORIAS_DOC } from "@/lib/categoriasDocumento";
 import type { DocumentoRow } from "@/lib/supabase/types";
 
 export function DocumentosTab({
@@ -17,8 +17,7 @@ export function DocumentosTab({
   recebidos: DocumentoRow[];
   enviados: DocumentoRow[];
 }) {
-  const todasCategorias = GRUPOS_DOC.flatMap((g) => g.categorias) as string[];
-  const semCategoria = recebidos.filter((d) => !d.categoria || !todasCategorias.includes(d.categoria));
+  const semCategoria = recebidos.filter((d) => !d.categoria || !CATEGORIAS_DOC.includes(d.categoria as never));
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -27,14 +26,8 @@ export function DocumentosTab({
         <p className="text-[12px] text-[#8A8578] mb-3">Clica numa das caixas para ver e adicionar documentos.</p>
 
         <div className="grid grid-cols-2 max-w-md gap-3">
-          {GRUPOS_DOC.map((grupo) => (
-            <GrupoDocumentosCard
-              key={grupo.chave}
-              obraId={obraId}
-              titulo={grupo.titulo}
-              categorias={grupo.categorias}
-              documentos={recebidos}
-            />
+          {CATEGORIAS_DOC.map((categoria) => (
+            <GrupoDocumentosCard key={categoria} obraId={obraId} categoria={categoria} documentos={recebidos} />
           ))}
         </div>
 

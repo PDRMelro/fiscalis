@@ -1,5 +1,5 @@
 import { FileArchive } from "lucide-react";
-import { GRUPOS_DOC } from "@/lib/categoriasDocumento";
+import { CATEGORIAS_DOC } from "@/lib/categoriasDocumento";
 import { GrupoDocumentosClienteCard } from "@/components/portal/GrupoDocumentosClienteCard";
 import type { DocumentoRow } from "@/lib/supabase/types";
 
@@ -12,20 +12,18 @@ export function DocumentosClienteSection({
   documentos: DocumentoRow[];
   podeEnviar: boolean;
 }) {
-  const todasCategorias = GRUPOS_DOC.flatMap((g) => g.categorias) as string[];
-  const semCategoria = documentos.filter((d) => !d.categoria || !todasCategorias.includes(d.categoria));
+  const semCategoria = documentos.filter((d) => !d.categoria || !CATEGORIAS_DOC.includes(d.categoria as never));
 
   return (
     <div className="mt-6">
       <p className="text-[12px] font-medium text-[#4A4740] mb-2">Documentos do projeto</p>
 
       <div className="grid grid-cols-2 gap-2.5 max-w-sm">
-        {GRUPOS_DOC.map((grupo) => (
+        {CATEGORIAS_DOC.map((categoria) => (
           <GrupoDocumentosClienteCard
-            key={grupo.chave}
+            key={categoria}
             obraId={obraId}
-            titulo={grupo.titulo}
-            categorias={grupo.categorias}
+            categoria={categoria}
             documentos={documentos}
             podeEnviar={podeEnviar}
           />

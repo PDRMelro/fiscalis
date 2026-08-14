@@ -9,19 +9,17 @@ import type { DocumentoRow } from "@/lib/supabase/types";
 
 export function GrupoDocumentosClienteCard({
   obraId,
-  titulo,
-  categorias,
+  categoria,
   documentos,
   podeEnviar,
 }: {
   obraId: string;
-  titulo: string;
-  categorias: readonly string[];
+  categoria: string;
   documentos: DocumentoRow[];
   podeEnviar: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const docsDoGrupo = documentos.filter((d) => d.categoria && categorias.includes(d.categoria));
+  const docsDoGrupo = documentos.filter((d) => d.categoria === categoria);
 
   return (
     <>
@@ -34,7 +32,7 @@ export function GrupoDocumentosClienteCard({
             <FolderOpen size={13} />
           </div>
           <div className="min-w-0">
-            <p className="text-[12px] font-medium text-[#14283A]">{titulo}</p>
+            <p className="text-[12px] font-medium text-[#14283A]">{categoria}</p>
             <p className="text-[10px] text-[#8A8578] truncate">{resumoGrupo(docsDoGrupo)}</p>
           </div>
         </div>
@@ -43,54 +41,25 @@ export function GrupoDocumentosClienteCard({
       <ModalShell open={open} onClose={() => setOpen(false)} maxWidth="max-w-lg">
         {() => (
           <div className="p-6">
-            <h2 className="text-[15px] font-semibold text-[#14283A] mb-3">{titulo}</h2>
+            <h2 className="text-[15px] font-semibold text-[#14283A] mb-3">{categoria}</h2>
 
-            {categorias.length === 1 ? (
-              <>
-                {podeEnviar && <DocumentoUploadCliente obraId={obraId} categoria={categorias[0]} />}
-                <div className="mt-3 divide-y divide-[#F2F0E8]">
-                  {docsDoGrupo.length === 0 && (
-                    <p className="text-[12px] text-[#8A8578] py-3 text-center">Ainda sem documentos.</p>
-                  )}
-                  {docsDoGrupo.map((d) => (
-                    <a
-                      key={d.id}
-                      href={`/api/documentos/${d.id}/download`}
-                      className="flex items-center gap-2 py-1.5 text-[12px] text-[#1F1D19] hover:underline"
-                    >
-                      <FileArchive size={13} className="text-[#8A8578] shrink-0" />
-                      <span className="truncate">{d.nome_ficheiro}</span>
-                    </a>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <div className="space-y-4">
-                {categorias.map((cat) => {
-                  const docsDaCategoria = documentos.filter((d) => d.categoria === cat);
-                  return (
-                    <div key={cat}>
-                      <p className="text-[12px] font-medium text-[#4A4740] mb-1.5">{cat}</p>
-                      {podeEnviar && <DocumentoUploadCliente obraId={obraId} categoria={cat} compacto />}
-                      {docsDaCategoria.length > 0 && (
-                        <div className="mt-1.5 divide-y divide-[#F2F0E8]">
-                          {docsDaCategoria.map((d) => (
-                            <a
-                              key={d.id}
-                              href={`/api/documentos/${d.id}/download`}
-                              className="flex items-center gap-2 py-1.5 text-[12px] text-[#1F1D19] hover:underline"
-                            >
-                              <FileArchive size={13} className="text-[#8A8578] shrink-0" />
-                              <span className="truncate">{d.nome_ficheiro}</span>
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            {podeEnviar && <DocumentoUploadCliente obraId={obraId} categoria={categoria} />}
+
+            <div className="mt-3 divide-y divide-[#F2F0E8]">
+              {docsDoGrupo.length === 0 && (
+                <p className="text-[12px] text-[#8A8578] py-3 text-center">Ainda sem documentos.</p>
+              )}
+              {docsDoGrupo.map((d) => (
+                <a
+                  key={d.id}
+                  href={`/api/documentos/${d.id}/download`}
+                  className="flex items-center gap-2 py-1.5 text-[12px] text-[#1F1D19] hover:underline"
+                >
+                  <FileArchive size={13} className="text-[#8A8578] shrink-0" />
+                  <span className="truncate">{d.nome_ficheiro}</span>
+                </a>
+              ))}
+            </div>
           </div>
         )}
       </ModalShell>
