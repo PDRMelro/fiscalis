@@ -6,6 +6,11 @@ const ADMIN_LOGIN = "/login";
 const PORTAL_PUBLIC_PATHS = ["/portal/login", "/portal/signup", "/portal/confirmar"];
 const PUBLIC_PATHS = ["/", ADMIN_LOGIN];
 
+// Só verifica "há sessão válida?" aqui — não faz nenhuma query extra à tabela
+// profiles a cada pedido (isso ficava caro: um pedido à Auth + um à base de
+// dados em CADA navegação). O papel exato (admin/client) é confirmado uma
+// única vez, já dentro do layout de cada área, que só corre quando essa
+// área é mesmo visitada.
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
@@ -34,34 +39,22 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  let role: "admin" | "client" | null = null;
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-    role = (profile?.role as "admin" | "client" | undefined) ?? null;
-  }
-
   const isPortalArea = pathname.startsWith(PORTAL_PREFIX);
   const isPortalPublic = PORTAL_PUBLIC_PATHS.some((p) => pathname.startsWith(p));
   const isAdminArea = !isPortalArea && !PUBLIC_PATHS.includes(pathname);
 
-  if (isAdminArea && (!user || role !== "admin")) {
+  if (isAdminArea && !user) {
     return NextResponse.redirect(new URL(ADMIN_LOGIN, request.url));
   }
 
-  if (isPortalArea && !isPortalPublic && (!user || role !== "client")) {
+  if (isPortalArea && !isPortalPublic && !user) {
     return NextResponse.redirect(new URL("/portal/login", request.url));
   }
 
-  if (pathname === ADMIN_LOGIN && user && role === "admin") {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
-
-  if (isPortalPublic && user && role === "client") {
-    return NextResponse.redirect(new URL("/portal", request.url));
+  // Utilizador já autenticado a abrir um ecrã de login: manda para "/",
+  // que faz UMA query para saber o papel e reencaminha para o sítio certo.
+  if (user && (pathname === ADMIN_LOGIN || isPortalPublic)) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return response;

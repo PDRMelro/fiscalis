@@ -15,7 +15,11 @@ export default async function PortalHomePage() {
 
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
 
-  const { data: obra } = await supabase.from("obras").select("*").maybeSingle();
+  if (profile?.role === "admin") redirect("/dashboard");
+
+  const { data: obra } = profile?.obra_id
+    ? await supabase.from("obras").select("*").eq("id", profile.obra_id).maybeSingle()
+    : { data: null };
 
   if (!profile || !obra) {
     return (
