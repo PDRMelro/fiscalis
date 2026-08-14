@@ -3,6 +3,41 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { X } from "lucide-react";
 
+function useEscapeToClose(open: boolean, onClose: () => void) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+}
+
+export function ModalShell({
+  open,
+  onClose,
+  children,
+  maxWidth = "max-w-md",
+}: {
+  open: boolean;
+  onClose: () => void;
+  children: (close: () => void) => ReactNode;
+  maxWidth?: string;
+}) {
+  useEscapeToClose(open, onClose);
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-6">
+      <div className={`bg-white rounded-xl shadow-xl w-full ${maxWidth} max-h-[85vh] overflow-y-auto relative`}>
+        <button onClick={onClose} className="absolute right-4 top-4 text-[#8A8578] hover:text-[#14283A]">
+          <X size={16} />
+        </button>
+        {children(onClose)}
+      </div>
+    </div>
+  );
+}
+
 export function ModalTrigger({
   label,
   icon: Icon,
@@ -16,13 +51,6 @@ export function ModalTrigger({
 }) {
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
-
   return (
     <>
       <button
@@ -35,19 +63,9 @@ export function ModalTrigger({
       >
         {Icon && <Icon size={14} />} {label}
       </button>
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-6">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md max-h-[85vh] overflow-y-auto relative">
-            <button
-              onClick={() => setOpen(false)}
-              className="absolute right-4 top-4 text-[#8A8578] hover:text-[#14283A]"
-            >
-              <X size={16} />
-            </button>
-            {children(() => setOpen(false))}
-          </div>
-        </div>
-      )}
+      <ModalShell open={open} onClose={() => setOpen(false)}>
+        {children}
+      </ModalShell>
     </>
   );
 }
