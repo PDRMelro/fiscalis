@@ -204,6 +204,8 @@ export type PerfilFiscalRow = {
   nif: string;
   cartao_cidadao: string;
   cedula_profissional: string;
+  seguro_rc_path: string | null;
+  seguro_rc_nome_ficheiro: string | null;
   updated_at: string;
 };
 
