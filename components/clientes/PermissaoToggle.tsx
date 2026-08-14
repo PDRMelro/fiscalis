@@ -3,7 +3,13 @@
 import { useTransition } from "react";
 import { atualizarPermissaoCliente } from "@/lib/actions/clientes";
 
-type Campo = "ativo" | "pode_ver_relatorios" | "pode_ver_nc" | "pode_ver_documentos" | "pode_ver_financeiro";
+type Campo =
+  | "ativo"
+  | "pode_ver_relatorios"
+  | "pode_ver_nc"
+  | "pode_ver_documentos"
+  | "pode_ver_financeiro"
+  | "pode_ver_intervenientes";
 
 export function PermissaoToggle({
   profileId,

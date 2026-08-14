@@ -172,11 +172,16 @@ export async function eliminarAuto(obraId: string, autoId: string) {
 
 export async function adicionarInterveniente(obraId: string, formData: FormData) {
   const supabase = await createClient();
+  const tipo = str(formData, "tipo");
   const { error } = await supabase.from("intervenientes").insert({
     obra_id: obraId,
     papel: str(formData, "papel"),
     nome: str(formData, "nome"),
     contacto: str(formData, "contacto") || null,
+    tipo: (tipo || null) as never,
+    empresa: str(formData, "empresa") || null,
+    cedula_profissional: str(formData, "cedula_profissional") || null,
+    colegio: str(formData, "colegio") || null,
   });
   if (error) throw new Error(error.message);
   revalidatePath(`/obras/${obraId}`);

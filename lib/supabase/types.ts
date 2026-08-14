@@ -25,6 +25,7 @@ export type ProfileRow = {
   pode_ver_nc: boolean;
   pode_ver_documentos: boolean;
   pode_ver_financeiro: boolean;
+  pode_ver_intervenientes: boolean;
   created_at: string;
 };
 
@@ -156,12 +157,18 @@ export type FaturacaoAutoRow = {
   updated_at: string;
 };
 
+export type TipoInterveniente = "Direção de Obra" | "Construtora" | "Arquitetura" | "Outro";
+
 export type IntervenienteRow = {
   id: string;
   obra_id: string;
   papel: string;
   nome: string;
   contacto: string | null;
+  tipo: TipoInterveniente | null;
+  empresa: string | null;
+  cedula_profissional: string | null;
+  colegio: string | null;
   created_at: string;
   updated_at: string;
 };

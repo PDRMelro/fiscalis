@@ -37,6 +37,7 @@ export default async function ClientesPage() {
                 <th className="px-3 py-3 font-medium text-center">Não conf.</th>
                 <th className="px-3 py-3 font-medium text-center">Documentos</th>
                 <th className="px-3 py-3 font-medium text-center">Financeiro</th>
+                <th className="px-3 py-3 font-medium text-center">Interv.</th>
               </tr>
             </thead>
             <tbody>
@@ -69,6 +70,13 @@ export default async function ClientesPage() {
                     </td>
                     <td className="px-3 py-3 text-center">
                       <PermissaoToggle profileId={c.id} campo="pode_ver_financeiro" valorInicial={c.pode_ver_financeiro} />
+                    </td>
+                    <td className="px-3 py-3 text-center">
+                      <PermissaoToggle
+                        profileId={c.id}
+                        campo="pode_ver_intervenientes"
+                        valorInicial={c.pode_ver_intervenientes}
+                      />
                     </td>
                   </tr>
                 );

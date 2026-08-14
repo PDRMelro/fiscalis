@@ -10,6 +10,7 @@ const CAMPOS_PERMITIDOS = [
   "pode_ver_nc",
   "pode_ver_documentos",
   "pode_ver_financeiro",
+  "pode_ver_intervenientes",
 ] as const;
 
 type CampoPermissao = (typeof CAMPOS_PERMITIDOS)[number];

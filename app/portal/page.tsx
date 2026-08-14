@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { MapPin, User, ExternalLink, ShieldCheck } from "lucide-react";
+import { MapPin, User, ExternalLink, ShieldCheck, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { LOGO_SRC } from "@/lib/branding";
@@ -35,7 +35,7 @@ export default async function PortalHomePage() {
     );
   }
 
-  const [{ data: relatorios }, { data: ncs }, { data: documentos }, { data: orcamentos }, { data: autos }] =
+  const [{ data: relatorios }, { data: ncs }, { data: documentos }, { data: orcamentos }, { data: autos }, { data: intervenientes }] =
     await Promise.all([
       supabase.from("relatorios").select("*").eq("obra_id", obra.id).order("data", { ascending: false }),
       supabase.from("nao_conformidades").select("*").eq("obra_id", obra.id).order("created_at", { ascending: false }),
@@ -44,6 +44,8 @@ export default async function PortalHomePage() {
       // (a Row Level Security filtra automaticamente — não é preciso verificar aqui).
       supabase.from("orcamentos").select("*").eq("obra_id", obra.id),
       supabase.from("faturacao_autos").select("*").eq("obra_id", obra.id).order("data", { ascending: false }),
+      // Idem para "Intervenientes" — só vem algo se pode_ver_intervenientes estiver ligado.
+      supabase.from("intervenientes").select("*").eq("obra_id", obra.id).order("created_at", { ascending: true }),
     ]);
 
   const temAcessoFinanceiro = (orcamentos && orcamentos.length > 0) || (autos && autos.length > 0);
@@ -190,6 +192,34 @@ export default async function PortalHomePage() {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {profile.pode_ver_intervenientes && intervenientes && intervenientes.length > 0 && (
+            <div className="mt-6">
+              <p className="text-[12px] font-medium text-[#4A4740] mb-2">Intervenientes</p>
+              <div className="bg-[#F5F4EF] rounded-lg divide-y divide-[#E4E1D6]">
+                {intervenientes.map((p) => {
+                  const detalhe =
+                    p.tipo === "Construtora" && p.empresa
+                      ? p.empresa
+                      : (p.tipo === "Direção de Obra" || p.tipo === "Arquitetura") && p.cedula_profissional
+                        ? `Cédula${p.colegio ? ` ${p.colegio}` : ""} n.º ${p.cedula_profissional}`
+                        : null;
+                  return (
+                    <div key={p.id} className="flex items-center gap-2.5 px-3 py-2.5">
+                      <Users size={13} className="text-[#8A8578] shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-[12px] text-[#1F1D19]">{p.nome}</p>
+                        <p className="text-[11px] text-[#8A8578]">
+                          {p.papel} {p.contacto && <>· {p.contacto}</>}
+                          {detalhe && <> · {detalhe}</>}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
