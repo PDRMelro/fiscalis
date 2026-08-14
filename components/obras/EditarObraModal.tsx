@@ -64,23 +64,23 @@ export function EditarObraModal({ obra }: { obra: ObraRow }) {
                   <input
                     name="termo_processo"
                     defaultValue={obra.termo_processo ?? ""}
-                    placeholder="Ex: 7/157/2026"
+                    placeholder="n/nnn/aaaa"
                     pattern="\d+/\d+/\d{4}"
-                    title="Formato: número/número/ano — ex: 7/157/2026"
+                    title="Formato: n/nnn/aaaa"
                     className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
                   />
-                  <p className="text-[10px] text-[#8A8578] mt-0.5">Formato: 7/157/2026</p>
+                  <p className="text-[10px] text-[#8A8578] mt-0.5">Formato: n/nnn/aaaa</p>
                 </div>
                 <div>
                   <input
                     name="termo_requerimento"
                     defaultValue={obra.termo_requerimento ?? ""}
-                    placeholder="Ex: 48000/2026"
+                    placeholder="nnnnn/aaaa"
                     pattern="\d+/\d{4}"
-                    title="Formato: número/ano — ex: 48000/2026"
+                    title="Formato: nnnnn/aaaa"
                     className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
                   />
-                  <p className="text-[10px] text-[#8A8578] mt-0.5">Formato: 48000/2026</p>
+                  <p className="text-[10px] text-[#8A8578] mt-0.5">Formato: nnnnn/aaaa</p>
                 </div>
               </div>
             </div>
