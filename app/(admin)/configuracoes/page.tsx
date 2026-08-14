@@ -3,8 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { atualizarPerfilFiscal } from "@/lib/actions/perfilFiscal";
 import { adicionarItemChecklist, eliminarItemChecklist } from "@/lib/actions/checklist";
-
-const ESPECIALIDADES = ["Estrutura", "Águas e esgotos", "Eletricidade", "Segurança", "Acabamentos", "Térmica e acústica"];
+import { ESPECIALIDADES_OBRA as ESPECIALIDADES } from "@/lib/especialidadesObra";
 
 export default async function ConfiguracoesPage() {
   const supabase = await createClient();

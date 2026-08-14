@@ -87,13 +87,27 @@ export type NaoConformidadeRow = {
   codigo: string | null;
   obra_id: string;
   visita_id: string | null;
+  data_deteccao: string;
+  local_zona: string | null;
+  especialidade: string | null;
   descricao: string;
+  requisito_incumprido: string | null;
+  acao_corretiva: string | null;
   severidade: Severidade;
   responsavel: string | null;
   prazo: string | null;
   estado: EstadoNC;
+  pdf_path: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type NcFotoRow = {
+  id: string;
+  nc_id: string;
+  storage_path: string;
+  nome_ficheiro: string;
+  created_at: string;
 };
 
 export type PropostaRow = {
@@ -209,6 +223,7 @@ export type Database = {
       visitas: TableDef<VisitaRow, "obra_id" | "data">;
       visita_fotos: TableDef<VisitaFotoRow, "visita_id" | "storage_path" | "nome_ficheiro">;
       nao_conformidades: TableDef<NaoConformidadeRow, "obra_id" | "descricao" | "severidade">;
+      nc_fotos: TableDef<NcFotoRow, "nc_id" | "storage_path" | "nome_ficheiro">;
       propostas: TableDef<PropostaRow, "cliente_nome" | "local" | "tipo_obra">;
       documentos: TableDef<DocumentoRow, "obra_id" | "direcao" | "nome_ficheiro" | "storage_path">;
       relatorios: TableDef<RelatorioRow, "obra_id">;

@@ -1,29 +1,33 @@
 import Link from "next/link";
-import { Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { SeveridadeTag } from "@/components/ui/Tags";
-import { NovaNCModal } from "@/components/nc/NovaNCModal";
 import { EstadoNCSelect } from "@/components/nc/EstadoNCSelect";
+import { GerarPdfNCButton } from "@/components/nc/GerarPdfNCButton";
 import { eliminarNC } from "@/lib/actions/nc";
 import { formatarData } from "@/lib/format";
 
 export default async function NaoConformidadesPage() {
   const supabase = await createClient();
-  const [{ data: ncs }, { data: obras }] = await Promise.all([
-    supabase
-      .from("nao_conformidades")
-      .select("*, obras(id, nome)")
-      .order("created_at", { ascending: false }),
-    supabase.from("obras").select("id, nome").order("nome"),
-  ]);
+  const { data: ncs } = await supabase
+    .from("nao_conformidades")
+    .select("*, obras(id, nome)")
+    .order("created_at", { ascending: false });
 
   return (
     <>
       <PageHeader
         title="Não conformidades"
         subtitle="Registo de não conformidades em obra"
-        action={<NovaNCModal obras={obras ?? []} />}
+        action={
+          <Link
+            href="/nc/nova"
+            className="flex items-center gap-1.5 text-[13px] text-white bg-[#14283A] rounded-lg px-3.5 py-2"
+          >
+            <Plus size={14} /> Nova não conformidade
+          </Link>
+        }
       />
       <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
         {(!ncs || ncs.length === 0) ? (
@@ -39,6 +43,7 @@ export default async function NaoConformidadesPage() {
                 <th className="px-5 py-3 font-medium">Responsável</th>
                 <th className="px-5 py-3 font-medium">Prazo</th>
                 <th className="px-5 py-3 font-medium">Estado</th>
+                <th className="px-5 py-3 font-medium">PDF</th>
                 <th className="px-5 py-3 font-medium" />
               </tr>
             </thead>
@@ -63,6 +68,9 @@ export default async function NaoConformidadesPage() {
                     <td className="px-5 py-3 text-[#8A8578] font-mono">{formatarData(n.prazo)}</td>
                     <td className="px-5 py-3">
                       <EstadoNCSelect id={n.id} estado={n.estado} />
+                    </td>
+                    <td className="px-5 py-3">
+                      <GerarPdfNCButton ncId={n.id} pdfPath={n.pdf_path} />
                     </td>
                     <td className="px-5 py-3">
                       <form action={eliminarNC.bind(null, n.id)}>

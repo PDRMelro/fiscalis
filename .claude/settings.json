@@ -16,7 +16,11 @@
       "Bash(curl -s -X DELETE https://zccxejalstjwlsrmxaoj.supabase.co/rest/v1/documentos?nome_ficheiro=eq.teste-diagnostico.txt -H 'apikey: __TRACKED_VAR__' -H 'Authorization: Bearer __CMDSUB_OUTPUT__')",
       "Bash(curl -s -X DELETE https://zccxejalstjwlsrmxaoj.supabase.co/storage/v1/object/documentos/14c6619b-b321-44fe-a235-f4edcb88d8d7/teste-diagnostico-1786730584.txt -H 'apikey: __TRACKED_VAR__' -H 'Authorization: Bearer __CMDSUB_OUTPUT__')",
       "Bash(rm -f /tmp/admin_token.txt /tmp/teste.txt)",
-      "Bash(curl -s \"https://zccxejalstjwlsrmxaoj.supabase.co/rest/v1/documentos?select=orcamento_id&limit=1\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjY3hlamFsc3Rqd2xzcm14YW9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MTIyMTQsImV4cCI6MjEwMjE4ODIxNH0.sbfVn6oB4VWzwYHWWeDnUtLGjTOu-8uzV-KZe_z2rwE\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjY3hlamFsc3Rqd2xzcm14YW9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MTIyMTQsImV4cCI6MjEwMjE4ODIxNH0.sbfVn6oB4VWzwYHWWeDnUtLGjTOu-8uzV-KZe_z2rwE\")"
+      "Bash(curl -s \"https://zccxejalstjwlsrmxaoj.supabase.co/rest/v1/documentos?select=orcamento_id&limit=1\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjY3hlamFsc3Rqd2xzcm14YW9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MTIyMTQsImV4cCI6MjEwMjE4ODIxNH0.sbfVn6oB4VWzwYHWWeDnUtLGjTOu-8uzV-KZe_z2rwE\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjY3hlamFsc3Rqd2xzcm14YW9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MTIyMTQsImV4cCI6MjEwMjE4ODIxNH0.sbfVn6oB4VWzwYHWWeDnUtLGjTOu-8uzV-KZe_z2rwE\")",
+      "Bash(mkdir -p \"c:/Users/Pedro/Documents/Fiscalis/fiscalis/app/api/nc/[id]/download\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Pedro\\Documents\\Fiscalis\\fiscalis\\app\\api\\nc\\[id]"
     ]
   }
 }
