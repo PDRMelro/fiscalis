@@ -105,13 +105,6 @@ create table public.visita_fotos (
   created_at timestamptz not null default now()
 );
 
-create view public.visitas_resumo
-  with (security_invoker = on) as
-select v.*, o.nome as obra_nome,
-  (select count(*) from public.nao_conformidades n where n.visita_id = v.id and n.estado = 'Aberta') as nc_abertas,
-  (select count(*) from public.visita_fotos f where f.visita_id = v.id) as fotos
-from public.visitas v join public.obras o on o.id = v.obra_id;
-
 -- -------------------------------------------------------------------------
 -- nao_conformidades
 -- -------------------------------------------------------------------------
@@ -141,6 +134,15 @@ create trigger trg_nc_codigo before insert on public.nao_conformidades
   for each row execute function public.set_nc_codigo();
 create trigger trg_nc_updated_at before update on public.nao_conformidades
   for each row execute function public.set_updated_at();
+
+-- visitas_resumo depende de nao_conformidades e visita_fotos, por isso só
+-- pode ser criada depois de ambas existirem.
+create view public.visitas_resumo
+  with (security_invoker = on) as
+select v.*, o.nome as obra_nome,
+  (select count(*) from public.nao_conformidades n where n.visita_id = v.id and n.estado = 'Aberta') as nc_abertas,
+  (select count(*) from public.visita_fotos f where f.visita_id = v.id) as fotos
+from public.visitas v join public.obras o on o.id = v.obra_id;
 
 -- -------------------------------------------------------------------------
 -- propostas
