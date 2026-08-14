@@ -1,43 +1,12 @@
-import { FileArchive, ShieldCheck, Trash2, Download } from "lucide-react";
+import { ShieldCheck, Trash2, Download } from "lucide-react";
 import { eliminarDocumento } from "@/lib/actions/documentos";
 import { DocumentoDropzone } from "@/components/obras/DocumentoDropzone";
+import { GrupoDocumentosCard } from "@/components/obras/GrupoDocumentosCard";
+import { LinhaDocumento } from "@/components/obras/LinhaDocumento";
 import { GerarTermoButton } from "@/components/obras/GerarTermoButton";
 import { formatarData } from "@/lib/format";
-import { CATEGORIAS_DOC } from "@/lib/categoriasDocumento";
+import { GRUPOS_DOC } from "@/lib/categoriasDocumento";
 import type { DocumentoRow } from "@/lib/supabase/types";
-
-function tamanho(bytes: number | null) {
-  if (!bytes) return "—";
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-function LinhaDocumento({ obraId, doc }: { obraId: string; doc: DocumentoRow }) {
-  return (
-    <div className="flex items-center gap-2 py-1.5 group">
-      <FileArchive size={13} className="text-[#8A8578] shrink-0" />
-      <a
-        href={`/api/documentos/${doc.id}/download`}
-        className="text-[12px] text-[#1F1D19] truncate flex-1 hover:underline"
-        title={doc.nome_ficheiro}
-      >
-        {doc.nome_ficheiro}
-      </a>
-      <span className="text-[10px] text-[#8A8578] font-mono shrink-0">{tamanho(doc.tamanho_bytes)}</span>
-      <a
-        href={`/api/documentos/${doc.id}/download`}
-        className="text-[#8A8578] hover:text-[#14283A] opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
-      >
-        <Download size={12} />
-      </a>
-      <form action={eliminarDocumento.bind(null, obraId, doc.id)}>
-        <button type="submit" className="text-[#B0402F] opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-          <Trash2 size={12} />
-        </button>
-      </form>
-    </div>
-  );
-}
 
 export function DocumentosTab({
   obraId,
@@ -48,39 +17,29 @@ export function DocumentosTab({
   recebidos: DocumentoRow[];
   enviados: DocumentoRow[];
 }) {
-  const semCategoria = recebidos.filter(
-    (d) => !d.categoria || !CATEGORIAS_DOC.includes(d.categoria as (typeof CATEGORIAS_DOC)[number])
-  );
+  const todasCategorias = GRUPOS_DOC.flatMap((g) => g.categorias) as string[];
+  const semCategoria = recebidos.filter((d) => !d.categoria || !todasCategorias.includes(d.categoria));
 
   return (
     <div className="max-w-3xl space-y-6">
       <div>
         <p className="text-[13px] font-medium text-[#4A4740] mb-1">Recebidos do cliente</p>
-        <p className="text-[12px] text-[#8A8578] mb-3">
-          Arrasta os ficheiros diretamente para o quadrado da especialidade correta.
-        </p>
+        <p className="text-[12px] text-[#8A8578] mb-3">Clica numa das caixas para ver e adicionar documentos.</p>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {CATEGORIAS_DOC.map((cat) => {
-            const docs = recebidos.filter((d) => d.categoria === cat);
-            return (
-              <div key={cat} className="bg-white border border-[#E4E1D6] rounded-xl p-3">
-                <p className="text-[12px] font-medium text-[#14283A] mb-2">{cat}</p>
-                <DocumentoDropzone obraId={obraId} direcao="recebido" categoria={cat} compacto />
-                {docs.length > 0 && (
-                  <div className="mt-2 divide-y divide-[#F2F0E8]">
-                    {docs.map((d) => (
-                      <LinhaDocumento key={d.id} obraId={obraId} doc={d} />
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+        <div className="grid grid-cols-2 max-w-md gap-3">
+          {GRUPOS_DOC.map((grupo) => (
+            <GrupoDocumentosCard
+              key={grupo.chave}
+              obraId={obraId}
+              titulo={grupo.titulo}
+              categorias={grupo.categorias}
+              documentos={recebidos}
+            />
+          ))}
         </div>
 
         {semCategoria.length > 0 && (
-          <div className="mt-3 bg-white border border-[#E4E1D6] rounded-xl p-3">
+          <div className="mt-3 bg-white border border-[#E4E1D6] rounded-xl p-3 max-w-md">
             <p className="text-[12px] font-medium text-[#14283A] mb-2">Sem categoria</p>
             <div className="divide-y divide-[#F2F0E8]">
               {semCategoria.map((d) => (
