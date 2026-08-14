@@ -33,9 +33,18 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Se o Supabase estiver lento/indisponível/a limitar pedidos por instantes,
+  // isto não pode deitar o site abaixo inteiro — trata-se como "sem sessão"
+  // (as áreas protegidas mandam para login, o que é o comportamento seguro).
+  let user = null;
+  try {
+    const {
+      data: { user: fetchedUser },
+    } = await supabase.auth.getUser();
+    user = fetchedUser;
+  } catch {
+    user = null;
+  }
 
   const { pathname } = request.nextUrl;
 
