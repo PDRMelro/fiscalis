@@ -10,6 +10,35 @@ export type ResultadoAcao = { error: string | null };
 
 export type FicheiroEnviado = { nome: string; path: string; tamanho: number };
 
+/**
+ * Usado por outros geradores de PDF (relatórios, Auto de Não Conformidade)
+ * quando o utilizador escolhe também disponibilizar a cópia em Documentos >
+ * Enviados ao cliente, na pasta certa.
+ */
+export async function copiarParaDocumentosEnviados(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  params: { obraId: string; categoria: string; nomeFicheiro: string; buffer: Buffer; createdBy: string | null }
+): Promise<ResultadoAcao> {
+  const path = `${params.obraId}/${crypto.randomUUID()}-${nomeSeguro(params.nomeFicheiro)}`;
+  const { error: uploadError } = await supabase.storage
+    .from("documentos")
+    .upload(path, params.buffer, { contentType: "application/pdf" });
+  if (uploadError) return { error: uploadError.message };
+
+  const { error } = await supabase.from("documentos").insert({
+    obra_id: params.obraId,
+    direcao: "enviado",
+    categoria: params.categoria,
+    nome_ficheiro: params.nomeFicheiro,
+    storage_path: path,
+    tamanho_bytes: params.buffer.length,
+    gerado_automaticamente: true,
+    created_by: params.createdBy,
+  });
+  if (error) return { error: error.message };
+  return { error: null };
+}
+
 // Nota: em produção o Next.js esconde a mensagem real de qualquer erro
 // "atirado" (throw) por uma Server Action, por segurança — por isso estas
 // ações devolvem sempre { error } em vez de lançar, e todo o corpo está

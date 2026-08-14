@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Plus, Camera, FileText } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { GerarComEnvioButton } from "@/components/ui/GerarComEnvioButton";
 import { formatarData } from "@/lib/format";
 import { gerarRelatorio } from "@/lib/actions/relatorios";
 
@@ -66,11 +67,12 @@ export default async function VisitasPage() {
                           Ver PDF
                         </a>
                       ) : (
-                        <form action={gerarRelatorio.bind(null, v.id)}>
-                          <button type="submit" className="flex items-center gap-1 text-[12px] text-[#14283A] font-medium ml-auto">
-                            <FileText size={12} /> Gerar relatório
-                          </button>
-                        </form>
+                        <GerarComEnvioButton
+                          label="Gerar relatório"
+                          icon={FileText}
+                          categoriaLabel="Relatórios"
+                          onGerar={gerarRelatorio.bind(null, v.id)}
+                        />
                       )}
                     </td>
                   </tr>

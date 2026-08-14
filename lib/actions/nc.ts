@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { gerarPdfAutoNaoConformidade } from "@/lib/pdf/autoNaoConformidade";
+import { copiarParaDocumentosEnviados } from "@/lib/actions/documentos";
 import type { EstadoNC, Severidade } from "@/lib/supabase/types";
 
 export type ResultadoAcao = { error: string | null };
@@ -92,7 +94,7 @@ export async function eliminarNC(id: string) {
   revalidatePath("/dashboard");
 }
 
-export async function gerarPdfAutoNC(ncId: string): Promise<ResultadoAcao> {
+export async function gerarPdfAutoNC(ncId: string, enviarCliente: boolean): Promise<ResultadoAcao> {
   try {
     const supabase = await createClient();
 
@@ -128,7 +130,20 @@ export async function gerarPdfAutoNC(ncId: string): Promise<ResultadoAcao> {
     const { error: updateError } = await supabase.from("nao_conformidades").update({ pdf_path: path }).eq("id", ncId);
     if (updateError) return { error: updateError.message };
 
+    if (enviarCliente) {
+      const user = await getUserSafe(supabase);
+      const resultado = await copiarParaDocumentosEnviados(supabase, {
+        obraId: nc.obra_id,
+        categoria: "Não conformidades",
+        nomeFicheiro: `Auto_${nc.codigo}.pdf`,
+        buffer,
+        createdBy: user?.id ?? null,
+      });
+      if (resultado.error) return { error: resultado.error };
+    }
+
     revalidatePath("/nc");
+    revalidatePath("/documentos");
     return { error: null };
   } catch (err) {
     console.error("gerarPdfAutoNC falhou", err);

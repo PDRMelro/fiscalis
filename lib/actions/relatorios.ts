@@ -4,46 +4,65 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { gerarPdfRelatorioVisita } from "@/lib/pdf/relatorioVisita";
+import { copiarParaDocumentosEnviados, type ResultadoAcao } from "@/lib/actions/documentos";
 
-export async function gerarRelatorio(visitaId: string) {
-  const supabase = await createClient();
+export async function gerarRelatorio(visitaId: string, enviarCliente: boolean): Promise<ResultadoAcao> {
+  try {
+    const supabase = await createClient();
 
-  const { data: visita, error: visitaError } = await supabase
-    .from("visitas")
-    .select("*, obras(*)")
-    .eq("id", visitaId)
-    .single();
-  if (visitaError || !visita) throw new Error("Visita não encontrada.");
+    const { data: visita, error: visitaError } = await supabase
+      .from("visitas")
+      .select("*, obras(*)")
+      .eq("id", visitaId)
+      .single();
+    if (visitaError || !visita) return { error: "Visita não encontrada." };
 
-  const obra = visita.obras as unknown as import("@/lib/supabase/types").ObraRow;
+    const obra = visita.obras as unknown as import("@/lib/supabase/types").ObraRow;
 
-  const [{ data: ncs }, { count: numFotos }] = await Promise.all([
-    supabase.from("nao_conformidades").select("*").eq("visita_id", visitaId),
-    supabase.from("visita_fotos").select("*", { count: "exact", head: true }).eq("visita_id", visitaId),
-  ]);
+    const [{ data: ncs }, { count: numFotos }] = await Promise.all([
+      supabase.from("nao_conformidades").select("*").eq("visita_id", visitaId),
+      supabase.from("visita_fotos").select("*", { count: "exact", head: true }).eq("visita_id", visitaId),
+    ]);
 
-  const user = await getUserSafe(supabase);
+    const user = await getUserSafe(supabase);
 
-  const { data: relatorio, error } = await supabase
-    .from("relatorios")
-    .insert({ obra_id: obra.id, visita_id: visitaId, data: visita.data, created_by: user?.id ?? null })
-    .select("*")
-    .single();
-  if (error || !relatorio) throw new Error(error?.message ?? "Não foi possível criar o relatório.");
+    const { data: relatorio, error } = await supabase
+      .from("relatorios")
+      .insert({ obra_id: obra.id, visita_id: visitaId, data: visita.data, created_by: user?.id ?? null })
+      .select("*")
+      .single();
+    if (error || !relatorio) return { error: error?.message ?? "Não foi possível criar o relatório." };
 
-  const buffer = await gerarPdfRelatorioVisita(relatorio.codigo ?? relatorio.id, obra, visita, ncs ?? [], numFotos ?? 0);
-  const path = `${obra.id}/${relatorio.id}.pdf`;
+    const buffer = await gerarPdfRelatorioVisita(relatorio.codigo ?? relatorio.id, obra, visita, ncs ?? [], numFotos ?? 0);
+    const path = `${obra.id}/${relatorio.id}.pdf`;
 
-  const { error: uploadError } = await supabase.storage
-    .from("relatorios")
-    .upload(path, buffer, { contentType: "application/pdf", upsert: true });
-  if (uploadError) throw new Error(uploadError.message);
+    const { error: uploadError } = await supabase.storage
+      .from("relatorios")
+      .upload(path, buffer, { contentType: "application/pdf", upsert: true });
+    if (uploadError) return { error: uploadError.message };
 
-  await supabase.from("relatorios").update({ storage_path: path }).eq("id", relatorio.id);
+    await supabase.from("relatorios").update({ storage_path: path }).eq("id", relatorio.id);
 
-  revalidatePath("/relatorios");
-  revalidatePath("/visitas");
-  revalidatePath(`/obras/${obra.id}`);
+    if (enviarCliente) {
+      const resultado = await copiarParaDocumentosEnviados(supabase, {
+        obraId: obra.id,
+        categoria: "Relatórios",
+        nomeFicheiro: `Relatorio_${relatorio.codigo ?? relatorio.id}.pdf`,
+        buffer,
+        createdBy: user?.id ?? null,
+      });
+      if (resultado.error) return { error: resultado.error };
+    }
+
+    revalidatePath("/relatorios");
+    revalidatePath("/visitas");
+    revalidatePath("/documentos");
+    revalidatePath(`/obras/${obra.id}`);
+    return { error: null };
+  } catch (err) {
+    console.error("gerarRelatorio falhou", err);
+    return { error: "Não foi possível gerar o relatório agora. Tenta outra vez." };
+  }
 }
 
 export async function eliminarRelatorio(id: string) {
