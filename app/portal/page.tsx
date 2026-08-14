@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { LOGO_SRC } from "@/lib/branding";
 import { EstadoDot } from "@/components/ui/Tags";
 import { clientLogout } from "@/lib/actions/auth";
-import { formatarData } from "@/lib/format";
+import { formatarData, formatarDinheiro } from "@/lib/format";
 
 export default async function PortalHomePage() {
   const supabase = await createClient();
@@ -34,11 +34,18 @@ export default async function PortalHomePage() {
     );
   }
 
-  const [{ data: relatorios }, { data: ncs }, { data: documentos }] = await Promise.all([
-    supabase.from("relatorios").select("*").eq("obra_id", obra.id).order("data", { ascending: false }),
-    supabase.from("nao_conformidades").select("*").eq("obra_id", obra.id).order("created_at", { ascending: false }),
-    supabase.from("documentos").select("*").eq("obra_id", obra.id).order("created_at", { ascending: false }),
-  ]);
+  const [{ data: relatorios }, { data: ncs }, { data: documentos }, { data: orcamentos }, { data: autos }] =
+    await Promise.all([
+      supabase.from("relatorios").select("*").eq("obra_id", obra.id).order("data", { ascending: false }),
+      supabase.from("nao_conformidades").select("*").eq("obra_id", obra.id).order("created_at", { ascending: false }),
+      supabase.from("documentos").select("*").eq("obra_id", obra.id).order("created_at", { ascending: false }),
+      // Só vêm dados aqui se o admin tiver ligado "Financeiro" para este cliente
+      // (a Row Level Security filtra automaticamente — não é preciso verificar aqui).
+      supabase.from("orcamentos").select("*").eq("obra_id", obra.id),
+      supabase.from("faturacao_autos").select("*").eq("obra_id", obra.id).order("data", { ascending: false }),
+    ]);
+
+  const temAcessoFinanceiro = (orcamentos && orcamentos.length > 0) || (autos && autos.length > 0);
 
   return (
     <div className="w-full max-w-3xl">
@@ -125,6 +132,57 @@ export default async function PortalHomePage() {
               ))}
             </div>
           </div>
+          {temAcessoFinanceiro && (
+            <div className="mt-6">
+              <p className="text-[12px] font-medium text-[#4A4740] mb-2">Financeiro</p>
+              {orcamentos && orcamentos.length > 0 && (
+                <div className="bg-[#F5F4EF] rounded-lg overflow-hidden mb-2">
+                  <table className="w-full text-[12px]">
+                    <thead>
+                      <tr className="text-left text-[#8A8578] border-b border-[#E4E1D6]">
+                        <th className="px-3 py-2 font-medium">Serviço</th>
+                        <th className="px-3 py-2 font-medium">Orçamentado</th>
+                        <th className="px-3 py-2 font-medium">Executado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orcamentos.map((o) => (
+                        <tr key={o.id} className="border-b border-[#E4E1D6] last:border-0">
+                          <td className="px-3 py-2 text-[#1F1D19]">{o.servico}</td>
+                          <td className="px-3 py-2 font-mono text-[#4A4740]">{formatarDinheiro(o.valor_orcamentado)}</td>
+                          <td className="px-3 py-2 font-mono text-[#4A4740]">{formatarDinheiro(o.valor_executado)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              {autos && autos.length > 0 && (
+                <div className="space-y-1.5">
+                  {autos.map((a) => (
+                    <div key={a.id} className="flex items-center justify-between text-[12px] bg-[#F5F4EF] rounded-lg px-3 py-2">
+                      <span className="text-[#1F1D19]">
+                        {a.numero} · {formatarData(a.data)}
+                      </span>
+                      <span className="flex items-center gap-2">
+                        <span className="font-mono text-[#4A4740]">{formatarDinheiro(a.valor)}</span>
+                        <span
+                          className="text-[11px] font-medium px-2 py-0.5 rounded"
+                          style={
+                            a.estado === "Pago"
+                              ? { backgroundColor: "#E3EEE6", color: "#2C6B45" }
+                              : { backgroundColor: "#FBEAD9", color: "#8A4A17" }
+                          }
+                        >
+                          {a.estado}
+                        </span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 

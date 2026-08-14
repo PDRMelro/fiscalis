@@ -20,6 +20,11 @@ export type ProfileRow = {
   obra_id: string | null;
   nome: string;
   email: string;
+  ativo: boolean;
+  pode_ver_relatorios: boolean;
+  pode_ver_nc: boolean;
+  pode_ver_documentos: boolean;
+  pode_ver_financeiro: boolean;
   created_at: string;
 };
 

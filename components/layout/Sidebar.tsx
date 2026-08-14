@@ -13,6 +13,7 @@ import {
   ClipboardList,
   CalendarDays,
   Eye,
+  Users,
 } from "lucide-react";
 import { LOGO_SRC } from "@/lib/branding";
 
@@ -26,6 +27,7 @@ const NAV = [
   { href: "/documentos", label: "Documentos", icon: FolderOpen },
   { href: "/relatorios", label: "Relatórios", icon: FileText },
   { href: "/portal", label: "Portal do Cliente", icon: Eye, external: true },
+  { href: "/clientes", label: "Clientes", icon: Users },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
 
