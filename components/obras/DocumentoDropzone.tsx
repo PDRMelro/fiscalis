@@ -28,11 +28,8 @@ export function DocumentoDropzone({
     lista.forEach((f) => fd.append("ficheiros", f));
     setErro(null);
     startTransition(async () => {
-      try {
-        await uploadDocumentos(obraId, direcao, categoria, fd);
-      } catch (e) {
-        setErro(e instanceof Error ? e.message : "Não foi possível enviar.");
-      }
+      const resultado = await uploadDocumentos(obraId, direcao, categoria, fd);
+      if (resultado.error) setErro(resultado.error);
       if (inputRef.current) inputRef.current.value = "";
     });
   }

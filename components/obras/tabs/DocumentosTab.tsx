@@ -1,6 +1,7 @@
 import { FileArchive, ShieldCheck, Trash2, Download } from "lucide-react";
-import { eliminarDocumento, gerarTermoResponsabilidade } from "@/lib/actions/documentos";
+import { eliminarDocumento } from "@/lib/actions/documentos";
 import { DocumentoDropzone } from "@/components/obras/DocumentoDropzone";
+import { GerarTermoButton } from "@/components/obras/GerarTermoButton";
 import { formatarData } from "@/lib/format";
 import type { DocumentoRow } from "@/lib/supabase/types";
 
@@ -95,14 +96,7 @@ export function DocumentosTab({
         <p className="text-[13px] font-medium text-[#4A4740] mb-3">Enviados ao cliente</p>
 
         <div className="mb-3">
-          <form action={gerarTermoResponsabilidade.bind(null, obraId)}>
-            <button
-              type="submit"
-              className="flex items-center gap-1.5 text-[12px] text-white bg-[#14283A] rounded-lg px-3 py-1.5"
-            >
-              <ShieldCheck size={13} /> Gerar Termo de Responsabilidade
-            </button>
-          </form>
+          <GerarTermoButton obraId={obraId} />
         </div>
 
         <div className="mb-3 max-w-md">
