@@ -7,7 +7,15 @@
       "Bash(curl -s https://fiscalis-pied.vercel.app/login)",
       "Bash(curl -s -D - -o /dev/null https://fiscalis-pied.vercel.app/login)",
       "Bash(git commit -m ' *)",
-      "Bash(curl -s https://fiscalis-pied.vercel.app/obras)"
+      "Bash(curl -s https://fiscalis-pied.vercel.app/obras)",
+      "Bash(curl -s -D - -o /dev/null https://fiscalis-pied.vercel.app/obras)",
+      "Bash(curl -s 'https://zccxejalstjwlsrmxaoj.supabase.co/rest/v1/obras?select=id,nome&limit=3' -H 'apikey: __TRACKED_VAR__' -H 'Authorization: Bearer __CMDSUB_OUTPUT__')",
+      "Bash(echo \"conteudo de teste\")",
+      "Bash(curl -s -w '\\\\nHTTP_STATUS:%{http_code}\\\\n' -X POST https://zccxejalstjwlsrmxaoj.supabase.co/storage/v1/object/documentos/__TRACKED_VAR__ -H 'apikey: __TRACKED_VAR__' -H 'Authorization: Bearer __CMDSUB_OUTPUT__' -H 'Content-Type: text/plain' --data-binary @/tmp/teste.txt)",
+      "Bash(curl -s -w '\\\\nHTTP_STATUS:%{http_code}\\\\n' -X POST https://zccxejalstjwlsrmxaoj.supabase.co/rest/v1/documentos -H 'apikey: __TRACKED_VAR__' -H 'Authorization: Bearer __CMDSUB_OUTPUT__' -H 'Content-Type: application/json' -H 'Prefer: return=representation' -d '{\"obra_id\":\"__TRACKED_VAR__\",\"direcao\":\"recebido\",\"categoria\":\"Arquitetura\",\"nome_ficheiro\":\"teste-diagnostico.txt\",\"storage_path\":\"__TRACKED_VAR__/teste-diagnostico-1786730584.txt\",\"tamanho_bytes\":17}')",
+      "Bash(curl -s -X DELETE https://zccxejalstjwlsrmxaoj.supabase.co/rest/v1/documentos?nome_ficheiro=eq.teste-diagnostico.txt -H 'apikey: __TRACKED_VAR__' -H 'Authorization: Bearer __CMDSUB_OUTPUT__')",
+      "Bash(curl -s -X DELETE https://zccxejalstjwlsrmxaoj.supabase.co/storage/v1/object/documentos/14c6619b-b321-44fe-a235-f4edcb88d8d7/teste-diagnostico-1786730584.txt -H 'apikey: __TRACKED_VAR__' -H 'Authorization: Bearer __CMDSUB_OUTPUT__')",
+      "Bash(rm -f /tmp/admin_token.txt /tmp/teste.txt)"
     ]
   }
 }
