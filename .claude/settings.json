@@ -5,7 +5,9 @@
       "Bash(curl -s \"https://zccxejalstjwlsrmxaoj.supabase.co/rest/v1/profiles?select=ativo,pode_ver_relatorios,pode_ver_nc,pode_ver_documentos,pode_ver_financeiro&limit=1\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjY3hlamFsc3Rqd2xzcm14YW9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MTIyMTQsImV4cCI6MjEwMjE4ODIxNH0.sbfVn6oB4VWzwYHWWeDnUtLGjTOu-8uzV-KZe_z2rwE\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjY3hlamFsc3Rqd2xzcm14YW9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MTIyMTQsImV4cCI6MjEwMjE4ODIxNH0.sbfVn6oB4VWzwYHWWeDnUtLGjTOu-8uzV-KZe_z2rwE\")",
       "Bash(node -e ' *)",
       "Bash(curl -s https://fiscalis-pied.vercel.app/login)",
-      "Bash(curl -s -D - -o /dev/null https://fiscalis-pied.vercel.app/login)"
+      "Bash(curl -s -D - -o /dev/null https://fiscalis-pied.vercel.app/login)",
+      "Bash(git commit -m ' *)",
+      "Bash(curl -s https://fiscalis-pied.vercel.app/obras)"
     ]
   }
 }
