@@ -1,18 +1,23 @@
 import { FileArchive } from "lucide-react";
 import { CATEGORIAS_DOC } from "@/lib/categoriasDocumento";
 import { GrupoDocumentosClienteCard } from "@/components/portal/GrupoDocumentosClienteCard";
+import { GrupoDocumentosOrcamentoClienteCard } from "@/components/portal/GrupoDocumentosOrcamentoClienteCard";
 import type { DocumentoRow } from "@/lib/supabase/types";
 
 export function DocumentosClienteSection({
   obraId,
   documentos,
   podeEnviar,
+  orcamentos,
 }: {
   obraId: string;
   documentos: DocumentoRow[];
   podeEnviar: boolean;
+  orcamentos: { id: string; servico: string }[];
 }) {
-  const semCategoria = documentos.filter((d) => !d.categoria || !CATEGORIAS_DOC.includes(d.categoria as never));
+  const semCategoria = documentos.filter(
+    (d) => !d.orcamento_id && (!d.categoria || !CATEGORIAS_DOC.includes(d.categoria as never))
+  );
 
   return (
     <div className="mt-6">
@@ -28,6 +33,9 @@ export function DocumentosClienteSection({
             podeEnviar={podeEnviar}
           />
         ))}
+        {orcamentos.length > 0 && (
+          <GrupoDocumentosOrcamentoClienteCard documentos={documentos} orcamentos={orcamentos} />
+        )}
       </div>
 
       {semCategoria.length > 0 && (

@@ -127,6 +127,7 @@ export default async function PortalHomePage() {
             obraId={obra.id}
             documentos={documentos ?? []}
             podeEnviar={profile.pode_ver_documentos}
+            orcamentos={orcamentos ?? []}
           />
           {temAcessoFinanceiro && (
             <div className="mt-6">

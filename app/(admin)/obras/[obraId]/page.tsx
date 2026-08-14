@@ -107,14 +107,13 @@ async function VisitasTabData({ obraId }: { obraId: string }) {
 
 async function DocumentosTabData({ obraId }: { obraId: string }) {
   const supabase = await createClient();
-  const { data: docs } = await supabase
-    .from("documentos")
-    .select("*")
-    .eq("obra_id", obraId)
-    .order("created_at", { ascending: false });
+  const [{ data: docs }, { data: orcamentos }] = await Promise.all([
+    supabase.from("documentos").select("*").eq("obra_id", obraId).order("created_at", { ascending: false }),
+    supabase.from("orcamentos").select("id, servico").eq("obra_id", obraId),
+  ]);
   const recebidos = (docs ?? []).filter((d) => d.direcao === "recebido");
   const enviados = (docs ?? []).filter((d) => d.direcao === "enviado");
-  return <DocumentosTab obraId={obraId} recebidos={recebidos} enviados={enviados} />;
+  return <DocumentosTab obraId={obraId} recebidos={recebidos} enviados={enviados} orcamentos={orcamentos ?? []} />;
 }
 
 async function OrcamentosTabData({ obraId }: { obraId: string }) {

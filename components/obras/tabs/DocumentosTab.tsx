@@ -2,6 +2,7 @@ import { ShieldCheck, Trash2, Download } from "lucide-react";
 import { eliminarDocumento } from "@/lib/actions/documentos";
 import { DocumentoDropzone } from "@/components/obras/DocumentoDropzone";
 import { GrupoDocumentosCard } from "@/components/obras/GrupoDocumentosCard";
+import { GrupoDocumentosOrcamentoCard } from "@/components/obras/GrupoDocumentosOrcamentoCard";
 import { LinhaDocumento } from "@/components/obras/LinhaDocumento";
 import { GerarTermoButton } from "@/components/obras/GerarTermoButton";
 import { formatarData } from "@/lib/format";
@@ -12,12 +13,16 @@ export function DocumentosTab({
   obraId,
   recebidos,
   enviados,
+  orcamentos,
 }: {
   obraId: string;
   recebidos: DocumentoRow[];
   enviados: DocumentoRow[];
+  orcamentos: { id: string; servico: string }[];
 }) {
-  const semCategoria = recebidos.filter((d) => !d.categoria || !CATEGORIAS_DOC.includes(d.categoria as never));
+  const semCategoria = recebidos.filter(
+    (d) => !d.orcamento_id && (!d.categoria || !CATEGORIAS_DOC.includes(d.categoria as never))
+  );
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -29,6 +34,9 @@ export function DocumentosTab({
           {CATEGORIAS_DOC.map((categoria) => (
             <GrupoDocumentosCard key={categoria} obraId={obraId} categoria={categoria} documentos={recebidos} />
           ))}
+          {orcamentos.length > 0 && (
+            <GrupoDocumentosOrcamentoCard obraId={obraId} documentos={recebidos} orcamentos={orcamentos} />
+          )}
         </div>
 
         {semCategoria.length > 0 && (
