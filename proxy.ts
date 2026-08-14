@@ -11,13 +11,27 @@ const PUBLIC_PATHS = ["/", ADMIN_LOGIN];
 // dados em CADA navegação). O papel exato (admin/client) é confirmado uma
 // única vez, já dentro do layout de cada área, que só corre quando essa
 // área é mesmo visitada.
+//
+// Tudo aqui dentro está protegido por um try/catch total: se o Supabase
+// estiver indisponível, a limitar pedidos, ou faltar alguma variável de
+// ambiente, o pedido segue em frente sem sessão em vez de derrubar o site
+// inteiro com um erro 500 — as páginas protegidas já sabem lidar com "sem
+// sessão" (mandam para login), e essa falha aparece de forma normal em vez
+// de um ecrã em branco.
 export async function proxy(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  const { pathname } = request.nextUrl;
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  try {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if (!url || !key) {
+      console.error("proxy.ts: NEXT_PUBLIC_SUPABASE_URL ou NEXT_PUBLIC_SUPABASE_ANON_KEY em falta no ambiente.");
+      return NextResponse.next({ request });
+    }
+
+    let response = NextResponse.next({ request });
+
+    const supabase = createServerClient(url, key, {
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -30,43 +44,35 @@ export async function proxy(request: NextRequest) {
           );
         },
       },
-    }
-  );
+    });
 
-  // Se o Supabase estiver lento/indisponível/a limitar pedidos por instantes,
-  // isto não pode deitar o site abaixo inteiro — trata-se como "sem sessão"
-  // (as áreas protegidas mandam para login, o que é o comportamento seguro).
-  let user = null;
-  try {
     const {
-      data: { user: fetchedUser },
+      data: { user },
     } = await supabase.auth.getUser();
-    user = fetchedUser;
-  } catch {
-    user = null;
+
+    const isPortalArea = pathname.startsWith(PORTAL_PREFIX);
+    const isPortalPublic = PORTAL_PUBLIC_PATHS.some((p) => pathname.startsWith(p));
+    const isAdminArea = !isPortalArea && !PUBLIC_PATHS.includes(pathname);
+
+    if (isAdminArea && !user) {
+      return NextResponse.redirect(new URL(ADMIN_LOGIN, request.url));
+    }
+
+    if (isPortalArea && !isPortalPublic && !user) {
+      return NextResponse.redirect(new URL("/portal/login", request.url));
+    }
+
+    // Utilizador já autenticado a abrir um ecrã de login: manda para "/",
+    // que faz UMA query para saber o papel e reencaminha para o sítio certo.
+    if (user && (pathname === ADMIN_LOGIN || isPortalPublic)) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    return response;
+  } catch (err) {
+    console.error("proxy.ts: falha inesperada, a deixar o pedido seguir sem sessão.", err);
+    return NextResponse.next({ request });
   }
-
-  const { pathname } = request.nextUrl;
-
-  const isPortalArea = pathname.startsWith(PORTAL_PREFIX);
-  const isPortalPublic = PORTAL_PUBLIC_PATHS.some((p) => pathname.startsWith(p));
-  const isAdminArea = !isPortalArea && !PUBLIC_PATHS.includes(pathname);
-
-  if (isAdminArea && !user) {
-    return NextResponse.redirect(new URL(ADMIN_LOGIN, request.url));
-  }
-
-  if (isPortalArea && !isPortalPublic && !user) {
-    return NextResponse.redirect(new URL("/portal/login", request.url));
-  }
-
-  // Utilizador já autenticado a abrir um ecrã de login: manda para "/",
-  // que faz UMA query para saber o papel e reencaminha para o sítio certo.
-  if (user && (pathname === ADMIN_LOGIN || isPortalPublic)) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
-  return response;
 }
 
 export const config = {
