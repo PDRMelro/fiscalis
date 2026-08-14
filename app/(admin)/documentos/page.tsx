@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { FileArchive, Upload, Trash2, ShieldCheck } from "lucide-react";
+import { FileArchive, Trash2, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { uploadDocumento, eliminarDocumento } from "@/lib/actions/documentos";
+import { eliminarDocumento } from "@/lib/actions/documentos";
+import { DocumentoDropzone } from "@/components/obras/DocumentoDropzone";
 
 function tamanho(bytes: number | null) {
   if (!bytes) return "—";
@@ -30,12 +31,9 @@ export default async function DocumentosPage() {
                 <Link href={`/obras/${o.id}?tab=Documentos`} className="text-[13px] font-medium text-[#14283A] hover:underline">
                   {o.nome}
                 </Link>
-                <form action={uploadDocumento.bind(null, o.id, "recebido")} encType="multipart/form-data" className="flex items-center gap-1.5">
-                  <input name="ficheiro" type="file" required className="text-[11px] max-w-[160px]" />
-                  <button type="submit" className="flex items-center gap-1.5 text-[11px] text-[#14283A] border border-[#E4E1D6] rounded-lg px-2.5 py-1 shrink-0">
-                    <Upload size={12} /> Adicionar
-                  </button>
-                </form>
+                <div className="w-64 shrink-0">
+                  <DocumentoDropzone obraId={o.id} direcao="recebido" compacto />
+                </div>
               </div>
               {docs.length === 0 ? (
                 <p className="px-5 py-4 text-[12px] text-[#8A8578]">Sem documentos.</p>

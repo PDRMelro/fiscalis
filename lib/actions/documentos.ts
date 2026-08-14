@@ -4,39 +4,48 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { gerarPdfTermoResponsabilidade } from "@/lib/pdf/termoResponsabilidade";
 
-export async function uploadDocumento(
+export async function uploadDocumentos(
   obraId: string,
   direcao: "recebido" | "enviado",
+  categoria: string | null,
   formData: FormData
 ) {
   const supabase = await createClient();
-  const ficheiro = formData.get("ficheiro") as File | null;
-  const categoria = String(formData.get("categoria") ?? "").trim() || null;
-  if (!ficheiro || ficheiro.size === 0) throw new Error("Escolhe um ficheiro.");
-
-  const path = `${obraId}/${crypto.randomUUID()}-${ficheiro.name}`;
-  const { error: uploadError } = await supabase.storage
-    .from("documentos")
-    .upload(path, ficheiro, { contentType: ficheiro.type || undefined });
-  if (uploadError) throw new Error(uploadError.message);
+  const ficheiros = formData.getAll("ficheiros").filter((f): f is File => f instanceof File && f.size > 0);
+  if (ficheiros.length === 0) throw new Error("Escolhe pelo menos um ficheiro.");
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { error } = await supabase.from("documentos").insert({
-    obra_id: obraId,
-    direcao,
-    categoria,
-    nome_ficheiro: ficheiro.name,
-    storage_path: path,
-    tamanho_bytes: ficheiro.size,
-    created_by: user?.id ?? null,
-  });
-  if (error) throw new Error(error.message);
+  const erros: string[] = [];
+
+  for (const ficheiro of ficheiros) {
+    const path = `${obraId}/${crypto.randomUUID()}-${ficheiro.name}`;
+    const { error: uploadError } = await supabase.storage
+      .from("documentos")
+      .upload(path, ficheiro, { contentType: ficheiro.type || undefined });
+    if (uploadError) {
+      erros.push(`${ficheiro.name}: ${uploadError.message}`);
+      continue;
+    }
+
+    const { error } = await supabase.from("documentos").insert({
+      obra_id: obraId,
+      direcao,
+      categoria,
+      nome_ficheiro: ficheiro.name,
+      storage_path: path,
+      tamanho_bytes: ficheiro.size,
+      created_by: user?.id ?? null,
+    });
+    if (error) erros.push(`${ficheiro.name}: ${error.message}`);
+  }
 
   revalidatePath(`/obras/${obraId}`);
   revalidatePath("/documentos");
+
+  if (erros.length > 0) throw new Error(erros.join(" · "));
 }
 
 export async function eliminarDocumento(obraId: string, documentoId: string) {

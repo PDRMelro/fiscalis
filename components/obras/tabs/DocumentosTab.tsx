@@ -1,5 +1,6 @@
-import { FileArchive, ShieldCheck, Upload, Trash2, Download } from "lucide-react";
-import { uploadDocumento, eliminarDocumento, gerarTermoResponsabilidade } from "@/lib/actions/documentos";
+import { FileArchive, ShieldCheck, Trash2, Download } from "lucide-react";
+import { eliminarDocumento, gerarTermoResponsabilidade } from "@/lib/actions/documentos";
+import { DocumentoDropzone } from "@/components/obras/DocumentoDropzone";
 import { formatarData } from "@/lib/format";
 import type { DocumentoRow } from "@/lib/supabase/types";
 
@@ -11,6 +12,33 @@ function tamanho(bytes: number | null) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function LinhaDocumento({ obraId, doc }: { obraId: string; doc: DocumentoRow }) {
+  return (
+    <div className="flex items-center gap-2 py-1.5 group">
+      <FileArchive size={13} className="text-[#8A8578] shrink-0" />
+      <a
+        href={`/api/documentos/${doc.id}/download`}
+        className="text-[12px] text-[#1F1D19] truncate flex-1 hover:underline"
+        title={doc.nome_ficheiro}
+      >
+        {doc.nome_ficheiro}
+      </a>
+      <span className="text-[10px] text-[#8A8578] font-mono shrink-0">{tamanho(doc.tamanho_bytes)}</span>
+      <a
+        href={`/api/documentos/${doc.id}/download`}
+        className="text-[#8A8578] hover:text-[#14283A] opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+      >
+        <Download size={12} />
+      </a>
+      <form action={eliminarDocumento.bind(null, obraId, doc.id)}>
+        <button type="submit" className="text-[#B0402F] opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+          <Trash2 size={12} />
+        </button>
+      </form>
+    </div>
+  );
+}
+
 export function DocumentosTab({
   obraId,
   recebidos,
@@ -20,67 +48,43 @@ export function DocumentosTab({
   recebidos: DocumentoRow[];
   enviados: DocumentoRow[];
 }) {
+  const semCategoria = recebidos.filter((d) => !d.categoria || !CATEGORIAS_DOC.includes(d.categoria));
+
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="max-w-3xl space-y-6">
       <div>
-        <div className="flex items-center justify-between mb-3 gap-4">
-          <p className="text-[13px] font-medium text-[#4A4740]">
-            Recebidos do cliente{" "}
-            <span className="text-[#8A8578] font-normal">— projetos de arquitetura e especialidades</span>
-          </p>
+        <p className="text-[13px] font-medium text-[#4A4740] mb-1">Recebidos do cliente</p>
+        <p className="text-[12px] text-[#8A8578] mb-3">
+          Arrasta os ficheiros diretamente para o quadrado da especialidade correta.
+        </p>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {CATEGORIAS_DOC.map((cat) => {
+            const docs = recebidos.filter((d) => d.categoria === cat);
+            return (
+              <div key={cat} className="bg-white border border-[#E4E1D6] rounded-xl p-3">
+                <p className="text-[12px] font-medium text-[#14283A] mb-2">{cat}</p>
+                <DocumentoDropzone obraId={obraId} direcao="recebido" categoria={cat} compacto />
+                {docs.length > 0 && (
+                  <div className="mt-2 divide-y divide-[#F2F0E8]">
+                    {docs.map((d) => (
+                      <LinhaDocumento key={d.id} obraId={obraId} doc={d} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
 
-        <form
-          action={uploadDocumento.bind(null, obraId, "recebido")}
-          encType="multipart/form-data"
-          className="flex items-center gap-2 mb-3 bg-[#F5F4EF] border border-[#E4E1D6] rounded-lg p-2.5"
-        >
-          <select name="categoria" className="text-[12px] border border-[#DEDBD2] rounded-lg px-2 py-1.5 bg-white">
-            {CATEGORIAS_DOC.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-          <input name="ficheiro" type="file" required className="flex-1 text-[12px]" />
-          <button
-            type="submit"
-            className="flex items-center gap-1.5 text-[12px] text-white bg-[#14283A] rounded-lg px-3 py-1.5 shrink-0"
-          >
-            <Upload size={13} /> Adicionar ficheiro
-          </button>
-        </form>
-
-        {recebidos.length === 0 ? (
-          <div className="bg-white border border-dashed border-[#C7C3B6] rounded-xl p-6 text-center text-[13px] text-[#8A8578]">
-            Ainda sem documentos recebidos nesta obra.
-          </div>
-        ) : (
-          <div className="bg-white border border-[#E4E1D6] rounded-xl divide-y divide-[#F2F0E8]">
-            {recebidos.map((d) => (
-              <div key={d.id} className="flex items-center gap-3 px-4 py-3 group">
-                <div className="w-9 h-9 rounded-lg bg-[#F0EEE5] flex items-center justify-center text-[#8A8578] shrink-0">
-                  <FileArchive size={16} />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[13px] text-[#1F1D19] truncate">{d.nome_ficheiro}</p>
-                  <p className="text-[11px] text-[#8A8578]">
-                    {d.categoria} · {formatarData(d.created_at)} · {tamanho(d.tamanho_bytes)}
-                  </p>
-                </div>
-                <a
-                  href={`/api/documentos/${d.id}/download`}
-                  className="text-[#8A8578] hover:text-[#14283A] opacity-0 group-hover:opacity-100 transition-opacity"
-                >
-                  <Download size={14} />
-                </a>
-                <form action={eliminarDocumento.bind(null, obraId, d.id)}>
-                  <button type="submit" className="text-[#B0402F] opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Trash2 size={14} />
-                  </button>
-                </form>
-              </div>
-            ))}
+        {semCategoria.length > 0 && (
+          <div className="mt-3 bg-white border border-[#E4E1D6] rounded-xl p-3">
+            <p className="text-[12px] font-medium text-[#14283A] mb-2">Sem categoria</p>
+            <div className="divide-y divide-[#F2F0E8]">
+              {semCategoria.map((d) => (
+                <LinhaDocumento key={d.id} obraId={obraId} doc={d} />
+              ))}
+            </div>
           </div>
         )}
       </div>
@@ -90,7 +94,7 @@ export function DocumentosTab({
       <div>
         <p className="text-[13px] font-medium text-[#4A4740] mb-3">Enviados ao cliente</p>
 
-        <div className="flex gap-2 mb-3">
+        <div className="mb-3">
           <form action={gerarTermoResponsabilidade.bind(null, obraId)}>
             <button
               type="submit"
@@ -101,19 +105,9 @@ export function DocumentosTab({
           </form>
         </div>
 
-        <form
-          action={uploadDocumento.bind(null, obraId, "enviado")}
-          encType="multipart/form-data"
-          className="flex items-center gap-2 mb-3 bg-[#F5F4EF] border border-[#E4E1D6] rounded-lg p-2.5"
-        >
-          <input name="ficheiro" type="file" required className="flex-1 text-[12px]" />
-          <button
-            type="submit"
-            className="flex items-center gap-1.5 text-[12px] text-[#14283A] border border-[#DEDBD2] bg-white rounded-lg px-3 py-1.5 shrink-0"
-          >
-            <Upload size={13} /> Adicionar outro documento
-          </button>
-        </form>
+        <div className="mb-3 max-w-md">
+          <DocumentoDropzone obraId={obraId} direcao="enviado" />
+        </div>
 
         {enviados.length === 0 ? (
           <div className="bg-white border border-dashed border-[#C7C3B6] rounded-xl p-6 text-center text-[13px] text-[#8A8578]">
