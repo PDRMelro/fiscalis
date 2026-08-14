@@ -224,6 +224,25 @@ export async function moverInterveniente(obraId: string, intervenienteId: string
   revalidatePath(`/obras/${obraId}`);
 }
 
+export async function editarInterveniente(obraId: string, intervenienteId: string, formData: FormData) {
+  const supabase = await createClient();
+  const tipo = str(formData, "tipo");
+  const { error } = await supabase
+    .from("intervenientes")
+    .update({
+      papel: str(formData, "papel"),
+      nome: str(formData, "nome"),
+      contacto: str(formData, "contacto") || null,
+      tipo: (tipo || null) as never,
+      empresa: str(formData, "empresa") || null,
+      cedula_profissional: str(formData, "cedula_profissional") || null,
+      colegio: str(formData, "colegio") || null,
+    })
+    .eq("id", intervenienteId);
+  if (error) throw new Error(error.message);
+  revalidatePath(`/obras/${obraId}`);
+}
+
 export async function eliminarInterveniente(obraId: string, intervenienteId: string) {
   const supabase = await createClient();
   const { error } = await supabase.from("intervenientes").delete().eq("id", intervenienteId);
