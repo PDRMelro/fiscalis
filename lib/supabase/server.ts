@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import type { Database } from "./types";
 
-export async function createClient() {
+export async function createClient(opts?: { esquecerAoFechar?: boolean }) {
   const cookieStore = await cookies();
 
   return createServerClient<Database>(
@@ -16,7 +16,14 @@ export async function createClient() {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+              cookieStore.set(
+                name,
+                value,
+                // Sem "Manter-me ligado": grava a sessão como cookie de
+                // sessão do browser (sem validade definida), para
+                // desaparecer sozinho quando o browser fechar de vez.
+                opts?.esquecerAoFechar ? { ...options, maxAge: undefined, expires: undefined } : options
+              )
             );
           } catch {
             // chamado a partir de um Server Component — ignorado porque o

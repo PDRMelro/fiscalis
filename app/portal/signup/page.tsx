@@ -64,6 +64,22 @@ export default function PortalSignupPage() {
               />
             </div>
 
+            <label className="flex items-start gap-2 text-[12px] text-[#4A4740]">
+              <input
+                name="aceitouPolitica"
+                type="checkbox"
+                required
+                className="w-3.5 h-3.5 mt-0.5 accent-[#14283A] shrink-0"
+              />
+              <span>
+                Li e aceito a{" "}
+                <Link href="/privacidade" target="_blank" className="text-[#14283A] underline underline-offset-2">
+                  Política de Proteção de Dados
+                </Link>
+                .
+              </span>
+            </label>
+
             {state.error && <p className="text-[12px] text-[#B0402F]">{state.error}</p>}
 
             <button

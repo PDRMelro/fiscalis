@@ -47,6 +47,16 @@ export default function AdminLoginPage() {
               />
             </div>
 
+            <label className="flex items-center gap-2 text-[12px] text-[#4A4740]">
+              <input
+                name="manterLigado"
+                type="checkbox"
+                defaultChecked
+                className="w-3.5 h-3.5 accent-[#14283A]"
+              />
+              Manter-me ligado
+            </label>
+
             {state.error && <p className="text-[12px] text-[#B0402F]">{state.error}</p>}
 
             <button

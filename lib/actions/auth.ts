@@ -1,10 +1,13 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import type { AuthError } from "@supabase/supabase-js";
 
 export type ActionResult = { error: string } | { error: null };
+
+const COOKIE_LEMBRAR = "fiscalis-lembrar";
 
 function mensagemErroLogin(error: AuthError): string {
   if (error.code === "over_request_rate_limit" || error.status === 429) {
@@ -18,11 +21,25 @@ function mensagemErroLogin(error: AuthError): string {
   return `Não foi possível entrar: ${error.message}`;
 }
 
+/** Grava a preferência "manter-me ligado" para o proxy.ts respeitar em cada refresh de sessão seguinte. */
+async function gravarPreferenciaLembrar(manterLigado: boolean) {
+  const cookieStore = await cookies();
+  if (manterLigado) {
+    cookieStore.delete(COOKIE_LEMBRAR);
+  } else {
+    // Cookie de sessão do próprio browser (sem maxAge) — desaparece sozinho
+    // ao fechar o browser, e enquanto existir diz ao proxy.ts para manter
+    // os cookies de autenticação também como "só desta sessão".
+    cookieStore.set(COOKIE_LEMBRAR, "0", { path: "/", httpOnly: true, sameSite: "lax" });
+  }
+}
+
 export async function adminLogin(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  const manterLigado = formData.get("manterLigado") === "on";
 
-  const supabase = await createClient();
+  const supabase = await createClient({ esquecerAoFechar: !manterLigado });
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return { error: mensagemErroLogin(error) };
 
@@ -37,12 +54,14 @@ export async function adminLogin(_prev: ActionResult, formData: FormData): Promi
     return { error: "Esta conta não tem acesso de administrador." };
   }
 
+  await gravarPreferenciaLembrar(manterLigado);
   redirect("/dashboard");
 }
 
 export async function adminLogout() {
   const supabase = await createClient();
   await supabase.auth.signOut();
+  (await cookies()).delete(COOKIE_LEMBRAR);
   redirect("/login");
 }
 
@@ -52,10 +71,12 @@ export async function clientSignUp(_prev: ActionResult, formData: FormData): Pro
   const password = String(formData.get("password") ?? "");
   const confirmar = String(formData.get("confirmar") ?? "");
   const codigoAcesso = String(formData.get("codigoAcesso") ?? "").trim();
+  const aceitouPolitica = formData.get("aceitouPolitica") === "on";
 
   if (!nome || !email || !password || !codigoAcesso) return { error: "Preenche todos os campos." };
   if (password !== confirmar) return { error: "As palavras-passe não coincidem." };
   if (password.length < 6) return { error: "A palavra-passe deve ter pelo menos 6 caracteres." };
+  if (!aceitouPolitica) return { error: "Tens de aceitar a Política de Proteção de Dados para criar conta." };
 
   const supabase = await createClient();
 
@@ -103,8 +124,9 @@ export async function clientResendOtp(email: string) {
 export async function clientLogin(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  const manterLigado = formData.get("manterLigado") === "on";
 
-  const supabase = await createClient();
+  const supabase = await createClient({ esquecerAoFechar: !manterLigado });
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
@@ -125,11 +147,13 @@ export async function clientLogin(_prev: ActionResult, formData: FormData): Prom
     return { error: "Esta conta não tem acesso ao portal do cliente." };
   }
 
+  await gravarPreferenciaLembrar(manterLigado);
   redirect("/portal");
 }
 
 export async function clientLogout() {
   const supabase = await createClient();
   await supabase.auth.signOut();
+  (await cookies()).delete(COOKIE_LEMBRAR);
   redirect("/portal/login");
 }

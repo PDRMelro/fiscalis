@@ -4,7 +4,8 @@ import { NextResponse, type NextRequest } from "next/server";
 const PORTAL_PREFIX = "/portal";
 const ADMIN_LOGIN = "/login";
 const PORTAL_PUBLIC_PATHS = ["/portal/login", "/portal/signup", "/portal/confirmar"];
-const PUBLIC_PATHS = ["/", ADMIN_LOGIN];
+const PUBLIC_PATHS = ["/", ADMIN_LOGIN, "/privacidade"];
+const COOKIE_LEMBRAR = "fiscalis-lembrar";
 
 // Só verifica "há sessão válida?" aqui — não faz nenhuma query extra à tabela
 // profiles a cada pedido (isso ficava caro: um pedido à Auth + um à base de
@@ -39,8 +40,17 @@ export async function proxy(request: NextRequest) {
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({ request });
+          // Se o utilizador escolheu não "manter-me ligado", cada renovação
+          // de sessão continua a gravar os cookies só para esta sessão do
+          // browser (sem maxAge), em vez de o Supabase os tornar persistentes
+          // outra vez sozinho a cada refresh.
+          const esquecerAoFechar = request.cookies.get(COOKIE_LEMBRAR)?.value === "0";
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+            response.cookies.set(
+              name,
+              value,
+              esquecerAoFechar ? { ...options, maxAge: undefined, expires: undefined } : options
+            )
           );
         },
       },

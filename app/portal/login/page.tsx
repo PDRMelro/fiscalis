@@ -36,6 +36,16 @@ export default function PortalLoginPage() {
               className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white focus:outline-none focus:border-[#14283A]"
             />
 
+            <label className="flex items-center gap-2 text-[12px] text-[#4A4740] mt-3">
+              <input
+                name="manterLigado"
+                type="checkbox"
+                defaultChecked
+                className="w-3.5 h-3.5 accent-[#14283A]"
+              />
+              Manter-me ligado
+            </label>
+
             {state.error && <p className="text-[12px] text-[#B0402F] mt-2">{state.error}</p>}
 
             <button
