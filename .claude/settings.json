@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -X POST https://zccxejalstjwlsrmxaoj.supabase.co/auth/v1/token?grant_type=password -H 'apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjY3hlamFsc3Rqd2xzcm14YW9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MTIyMTQsImV4cCI6MjEwMjE4ODIxNH0.sbfVn6oB4VWzwYHWWeDnUtLGjTOu-8uzV-KZe_z2rwE' -H 'Content-Type: application/json' -d '{\"email\":\"pdrmelro@gmail.com\",\"password\":\"20Abril2013*\"}' -o /tmp/auth_test.json -w 'HTTP status: %{http_code}\\\\n')"
+    ]
+  }
+}
