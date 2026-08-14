@@ -19,7 +19,7 @@ export function IntervenienteCampos({
   };
 }) {
   const mostrarEmpresa = tipo === "Construtora";
-  const mostrarCedula = tipo === "Direção de Obra" || tipo === "Arquitetura";
+  const mostrarCedula = tipo === "Direção de Obra" || tipo === "Arquitetura" || tipo === "Coordenador de Segurança";
 
   return (
     <>
@@ -34,6 +34,7 @@ export function IntervenienteCampos({
           <option value="Direção de Obra">Direção de Obra</option>
           <option value="Construtora">Construtora</option>
           <option value="Arquitetura">Arquitetura</option>
+          <option value="Coordenador de Segurança">Coordenador de Segurança em Obra</option>
           <option value="Outro">Outro</option>
         </select>
         <input

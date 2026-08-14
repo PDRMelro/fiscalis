@@ -171,7 +171,12 @@ export type FaturacaoAutoRow = {
   updated_at: string;
 };
 
-export type TipoInterveniente = "Direção de Obra" | "Construtora" | "Arquitetura" | "Outro";
+export type TipoInterveniente =
+  | "Direção de Obra"
+  | "Construtora"
+  | "Arquitetura"
+  | "Coordenador de Segurança"
+  | "Outro";
 
 export type IntervenienteRow = {
   id: string;
