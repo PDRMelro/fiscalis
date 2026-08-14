@@ -60,18 +60,28 @@ export function EditarObraModal({ obra }: { obra: ObraRow }) {
                 className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
               />
               <div className="grid grid-cols-2 gap-2">
-                <input
-                  name="termo_processo"
-                  defaultValue={obra.termo_processo ?? ""}
-                  placeholder="N.º do processo"
-                  className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
-                />
-                <input
-                  name="termo_requerimento"
-                  defaultValue={obra.termo_requerimento ?? ""}
-                  placeholder="N.º do requerimento"
-                  className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
-                />
+                <div>
+                  <input
+                    name="termo_processo"
+                    defaultValue={obra.termo_processo ?? ""}
+                    placeholder="Ex: 7/157/2026"
+                    pattern="\d+/\d+/\d{4}"
+                    title="Formato: número/número/ano — ex: 7/157/2026"
+                    className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
+                  />
+                  <p className="text-[10px] text-[#8A8578] mt-0.5">Formato: 7/157/2026</p>
+                </div>
+                <div>
+                  <input
+                    name="termo_requerimento"
+                    defaultValue={obra.termo_requerimento ?? ""}
+                    placeholder="Ex: 48000/2026"
+                    pattern="\d+/\d{4}"
+                    title="Formato: número/ano — ex: 48000/2026"
+                    className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
+                  />
+                  <p className="text-[10px] text-[#8A8578] mt-0.5">Formato: 48000/2026</p>
+                </div>
               </div>
             </div>
           </div>
