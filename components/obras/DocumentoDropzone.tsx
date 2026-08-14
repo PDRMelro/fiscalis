@@ -10,11 +10,13 @@ export function DocumentoDropzone({
   obraId,
   direcao,
   categoria = null,
+  orcamentoId = null,
   compacto = false,
 }: {
   obraId: string;
   direcao: DirecaoDocumento;
   categoria?: string | null;
+  orcamentoId?: string | null;
   compacto?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -47,11 +49,13 @@ export function DocumentoDropzone({
               continue;
             }
 
-            const resultado = await registarDocumento(obraId, direcao, categoria, {
-              nome: ficheiro.name,
-              path,
-              tamanho: ficheiro.size,
-            });
+            const resultado = await registarDocumento(
+              obraId,
+              direcao,
+              categoria,
+              { nome: ficheiro.name, path, tamanho: ficheiro.size },
+              orcamentoId
+            );
             if (resultado.error) erros.push(`${ficheiro.name}: ${resultado.error}`);
           } catch (err) {
             console.error("Falha ao enviar ficheiro", ficheiro.name, err);

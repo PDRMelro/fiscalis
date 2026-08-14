@@ -113,6 +113,7 @@ export async function adicionarOrcamento(obraId: string, formData: FormData) {
     fornecedor: str(formData, "fornecedor"),
     valor_orcamentado: num(formData, "valor_orcamentado"),
     valor_executado: num(formData, "valor_executado"),
+    taxa_iva: num(formData, "taxa_iva") || 23,
   });
   if (error) throw new Error(error.message);
   revalidatePath(`/obras/${obraId}`);
@@ -124,6 +125,7 @@ export async function atualizarOrcamento(obraId: string, orcamentoId: string, fo
     .from("orcamentos")
     .update({
       valor_executado: num(formData, "valor_executado"),
+      taxa_iva: num(formData, "taxa_iva") || 23,
     })
     .eq("id", orcamentoId);
   if (error) throw new Error(error.message);

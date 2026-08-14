@@ -6,7 +6,8 @@ import { LOGO_SRC } from "@/lib/branding";
 import { EstadoDot } from "@/components/ui/Tags";
 import { clientLogout } from "@/lib/actions/auth";
 import { DocumentosClienteSection } from "@/components/portal/DocumentosClienteSection";
-import { formatarData, formatarDinheiro } from "@/lib/format";
+import { OrcamentoDocumentosClienteButton } from "@/components/portal/OrcamentoDocumentosClienteButton";
+import { formatarData, formatarDinheiro, comIva } from "@/lib/format";
 
 export default async function PortalHomePage() {
   const supabase = await createClient();
@@ -131,14 +132,34 @@ export default async function PortalHomePage() {
                         <th className="px-3 py-2 font-medium">Serviço</th>
                         <th className="px-3 py-2 font-medium">Orçamentado</th>
                         <th className="px-3 py-2 font-medium">Executado</th>
+                        <th className="px-3 py-2 font-medium">Docs</th>
                       </tr>
                     </thead>
                     <tbody>
                       {orcamentos.map((o) => (
                         <tr key={o.id} className="border-b border-[#E4E1D6] last:border-0">
                           <td className="px-3 py-2 text-[#1F1D19]">{o.servico}</td>
-                          <td className="px-3 py-2 font-mono text-[#4A4740]">{formatarDinheiro(o.valor_orcamentado)}</td>
-                          <td className="px-3 py-2 font-mono text-[#4A4740]">{formatarDinheiro(o.valor_executado)}</td>
+                          <td className="px-3 py-2 font-mono text-[#4A4740]">
+                            <div>{formatarDinheiro(o.valor_orcamentado)}</div>
+                            <div className="text-[10px] text-[#8A8578]">
+                              {formatarDinheiro(comIva(o.valor_orcamentado, o.taxa_iva))} c/ IVA
+                            </div>
+                          </td>
+                          <td className="px-3 py-2 font-mono text-[#4A4740]">
+                            <div>{formatarDinheiro(o.valor_executado)}</div>
+                            <div className="text-[10px] text-[#8A8578]">
+                              {formatarDinheiro(comIva(o.valor_executado, o.taxa_iva))} c/ IVA
+                            </div>
+                          </td>
+                          <td className="px-3 py-2">
+                            <OrcamentoDocumentosClienteButton
+                              obraId={obra.id}
+                              orcamentoId={o.id}
+                              servico={o.servico}
+                              documentos={documentos ?? []}
+                              podeEnviar={profile.pode_ver_documentos}
+                            />
+                          </td>
                         </tr>
                       ))}
                     </tbody>

@@ -8,10 +8,12 @@ import { registarDocumentoCliente } from "@/lib/actions/documentos";
 export function DocumentoUploadCliente({
   obraId,
   categoria = null,
+  orcamentoId = null,
   compacto = false,
 }: {
   obraId: string;
   categoria?: string | null;
+  orcamentoId?: string | null;
   compacto?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -44,11 +46,11 @@ export function DocumentoUploadCliente({
               continue;
             }
 
-            const resultado = await registarDocumentoCliente(categoria, {
-              nome: ficheiro.name,
-              path,
-              tamanho: ficheiro.size,
-            });
+            const resultado = await registarDocumentoCliente(
+              categoria,
+              { nome: ficheiro.name, path, tamanho: ficheiro.size },
+              orcamentoId
+            );
             if (resultado.error) erros.push(`${ficheiro.name}: ${resultado.error}`);
           } catch (err) {
             console.error("Falha ao enviar ficheiro", ficheiro.name, err);

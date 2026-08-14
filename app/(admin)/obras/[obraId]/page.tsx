@@ -119,12 +119,11 @@ async function DocumentosTabData({ obraId }: { obraId: string }) {
 
 async function OrcamentosTabData({ obraId }: { obraId: string }) {
   const supabase = await createClient();
-  const { data: itens } = await supabase
-    .from("orcamentos")
-    .select("*")
-    .eq("obra_id", obraId)
-    .order("created_at", { ascending: true });
-  return <OrcamentosTab obraId={obraId} itens={itens ?? []} />;
+  const [{ data: itens }, { data: documentos }] = await Promise.all([
+    supabase.from("orcamentos").select("*").eq("obra_id", obraId).order("created_at", { ascending: true }),
+    supabase.from("documentos").select("*").eq("obra_id", obraId).not("orcamento_id", "is", null),
+  ]);
+  return <OrcamentosTab obraId={obraId} itens={itens ?? []} documentos={documentos ?? []} />;
 }
 
 async function FinanceiroTabData({ obraId, honorarioMensal }: { obraId: string; honorarioMensal: number | null }) {

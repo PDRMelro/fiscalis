@@ -110,6 +110,7 @@ export type PropostaRow = {
 export type DocumentoRow = {
   id: string;
   obra_id: string;
+  orcamento_id: string | null;
   direcao: DirecaoDocumento;
   categoria: string | null;
   tipo: string | null;
@@ -139,6 +140,7 @@ export type OrcamentoRow = {
   fornecedor: string;
   valor_orcamentado: number;
   valor_executado: number;
+  taxa_iva: number;
   created_at: string;
   updated_at: string;
 };

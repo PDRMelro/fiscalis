@@ -24,7 +24,8 @@ export async function registarDocumento(
   obraId: string,
   direcao: "recebido" | "enviado",
   categoria: string | null,
-  ficheiro: FicheiroEnviado
+  ficheiro: FicheiroEnviado,
+  orcamentoId: string | null = null
 ): Promise<ResultadoAcao> {
   try {
     const supabase = await createClient();
@@ -32,6 +33,7 @@ export async function registarDocumento(
 
     const { error } = await supabase.from("documentos").insert({
       obra_id: obraId,
+      orcamento_id: orcamentoId,
       direcao,
       categoria,
       nome_ficheiro: ficheiro.nome,
@@ -57,7 +59,8 @@ export async function registarDocumento(
  */
 export async function registarDocumentoCliente(
   categoria: string | null,
-  ficheiro: FicheiroEnviado
+  ficheiro: FicheiroEnviado,
+  orcamentoId: string | null = null
 ): Promise<ResultadoAcao> {
   try {
     const supabase = await createClient();
@@ -66,16 +69,20 @@ export async function registarDocumentoCliente(
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("obra_id, ativo, pode_ver_documentos")
+      .select("obra_id, ativo, pode_ver_documentos, pode_ver_financeiro")
       .eq("id", user.id)
       .single();
 
     if (!profile?.ativo || !profile.pode_ver_documentos || !profile.obra_id) {
       return { error: "Não tens permissão para enviar documentos. Contacta o teu engenheiro fiscal." };
     }
+    if (orcamentoId && !profile.pode_ver_financeiro) {
+      return { error: "Não tens permissão para anexar documentos a orçamentos." };
+    }
 
     const { error } = await supabase.from("documentos").insert({
       obra_id: profile.obra_id,
+      orcamento_id: orcamentoId,
       direcao: "recebido",
       categoria,
       nome_ficheiro: ficheiro.nome,

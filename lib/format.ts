@@ -14,6 +14,11 @@ export function formatarDinheiro(valor: number | null | undefined): string {
   return new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR" }).format(valor);
 }
 
+/** valor guardado é sempre sem IVA; isto calcula o valor com IVA a partir da taxa (%). */
+export function comIva(valorSemIva: number, taxaIva: number): number {
+  return valorSemIva * (1 + taxaIva / 100);
+}
+
 /** Input <input type="date"> espera sempre "yyyy-mm-dd". */
 export function paraInputDate(data: string | Date | null | undefined): string {
   if (!data) return "";
