@@ -29,28 +29,38 @@ export function DocumentoDropzone({
     setErro(null);
 
     startTransition(async () => {
-      const supabase = createClient();
       const erros: string[] = [];
+      try {
+        const supabase = createClient();
 
-      for (let i = 0; i < lista.length; i++) {
-        const ficheiro = lista[i];
-        setProgresso(lista.length > 1 ? `A enviar ${i + 1}/${lista.length}...` : "A enviar...");
+        for (let i = 0; i < lista.length; i++) {
+          const ficheiro = lista[i];
+          setProgresso(lista.length > 1 ? `A enviar ${i + 1}/${lista.length}...` : "A enviar...");
 
-        const path = `${obraId}/${crypto.randomUUID()}-${ficheiro.name}`;
-        const { error: uploadError } = await supabase.storage
-          .from("documentos")
-          .upload(path, ficheiro, { contentType: ficheiro.type || undefined });
-        if (uploadError) {
-          erros.push(`${ficheiro.name}: ${uploadError.message}`);
-          continue;
+          try {
+            const path = `${obraId}/${crypto.randomUUID()}-${ficheiro.name}`;
+            const { error: uploadError } = await supabase.storage
+              .from("documentos")
+              .upload(path, ficheiro, { contentType: ficheiro.type || undefined });
+            if (uploadError) {
+              erros.push(`${ficheiro.name}: ${uploadError.message}`);
+              continue;
+            }
+
+            const resultado = await registarDocumento(obraId, direcao, categoria, {
+              nome: ficheiro.name,
+              path,
+              tamanho: ficheiro.size,
+            });
+            if (resultado.error) erros.push(`${ficheiro.name}: ${resultado.error}`);
+          } catch (err) {
+            console.error("Falha ao enviar ficheiro", ficheiro.name, err);
+            erros.push(`${ficheiro.name}: falha inesperada ao enviar.`);
+          }
         }
-
-        const resultado = await registarDocumento(obraId, direcao, categoria, {
-          nome: ficheiro.name,
-          path,
-          tamanho: ficheiro.size,
-        });
-        if (resultado.error) erros.push(`${ficheiro.name}: ${resultado.error}`);
+      } catch (err) {
+        console.error("DocumentoDropzone falhou", err);
+        erros.push("Falha inesperada. Verifica a ligação e tenta outra vez.");
       }
 
       setProgresso(null);

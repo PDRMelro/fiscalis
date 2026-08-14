@@ -30,41 +30,52 @@ export function NovaVisitaForm({
     }
 
     startTransition(async () => {
-      setProgresso("A criar visita...");
-      const resultado = await criarVisita(obraId, data, notas);
-      if (resultado.error || !resultado.visitaId) {
-        setErro(resultado.error ?? "Não foi possível criar a visita.");
-        setProgresso(null);
-        return;
-      }
-
-      const visitaId = resultado.visitaId;
-      const supabase = createClient();
-      const erros: string[] = [];
-
-      for (let i = 0; i < fotos.length; i++) {
-        const foto = fotos[i];
-        setProgresso(`A enviar foto ${i + 1}/${fotos.length}...`);
-        const path = `${obraId}/${visitaId}/${crypto.randomUUID()}-${foto.nome}`;
-        const { error: uploadError } = await supabase.storage
-          .from("visita-fotos")
-          .upload(path, foto.file, { contentType: foto.file.type || undefined });
-        if (uploadError) {
-          erros.push(`${foto.nome}: ${uploadError.message}`);
-          continue;
+      try {
+        setProgresso("A criar visita...");
+        const resultado = await criarVisita(obraId, data, notas);
+        if (resultado.error || !resultado.visitaId) {
+          setErro(resultado.error ?? "Não foi possível criar a visita.");
+          setProgresso(null);
+          return;
         }
-        const registo = await registarFotoVisita(visitaId, obraId, { nome: foto.nome, path });
-        if (registo.error) erros.push(`${foto.nome}: ${registo.error}`);
+
+        const visitaId = resultado.visitaId;
+        const supabase = createClient();
+        const erros: string[] = [];
+
+        for (let i = 0; i < fotos.length; i++) {
+          const foto = fotos[i];
+          setProgresso(`A enviar foto ${i + 1}/${fotos.length}...`);
+          try {
+            const path = `${obraId}/${visitaId}/${crypto.randomUUID()}-${foto.nome}`;
+            const { error: uploadError } = await supabase.storage
+              .from("visita-fotos")
+              .upload(path, foto.file, { contentType: foto.file.type || undefined });
+            if (uploadError) {
+              erros.push(`${foto.nome}: ${uploadError.message}`);
+              continue;
+            }
+            const registo = await registarFotoVisita(visitaId, obraId, { nome: foto.nome, path });
+            if (registo.error) erros.push(`${foto.nome}: ${registo.error}`);
+          } catch (err) {
+            console.error("Falha ao enviar foto", foto.nome, err);
+            erros.push(`${foto.nome}: falha inesperada ao enviar.`);
+          }
+        }
+
+        setProgresso(null);
+
+        if (erros.length > 0) {
+          setErro(`Visita guardada, mas houve problemas com algumas fotos: ${erros.join(" · ")}`);
+          return;
+        }
+
+        router.push("/visitas");
+      } catch (err) {
+        console.error("NovaVisitaForm falhou", err);
+        setProgresso(null);
+        setErro("Falha inesperada. Verifica a ligação e tenta outra vez.");
       }
-
-      setProgresso(null);
-
-      if (erros.length > 0) {
-        setErro(`Visita guardada, mas houve problemas com algumas fotos: ${erros.join(" · ")}`);
-        return;
-      }
-
-      router.push("/visitas");
     });
   }
 
