@@ -59,6 +59,65 @@ export async function uploadDocumentos(
   }
 }
 
+/**
+ * Usado pelo Portal do Cliente — a obra vem sempre do perfil da conta com
+ * sessão iniciada (nunca de um parâmetro), e o envio é sempre "recebido",
+ * para o cliente nunca conseguir escrever fora da sua própria obra.
+ */
+export async function uploadDocumentoCliente(formData: FormData): Promise<ResultadoAcao> {
+  try {
+    const supabase = await createClient();
+    const user = await getUserSafe(supabase);
+    if (!user) return { error: "A tua sessão expirou. Volta a entrar." };
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("obra_id, ativo, pode_ver_documentos")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile?.ativo || !profile.pode_ver_documentos || !profile.obra_id) {
+      return { error: "Não tens permissão para enviar documentos. Contacta o teu engenheiro fiscal." };
+    }
+
+    const ficheiros = formData.getAll("ficheiros").filter((f): f is File => f instanceof File && f.size > 0);
+    if (ficheiros.length === 0) return { error: "Escolhe pelo menos um ficheiro." };
+
+    const erros: string[] = [];
+
+    for (const ficheiro of ficheiros) {
+      const path = `${profile.obra_id}/${crypto.randomUUID()}-${ficheiro.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from("documentos")
+        .upload(path, ficheiro, { contentType: ficheiro.type || undefined });
+      if (uploadError) {
+        erros.push(`${ficheiro.name}: ${uploadError.message}`);
+        continue;
+      }
+
+      const { error } = await supabase.from("documentos").insert({
+        obra_id: profile.obra_id,
+        direcao: "recebido",
+        categoria: null,
+        nome_ficheiro: ficheiro.name,
+        storage_path: path,
+        tamanho_bytes: ficheiro.size,
+        created_by: user.id,
+      });
+      if (error) erros.push(`${ficheiro.name}: ${error.message}`);
+    }
+
+    revalidatePath("/portal");
+    revalidatePath(`/obras/${profile.obra_id}`);
+    revalidatePath("/documentos");
+
+    return { error: erros.length > 0 ? erros.join(" · ") : null };
+  } catch (err) {
+    console.error("uploadDocumentoCliente falhou", err);
+    return { error: "Não foi possível enviar agora. Tenta outra vez." };
+  }
+}
+
 export async function eliminarDocumento(obraId: string, documentoId: string) {
   try {
     const supabase = await createClient();

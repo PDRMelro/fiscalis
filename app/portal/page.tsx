@@ -5,6 +5,7 @@ import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { LOGO_SRC } from "@/lib/branding";
 import { EstadoDot } from "@/components/ui/Tags";
 import { clientLogout } from "@/lib/actions/auth";
+import { DocumentoUploadCliente } from "@/components/portal/DocumentoUploadCliente";
 import { formatarData, formatarDinheiro } from "@/lib/format";
 
 export default async function PortalHomePage() {
@@ -130,6 +131,7 @@ export default async function PortalHomePage() {
                 </a>
               ))}
             </div>
+            {profile.pode_ver_documentos && <DocumentoUploadCliente />}
           </div>
           {temAcessoFinanceiro && (
             <div className="mt-6">
