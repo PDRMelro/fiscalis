@@ -1,19 +1,18 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Camera, X } from "lucide-react";
 
-type FotoPreview = { id: string; url: string; nome: string; file: File };
+export type FotoSelecionada = { id: string; url: string; nome: string; file: File };
 
-export function FotoPicker() {
+export function FotoPicker({
+  fotos,
+  onChange,
+}: {
+  fotos: FotoSelecionada[];
+  onChange: (fotos: FotoSelecionada[]) => void;
+}) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [fotos, setFotos] = useState<FotoPreview[]>([]);
-
-  function sincronizarInput(lista: FotoPreview[]) {
-    const dt = new DataTransfer();
-    lista.forEach((f) => dt.items.add(f.file));
-    if (inputRef.current) inputRef.current.files = dt.files;
-  }
 
   function adicionarFicheiros(fileList: FileList) {
     const novas = Array.from(fileList).map((file) => ({
@@ -22,19 +21,11 @@ export function FotoPicker() {
       nome: file.name,
       file,
     }));
-    setFotos((prev) => {
-      const atualizado = [...prev, ...novas];
-      sincronizarInput(atualizado);
-      return atualizado;
-    });
+    onChange([...fotos, ...novas]);
   }
 
   function remover(id: string) {
-    setFotos((prev) => {
-      const atualizado = prev.filter((f) => f.id !== id);
-      sincronizarInput(atualizado);
-      return atualizado;
-    });
+    onChange(fotos.filter((f) => f.id !== id));
   }
 
   return (
@@ -42,11 +33,13 @@ export function FotoPicker() {
       <input
         ref={inputRef}
         type="file"
-        name="fotos"
         accept="image/*"
         multiple
         className="hidden"
-        onChange={(e) => e.target.files && adicionarFicheiros(e.target.files)}
+        onChange={(e) => {
+          if (e.target.files) adicionarFicheiros(e.target.files);
+          e.target.value = "";
+        }}
       />
       <button
         type="button"

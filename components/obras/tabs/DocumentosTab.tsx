@@ -3,9 +3,8 @@ import { eliminarDocumento } from "@/lib/actions/documentos";
 import { DocumentoDropzone } from "@/components/obras/DocumentoDropzone";
 import { GerarTermoButton } from "@/components/obras/GerarTermoButton";
 import { formatarData } from "@/lib/format";
+import { CATEGORIAS_DOC } from "@/lib/categoriasDocumento";
 import type { DocumentoRow } from "@/lib/supabase/types";
-
-const CATEGORIAS_DOC = ["Arquitetura", "Estruturas", "Águas e esgotos", "Eletricidade", "Térmica e acústica", "Outros"];
 
 function tamanho(bytes: number | null) {
   if (!bytes) return "—";
@@ -49,7 +48,9 @@ export function DocumentosTab({
   recebidos: DocumentoRow[];
   enviados: DocumentoRow[];
 }) {
-  const semCategoria = recebidos.filter((d) => !d.categoria || !CATEGORIAS_DOC.includes(d.categoria));
+  const semCategoria = recebidos.filter(
+    (d) => !d.categoria || !CATEGORIAS_DOC.includes(d.categoria as (typeof CATEGORIAS_DOC)[number])
+  );
 
   return (
     <div className="max-w-3xl space-y-6">

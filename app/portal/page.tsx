@@ -5,7 +5,7 @@ import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { LOGO_SRC } from "@/lib/branding";
 import { EstadoDot } from "@/components/ui/Tags";
 import { clientLogout } from "@/lib/actions/auth";
-import { DocumentoUploadCliente } from "@/components/portal/DocumentoUploadCliente";
+import { DocumentosClienteSection } from "@/components/portal/DocumentosClienteSection";
 import { formatarData, formatarDinheiro } from "@/lib/format";
 
 export default async function PortalHomePage() {
@@ -115,24 +115,11 @@ export default async function PortalHomePage() {
             </div>
           </div>
 
-          <div className="mt-6">
-            <p className="text-[12px] font-medium text-[#4A4740] mb-2">Documentos do projeto</p>
-            <div className="flex flex-wrap gap-2">
-              {(!documentos || documentos.length === 0) && (
-                <p className="text-[12px] text-[#8A8578]">Sem documentos.</p>
-              )}
-              {documentos?.map((d) => (
-                <a
-                  key={d.id}
-                  href={`/api/documentos/${d.id}/download`}
-                  className="text-[11px] text-[#4A4740] bg-[#F5F4EF] border border-[#E4E1D6] rounded px-2 py-1 hover:bg-[#EDEBE2]"
-                >
-                  {d.nome_ficheiro}
-                </a>
-              ))}
-            </div>
-            {profile.pode_ver_documentos && <DocumentoUploadCliente obraId={obra.id} />}
-          </div>
+          <DocumentosClienteSection
+            obraId={obra.id}
+            documentos={documentos ?? []}
+            podeEnviar={profile.pode_ver_documentos}
+          />
           {temAcessoFinanceiro && (
             <div className="mt-6">
               <p className="text-[12px] font-medium text-[#4A4740] mb-2">Financeiro</p>

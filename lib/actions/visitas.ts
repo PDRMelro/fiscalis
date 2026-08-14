@@ -1,50 +1,67 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 
-export async function criarVisita(formData: FormData) {
-  const supabase = await createClient();
+export type ResultadoCriarVisita = { visitaId: string | null; error: string | null };
+export type ResultadoAcao = { error: string | null };
 
-  const obraId = String(formData.get("obra_id") ?? "");
-  const data = String(formData.get("data") ?? "");
-  const notas = String(formData.get("notas") ?? "").trim();
-  if (!obraId || !data) throw new Error("Escolhe a obra e a data da visita.");
+export async function criarVisita(obraId: string, data: string, notas: string): Promise<ResultadoCriarVisita> {
+  try {
+    if (!obraId || !data) return { visitaId: null, error: "Escolhe a obra e a data da visita." };
 
-  const user = await getUserSafe(supabase);
+    const supabase = await createClient();
+    const user = await getUserSafe(supabase);
 
-  const { data: visita, error } = await supabase
-    .from("visitas")
-    .insert({
-      obra_id: obraId,
-      data,
-      notas: notas || null,
-      especialidades: notas || null,
-      created_by: user?.id ?? null,
-    })
-    .select("id")
-    .single();
-  if (error) throw new Error(error.message);
+    const { data: visita, error } = await supabase
+      .from("visitas")
+      .insert({
+        obra_id: obraId,
+        data,
+        notas: notas || null,
+        especialidades: notas || null,
+        created_by: user?.id ?? null,
+      })
+      .select("id")
+      .single();
+    if (error || !visita) return { visitaId: null, error: error?.message ?? "Não foi possível criar a visita." };
 
-  const fotos = formData.getAll("fotos") as File[];
-  for (const foto of fotos) {
-    if (!foto || foto.size === 0) continue;
-    const path = `${obraId}/${visita.id}/${crypto.randomUUID()}-${foto.name}`;
-    const { error: uploadError } = await supabase.storage
-      .from("visita-fotos")
-      .upload(path, foto, { contentType: foto.type || undefined });
-    if (uploadError) continue;
-    await supabase.from("visita_fotos").insert({
-      visita_id: visita.id,
-      storage_path: path,
-      nome_ficheiro: foto.name,
-    });
+    revalidatePath("/visitas");
+    revalidatePath("/calendario");
+    revalidatePath(`/obras/${obraId}`);
+
+    return { visitaId: visita.id, error: null };
+  } catch (err) {
+    console.error("criarVisita falhou", err);
+    return { visitaId: null, error: "Não foi possível criar a visita agora. Tenta outra vez." };
   }
+}
 
-  revalidatePath("/visitas");
-  revalidatePath("/calendario");
-  revalidatePath(`/obras/${obraId}`);
-  redirect("/visitas");
+/**
+ * O ficheiro em si vai diretamente do browser para o Supabase Storage (o
+ * Vercel rejeita pedidos a Server Actions acima de ~4.5MB, insuficiente
+ * para fotos de obra) — isto só grava os metadados depois de já enviado.
+ */
+export async function registarFotoVisita(
+  visitaId: string,
+  obraId: string,
+  foto: { nome: string; path: string }
+): Promise<ResultadoAcao> {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.from("visita_fotos").insert({
+      visita_id: visitaId,
+      storage_path: foto.path,
+      nome_ficheiro: foto.nome,
+    });
+    if (error) return { error: error.message };
+
+    revalidatePath("/visitas");
+    revalidatePath(`/obras/${obraId}`);
+    return { error: null };
+  } catch (err) {
+    console.error("registarFotoVisita falhou", err);
+    return { error: "Não foi possível guardar a foto." };
+  }
 }

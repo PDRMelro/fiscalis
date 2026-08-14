@@ -5,7 +5,15 @@ import { Upload, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { registarDocumentoCliente } from "@/lib/actions/documentos";
 
-export function DocumentoUploadCliente({ obraId }: { obraId: string }) {
+export function DocumentoUploadCliente({
+  obraId,
+  categoria = null,
+  compacto = false,
+}: {
+  obraId: string;
+  categoria?: string | null;
+  compacto?: boolean;
+}) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [arrastando, setArrastando] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -34,7 +42,11 @@ export function DocumentoUploadCliente({ obraId }: { obraId: string }) {
           continue;
         }
 
-        const resultado = await registarDocumentoCliente({ nome: ficheiro.name, path, tamanho: ficheiro.size });
+        const resultado = await registarDocumentoCliente(categoria, {
+          nome: ficheiro.name,
+          path,
+          tamanho: ficheiro.size,
+        });
         if (resultado.error) erros.push(`${ficheiro.name}: ${resultado.error}`);
       }
 
@@ -45,7 +57,7 @@ export function DocumentoUploadCliente({ obraId }: { obraId: string }) {
   }
 
   return (
-    <div className="mt-2">
+    <div className={compacto ? "" : "mt-2"}>
       <div
         role="button"
         tabIndex={0}
@@ -61,7 +73,9 @@ export function DocumentoUploadCliente({ obraId }: { obraId: string }) {
           setArrastando(false);
           if (e.dataTransfer.files) enviar(e.dataTransfer.files);
         }}
-        className={`cursor-pointer border-2 border-dashed rounded-lg flex items-center justify-center gap-2 py-4 px-3 transition-colors ${
+        className={`cursor-pointer border-2 border-dashed rounded-lg flex items-center justify-center gap-2 transition-colors ${
+          compacto ? "py-3 px-2" : "py-4 px-3"
+        } ${
           arrastando
             ? "border-[#14283A] bg-[#EAF0F5]"
             : pending
@@ -77,12 +91,12 @@ export function DocumentoUploadCliente({ obraId }: { obraId: string }) {
           onChange={(e) => e.target.files && enviar(e.target.files)}
         />
         {pending ? (
-          <Loader2 size={15} className="text-[#C9A050] animate-spin shrink-0" />
+          <Loader2 size={14} className="text-[#C9A050] animate-spin shrink-0" />
         ) : (
-          <Upload size={15} className="text-[#8A8578] shrink-0" />
+          <Upload size={14} className="text-[#8A8578] shrink-0" />
         )}
         <span className="text-[11px] text-[#8A8578] text-center">
-          {progresso ?? "Arrasta ficheiros para aqui ou clica para escolher"}
+          {progresso ?? "Arrasta ou clica"}
         </span>
       </div>
       {erro && <p className="text-[11px] text-[#B0402F] mt-1">{erro}</p>}

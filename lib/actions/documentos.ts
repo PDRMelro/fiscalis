@@ -55,7 +55,10 @@ export async function registarDocumento(
  * sessão iniciada (nunca de um parâmetro), e o envio é sempre "recebido",
  * para o cliente nunca conseguir escrever fora da sua própria obra.
  */
-export async function registarDocumentoCliente(ficheiro: FicheiroEnviado): Promise<ResultadoAcao> {
+export async function registarDocumentoCliente(
+  categoria: string | null,
+  ficheiro: FicheiroEnviado
+): Promise<ResultadoAcao> {
   try {
     const supabase = await createClient();
     const user = await getUserSafe(supabase);
@@ -74,7 +77,7 @@ export async function registarDocumentoCliente(ficheiro: FicheiroEnviado): Promi
     const { error } = await supabase.from("documentos").insert({
       obra_id: profile.obra_id,
       direcao: "recebido",
-      categoria: null,
+      categoria,
       nome_ficheiro: ficheiro.nome,
       storage_path: ficheiro.path,
       tamanho_bytes: ficheiro.tamanho,
