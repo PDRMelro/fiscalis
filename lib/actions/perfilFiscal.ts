@@ -40,7 +40,7 @@ export async function registarSeguroRC(ficheiro: { nome: string; path: string })
     if (error) return { error: error.message };
 
     if (atual?.seguro_rc_path) {
-      await supabase.storage.from("documentos").remove([atual.seguro_rc_path]);
+      await supabase.storage.from("perfil-fiscal").remove([atual.seguro_rc_path]);
     }
 
     revalidatePath("/configuracoes");
@@ -56,7 +56,7 @@ export async function eliminarSeguroRC() {
     const supabase = await createClient();
     const { data: atual } = await supabase.from("perfil_fiscal").select("seguro_rc_path").eq("id", true).single();
     if (atual?.seguro_rc_path) {
-      await supabase.storage.from("documentos").remove([atual.seguro_rc_path]);
+      await supabase.storage.from("perfil-fiscal").remove([atual.seguro_rc_path]);
     }
     await supabase.from("perfil_fiscal").update({ seguro_rc_path: null, seguro_rc_nome_ficheiro: null }).eq("id", true);
   } catch (err) {

@@ -16,9 +16,9 @@ export function SeguroRCCard({ nomeFicheiro }: { nomeFicheiro: string | null }) 
     startTransition(async () => {
       try {
         const supabase = createClient();
-        const path = `perfil-fiscal/seguro-rc/${crypto.randomUUID()}-${nomeSeguro(ficheiro.name)}`;
+        const path = `seguro-rc/${crypto.randomUUID()}-${nomeSeguro(ficheiro.name)}`;
         const { error: uploadError } = await supabase.storage
-          .from("documentos")
+          .from("perfil-fiscal")
           .upload(path, ficheiro, { contentType: ficheiro.type || undefined });
         if (uploadError) {
           setErro(uploadError.message);

@@ -12,7 +12,7 @@ export async function GET() {
   if (!perfil?.seguro_rc_path) return NextResponse.json({ error: "Ficheiro não encontrado." }, { status: 404 });
 
   const { data, error } = await supabase.storage
-    .from("documentos")
+    .from("perfil-fiscal")
     .createSignedUrl(perfil.seguro_rc_path, 60, { download: perfil.seguro_rc_nome_ficheiro ?? "seguro-rc.pdf" });
 
   if (error || !data) return NextResponse.json({ error: "Sem acesso a este ficheiro." }, { status: 403 });
