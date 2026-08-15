@@ -11,7 +11,6 @@ import {
   Settings,
   ClipboardList,
   CalendarDays,
-  Eye,
   Users,
 } from "lucide-react";
 import { LOGO_SRC } from "@/lib/branding";
@@ -24,7 +23,6 @@ const NAV = [
   { href: "/propostas", label: "Propostas", icon: Send },
   { href: "/nc", label: "Não conformidades", icon: AlertTriangle },
   { href: "/relatorios", label: "Relatórios", icon: FileText },
-  { href: "/portal", label: "Portal do Cliente", icon: Eye, external: true },
   { href: "/clientes", label: "Clientes", icon: Users },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
@@ -45,12 +43,11 @@ export function Sidebar({ nome, cargo }: { nome: string; cargo: string }) {
       <nav className="flex-1 px-3 mt-3 space-y-0.5">
         {NAV.map((item) => {
           const Icon = item.icon;
-          const active = item.external ? false : pathname === item.href || pathname.startsWith(item.href + "/");
+          const active = pathname === item.href || pathname.startsWith(item.href + "/");
           return (
             <Link
               key={item.href}
               href={item.href}
-              target={item.external ? "_blank" : undefined}
               className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] transition-all duration-200 relative border ${
                 active ? "text-[#F6EDD8]" : "border-transparent text-[#9FB0BF] hover:text-white hover:bg-white/[0.04]"
               }`}
