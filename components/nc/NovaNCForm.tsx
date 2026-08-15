@@ -7,16 +7,22 @@ import { criarNC, registarFotoNC } from "@/lib/actions/nc";
 import { FotoPicker, type FotoSelecionada } from "@/components/visitas/FotoPicker";
 import { nomeSeguro } from "@/lib/nomeSeguro";
 import { ESPECIALIDADES_OBRA } from "@/lib/especialidadesObra";
+import { formatarData } from "@/lib/format";
 
 export function NovaNCForm({
   obras,
   obraIdInicial,
+  visitaId,
+  visitaData,
 }: {
   obras: { id: string; nome: string }[];
   obraIdInicial?: string;
+  visitaId?: string;
+  visitaData?: string;
 }) {
   const router = useRouter();
   const [obraId, setObraId] = useState(obraIdInicial ?? "");
+  const obraNome = obras.find((o) => o.id === obraId)?.nome;
   const [fotos, setFotos] = useState<FotoSelecionada[]>([]);
   const [pending, startTransition] = useTransition();
   const [progresso, setProgresso] = useState<string | null>(null);
@@ -80,25 +86,42 @@ export function NovaNCForm({
 
   return (
     <form action={guardar} className="bg-white border border-[#E4E1D6] rounded-xl p-5 max-w-2xl space-y-4">
+      {visitaId && (
+        <>
+          <input type="hidden" name="visita_id" value={visitaId} />
+          <p className="text-[12px] text-[#8A4A17] bg-[#FBF0DC] border border-[#E8C98F] rounded-lg px-3 py-2">
+            Vai ficar associada à visita de {visitaData ? formatarData(visitaData) : "—"}.
+          </p>
+        </>
+      )}
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Obra</label>
-          <select
-            name="obra_id"
-            value={obraId}
-            onChange={(e) => setObraId(e.target.value)}
-            required
-            className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
-          >
-            <option value="" disabled>
-              Escolhe a obra
-            </option>
-            {obras.map((o) => (
-              <option key={o.id} value={o.id}>
-                {o.nome}
+          {visitaId ? (
+            <>
+              <input type="hidden" name="obra_id" value={obraId} />
+              <p className="px-3 py-2 rounded-lg border border-[#EDEBE2] bg-[#F5F4EF] text-[13px] text-[#4A4740]">
+                {obraNome ?? "—"}
+              </p>
+            </>
+          ) : (
+            <select
+              name="obra_id"
+              value={obraId}
+              onChange={(e) => setObraId(e.target.value)}
+              required
+              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
+            >
+              <option value="" disabled>
+                Escolhe a obra
               </option>
-            ))}
-          </select>
+              {obras.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.nome}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
         <div>
           <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Data de deteção</label>

@@ -25,6 +25,7 @@ export async function criarNC(formData: FormData): Promise<ResultadoCriarNC> {
       .from("nao_conformidades")
       .insert({
         obra_id: obraId,
+        visita_id: str(formData, "visita_id") || null,
         data_deteccao: str(formData, "data_deteccao") || new Date().toISOString().slice(0, 10),
         local_zona: str(formData, "local_zona") || null,
         especialidade: str(formData, "especialidade") || null,
@@ -40,8 +41,12 @@ export async function criarNC(formData: FormData): Promise<ResultadoCriarNC> {
 
     if (error || !data) return { ncId: null, error: error?.message ?? "Não foi possível criar a não conformidade." };
 
+    const visitaId = str(formData, "visita_id");
     revalidatePath("/nc");
     revalidatePath("/dashboard");
+    revalidatePath("/visitas");
+    revalidatePath("/calendario");
+    if (visitaId) revalidatePath(`/visitas/${visitaId}/completar`);
     return { ncId: data.id, error: null };
   } catch (err) {
     console.error("criarNC falhou", err);

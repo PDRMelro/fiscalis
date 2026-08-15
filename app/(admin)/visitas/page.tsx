@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, CalendarPlus, Camera, FileText, Clock, X } from "lucide-react";
+import { Plus, CalendarPlus, Camera, FileText, AlertTriangle, Clock, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { GerarComEnvioButton } from "@/components/ui/GerarComEnvioButton";
@@ -117,17 +117,28 @@ export default async function VisitasPage() {
                             </button>
                           </form>
                         </div>
-                      ) : relatorioId ? (
-                        <a href={`/api/relatorios/${relatorioId}/download`} className="text-[12px] text-[#14283A] font-medium">
-                          Ver PDF
-                        </a>
                       ) : (
-                        <GerarComEnvioButton
-                          label="Gerar relatório"
-                          icon={FileText}
-                          categoriaLabel="Relatórios"
-                          onGerar={gerarRelatorio.bind(null, v.id)}
-                        />
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            href={`/nc/nova?visitaId=${v.id}`}
+                            title="Nova não conformidade nesta visita"
+                            className="text-[#8A8578] opacity-0 group-hover:opacity-100 transition-opacity hover:text-[#B0402F]"
+                          >
+                            <AlertTriangle size={14} />
+                          </Link>
+                          {relatorioId ? (
+                            <a href={`/api/relatorios/${relatorioId}/download`} className="text-[12px] text-[#14283A] font-medium">
+                              Ver PDF
+                            </a>
+                          ) : (
+                            <GerarComEnvioButton
+                              label="Gerar relatório"
+                              icon={FileText}
+                              categoriaLabel="Relatórios"
+                              onGerar={gerarRelatorio.bind(null, v.id)}
+                            />
+                          )}
+                        </div>
                       )}
                     </td>
                   </tr>
