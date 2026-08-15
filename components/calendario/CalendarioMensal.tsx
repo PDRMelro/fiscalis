@@ -26,7 +26,17 @@ function gerarGrelha(mesAtual: Date) {
   });
 }
 
-export function CalendarioMensal({ visitas }: { visitas: VisitaResumoRow[] }) {
+export function CalendarioMensal({
+  visitas,
+  mostrarObra = true,
+  clicavel = true,
+}: {
+  visitas: VisitaResumoRow[];
+  /** No portal do cliente é sempre a mesma obra — mostra a hora/estado em vez de repetir o nome. */
+  mostrarObra?: boolean;
+  /** No portal do cliente as etiquetas não levam a páginas do administrador. */
+  clicavel?: boolean;
+}) {
   const hoje = new Date();
   const [mesAtual, setMesAtual] = useState(new Date(hoje.getFullYear(), hoje.getMonth(), 1));
 
@@ -100,21 +110,35 @@ export function CalendarioMensal({ visitas }: { visitas: VisitaResumoRow[] }) {
               </span>
 
               <div className="mt-1 space-y-1">
-                {eventos.slice(0, 3).map((v) => (
-                  <Link
-                    key={v.id}
-                    href={v.estado === "Agendada" ? `/visitas/${v.id}/completar` : `/obras/${v.obra_id}`}
-                    title={`${v.obra_nome}${v.hora ? " · " + v.hora.slice(0, 5) : ""} — ${v.estado}`}
-                    className={`flex items-center gap-0.5 truncate text-[10px] font-medium px-1.5 py-0.5 rounded border transition-colors ${
-                      v.estado === "Agendada"
-                        ? "text-[#8A4A17] bg-[#FBF0DC] border-[#E8C98F] hover:bg-[#F5E7C6]"
-                        : "text-[#3E7A4D] bg-[#E9F5EC] border-[#B9DCC2] hover:bg-[#DCEFE1]"
-                    }`}
-                  >
-                    {v.hora && <Clock size={9} className="shrink-0" />}
-                    <span className="truncate">{v.obra_nome}</span>
-                  </Link>
-                ))}
+                {eventos.slice(0, 3).map((v) => {
+                  const classes = `flex items-center gap-0.5 truncate text-[10px] font-medium px-1.5 py-0.5 rounded border transition-colors ${
+                    v.estado === "Agendada"
+                      ? `text-[#8A4A17] bg-[#FBF0DC] border-[#E8C98F] ${clicavel ? "hover:bg-[#F5E7C6]" : ""}`
+                      : `text-[#3E7A4D] bg-[#E9F5EC] border-[#B9DCC2] ${clicavel ? "hover:bg-[#DCEFE1]" : ""}`
+                  }`;
+                  const conteudo = (
+                    <>
+                      {v.hora && <Clock size={9} className="shrink-0" />}
+                      <span className="truncate">{mostrarObra ? v.obra_nome : v.estado}</span>
+                    </>
+                  );
+                  const titulo = `${v.obra_nome}${v.hora ? " · " + v.hora.slice(0, 5) : ""} — ${v.estado}`;
+
+                  return clicavel ? (
+                    <Link
+                      key={v.id}
+                      href={v.estado === "Agendada" ? `/visitas/${v.id}/completar` : `/obras/${v.obra_id}`}
+                      title={titulo}
+                      className={classes}
+                    >
+                      {conteudo}
+                    </Link>
+                  ) : (
+                    <div key={v.id} title={titulo} className={classes}>
+                      {conteudo}
+                    </div>
+                  );
+                })}
                 {eventos.length > 3 && <p className="text-[10px] text-[#8A8578] px-1">+{eventos.length - 3} mais</p>}
               </div>
             </div>

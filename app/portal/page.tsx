@@ -7,6 +7,7 @@ import { EstadoDot } from "@/components/ui/Tags";
 import { clientLogout } from "@/lib/actions/auth";
 import { DocumentosClienteSection } from "@/components/portal/DocumentosClienteSection";
 import { OrcamentoDocumentosClienteButton } from "@/components/portal/OrcamentoDocumentosClienteButton";
+import { CalendarioMensal } from "@/components/calendario/CalendarioMensal";
 import { formatarData, formatarDinheiro, comIva } from "@/lib/format";
 
 export default async function PortalHomePage() {
@@ -35,7 +36,7 @@ export default async function PortalHomePage() {
     );
   }
 
-  const [{ data: relatorios }, { data: ncs }, { data: documentos }, { data: orcamentos }, { data: autos }, { data: intervenientes }] =
+  const [{ data: relatorios }, { data: ncs }, { data: documentos }, { data: orcamentos }, { data: autos }, { data: intervenientes }, { data: visitas }] =
     await Promise.all([
       supabase.from("relatorios").select("*").eq("obra_id", obra.id).order("data", { ascending: false }),
       supabase.from("nao_conformidades").select("*").eq("obra_id", obra.id).order("created_at", { ascending: false }),
@@ -51,6 +52,7 @@ export default async function PortalHomePage() {
         .eq("obra_id", obra.id)
         .order("ordem", { ascending: true })
         .order("created_at", { ascending: true }),
+      supabase.from("visitas_resumo").select("*").eq("obra_id", obra.id).order("data", { ascending: true }),
     ]);
 
   const temAcessoFinanceiro = (orcamentos && orcamentos.length > 0) || (autos && autos.length > 0);
@@ -121,6 +123,19 @@ export default async function PortalHomePage() {
                 ))}
               </div>
             </div>
+          </div>
+
+          <div className="mt-6">
+            <p className="text-[12px] font-medium text-[#4A4740] mb-2">Calendário de visitas</p>
+            <div className="flex items-center gap-4 mb-2">
+              <span className="flex items-center gap-1.5 text-[11px] text-[#8A8578]">
+                <span className="w-2.5 h-2.5 rounded-sm bg-[#FBF0DC] border border-[#E8C98F]" /> Agendada
+              </span>
+              <span className="flex items-center gap-1.5 text-[11px] text-[#8A8578]">
+                <span className="w-2.5 h-2.5 rounded-sm bg-[#E9F5EC] border border-[#B9DCC2]" /> Realizada
+              </span>
+            </div>
+            <CalendarioMensal visitas={visitas ?? []} mostrarObra={false} clicavel={false} />
           </div>
 
           <DocumentosClienteSection
