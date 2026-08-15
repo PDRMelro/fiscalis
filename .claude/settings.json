@@ -20,11 +20,13 @@
       "Bash(mkdir -p \"c:/Users/Pedro/Documents/Fiscalis/fiscalis/app/api/nc/[id]/download\")",
       "PowerShell(Stop-Process -Id 22896,3536,18904,18872 -Force -ErrorAction SilentlyContinue)",
       "Bash(mkdir -p \"c:\\\\Users\\\\Pedro\\\\Documents\\\\Fiscalis\\\\fiscalis\\\\app\\\\\\(admin\\)\\\\nc\\\\[id]\\\\editar\")",
-      "Bash(xargs grep -liE \"lembrete|reminder|notific\")"
+      "Bash(xargs grep -liE \"lembrete|reminder|notific\")",
+      "Bash(mkdir -p \"c:\\\\Users\\\\Pedro\\\\Documents\\\\Fiscalis\\\\fiscalis\\\\app\\\\\\(admin\\)\\\\visitas\\\\agendar\" \"c:\\\\Users\\\\Pedro\\\\Documents\\\\Fiscalis\\\\fiscalis\\\\app\\\\\\(admin\\)\\\\visitas\\\\[id]\\\\completar\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\Pedro\\Documents\\Fiscalis\\fiscalis\\app\\api\\nc\\[id]",
-      "c:\\Users\\Pedro\\Documents\\Fiscalis\\fiscalis\\app\\(admin)\\nc\\[id]"
+      "c:\\Users\\Pedro\\Documents\\Fiscalis\\fiscalis\\app\\(admin)\\nc\\[id]",
+      "c:\\Users\\Pedro\\Documents\\Fiscalis\\fiscalis\\app\\(admin)\\visitas\\[id]"
     ]
   }
 }

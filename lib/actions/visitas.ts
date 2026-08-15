@@ -21,6 +21,7 @@ export async function criarVisita(obraId: string, data: string, notas: string): 
         data,
         notas: notas || null,
         especialidades: notas || null,
+        estado: "Realizada",
         created_by: user?.id ?? null,
       })
       .select("id")
@@ -29,6 +30,7 @@ export async function criarVisita(obraId: string, data: string, notas: string): 
 
     revalidatePath("/visitas");
     revalidatePath("/calendario");
+    revalidatePath("/dashboard");
     revalidatePath(`/obras/${obraId}`);
 
     return { visitaId: visita.id, error: null };
@@ -36,6 +38,85 @@ export async function criarVisita(obraId: string, data: string, notas: string): 
     console.error("criarVisita falhou", err);
     return { visitaId: null, error: "Não foi possível criar a visita agora. Tenta outra vez." };
   }
+}
+
+export async function agendarVisita(
+  obraId: string,
+  data: string,
+  hora: string,
+  notas: string
+): Promise<ResultadoCriarVisita> {
+  try {
+    if (!obraId || !data) return { visitaId: null, error: "Escolhe a obra e a data da visita." };
+
+    const supabase = await createClient();
+    const user = await getUserSafe(supabase);
+
+    const { data: visita, error } = await supabase
+      .from("visitas")
+      .insert({
+        obra_id: obraId,
+        data,
+        hora: hora || null,
+        notas: notas || null,
+        estado: "Agendada",
+        created_by: user?.id ?? null,
+      })
+      .select("id")
+      .single();
+    if (error || !visita) return { visitaId: null, error: error?.message ?? "Não foi possível agendar a visita." };
+
+    revalidatePath("/visitas");
+    revalidatePath("/calendario");
+    revalidatePath("/dashboard");
+    revalidatePath(`/obras/${obraId}`);
+
+    return { visitaId: visita.id, error: null };
+  } catch (err) {
+    console.error("agendarVisita falhou", err);
+    return { visitaId: null, error: "Não foi possível agendar a visita agora. Tenta outra vez." };
+  }
+}
+
+export async function completarVisita(
+  visitaId: string,
+  obraId: string,
+  data: string,
+  notas: string
+): Promise<ResultadoAcao> {
+  try {
+    if (!data) return { error: "Confirma a data da visita." };
+
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("visitas")
+      .update({ data, notas: notas || null, especialidades: notas || null, estado: "Realizada" })
+      .eq("id", visitaId);
+    if (error) return { error: error.message };
+
+    revalidatePath("/visitas");
+    revalidatePath("/calendario");
+    revalidatePath("/dashboard");
+    revalidatePath(`/obras/${obraId}`);
+
+    return { error: null };
+  } catch (err) {
+    console.error("completarVisita falhou", err);
+    return { error: "Não foi possível completar a visita agora. Tenta outra vez." };
+  }
+}
+
+export async function cancelarVisitaAgendada(obraId: string, visitaId: string) {
+  try {
+    const supabase = await createClient();
+    await supabase.from("visitas").delete().eq("id", visitaId).eq("estado", "Agendada");
+  } catch (err) {
+    console.error("cancelarVisitaAgendada falhou", err);
+  }
+  revalidatePath("/visitas");
+  revalidatePath("/calendario");
+  revalidatePath("/dashboard");
+  revalidatePath(`/obras/${obraId}`);
 }
 
 /**

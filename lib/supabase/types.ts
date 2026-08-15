@@ -58,12 +58,16 @@ export type ObraAreaRow = {
   updated_at: string;
 };
 
+export type EstadoVisita = "Agendada" | "Realizada";
+
 export type VisitaRow = {
   id: string;
   obra_id: string;
   data: string;
+  hora: string | null;
   notas: string | null;
   especialidades: string | null;
+  estado: EstadoVisita;
   created_by: string | null;
   created_at: string;
 };
