@@ -7,8 +7,11 @@ import { gerarPdfAutoNC } from "@/lib/actions/nc";
 export function GerarPdfNCButton({ ncId, pdfPath }: { ncId: string; pdfPath: string | null }) {
   if (pdfPath) {
     return (
-      <a href={`/api/nc/${ncId}/download`} className="text-[12px] text-[#14283A] font-medium">
-        Ver PDF
+      <a
+        href={`/api/nc/${ncId}/download`}
+        className="inline-flex items-center gap-1 text-[11px] text-[#14283A] font-medium border border-[#DEDBD2] rounded-lg px-2 py-1 hover:bg-[#F5F4EF] hover:border-[#C9A050] transition-colors"
+      >
+        <FileText size={12} /> Ver PDF
       </a>
     );
   }
@@ -19,7 +22,7 @@ export function GerarPdfNCButton({ ncId, pdfPath }: { ncId: string; pdfPath: str
       icon={FileText}
       categoriaLabel="Não conformidades"
       onGerar={gerarPdfAutoNC.bind(null, ncId)}
-      className="flex items-center gap-1 text-[12px] text-[#14283A] font-medium"
+      className="inline-flex items-center gap-1 text-[11px] text-[#14283A] font-medium border border-[#DEDBD2] rounded-lg px-2 py-1 hover:bg-[#F5F4EF] hover:border-[#C9A050] transition-colors cursor-pointer"
     />
   );
 }
