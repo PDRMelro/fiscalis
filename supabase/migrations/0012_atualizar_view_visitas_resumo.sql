@@ -6,9 +6,16 @@
 -- Uma view criada com "select v.*" fixa a lista de colunas no momento em
 -- que é criada — colunas adicionadas à tabela depois (estado, hora, da
 -- migração 0011) não aparecem sozinhas na view. É preciso recriá-la.
+--
+-- "create or replace view" só permite ACRESCENTAR colunas no fim da lista
+-- já existente — como estado/hora entram no meio (fazem parte de v.*, que
+-- vem antes de obra_nome), isso desloca as colunas seguintes e o Postgres
+-- recusa. Por isso apaga-se e cria-se de novo.
 -- =========================================================================
 
-create or replace view public.visitas_resumo
+drop view if exists public.visitas_resumo;
+
+create view public.visitas_resumo
   with (security_invoker = on) as
 select v.*, o.nome as obra_nome,
   (select count(*) from public.nao_conformidades n where n.visita_id = v.id and n.estado = 'Aberta') as nc_abertas,
