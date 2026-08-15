@@ -14,11 +14,7 @@ export default async function VisitasPage() {
     supabase.from("relatorios").select("id, visita_id"),
   ]);
   const relatorioPorVisita = new Map((relatorios ?? []).filter((r) => r.visita_id).map((r) => [r.visita_id as string, r.id]));
-
-  const agendadas = (visitas ?? [])
-    .filter((v) => v.estado === "Agendada")
-    .sort((a, b) => a.data.localeCompare(b.data));
-  const realizadas = (visitas ?? []).filter((v) => v.estado === "Realizada");
+  const todas = visitas ?? [];
 
   return (
     <>
@@ -43,69 +39,8 @@ export default async function VisitasPage() {
         }
       />
 
-      {agendadas.length > 0 && (
-        <div className="mb-6">
-          <p className="text-[13px] font-medium text-[#4A4740] mb-3">Agendadas</p>
-          <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
-            <table className="w-full text-[13px]">
-              <thead>
-                <tr className="text-left text-[#8A8578] border-b border-[#EDEBE2]">
-                  <th className="px-5 py-3 font-medium">Data</th>
-                  <th className="px-5 py-3 font-medium">Hora</th>
-                  <th className="px-5 py-3 font-medium">Obra</th>
-                  <th className="px-5 py-3 font-medium">Motivo / observações</th>
-                  <th className="px-5 py-3 font-medium" />
-                </tr>
-              </thead>
-              <tbody>
-                {agendadas.map((v) => (
-                  <tr key={v.id} className="border-b border-[#F2F0E8] last:border-0 group">
-                    <td className="px-5 py-3 font-mono text-[#8A4A17]">{formatarData(v.data)}</td>
-                    <td className="px-5 py-3 text-[#8A8578] font-mono">
-                      {v.hora ? (
-                        <span className="flex items-center gap-1">
-                          <Clock size={12} /> {v.hora.slice(0, 5)}
-                        </span>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                    <td className="px-5 py-3 text-[#4A4740]">
-                      <Link href={`/obras/${v.obra_id}`} className="hover:underline">
-                        {v.obra_nome}
-                      </Link>
-                    </td>
-                    <td className="px-5 py-3 text-[#4A4740] max-w-[260px] truncate">{v.notas || "—"}</td>
-                    <td className="px-5 py-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link
-                          href={`/visitas/${v.id}/completar`}
-                          className="text-[11px] text-[#14283A] font-medium border border-[#DEDBD2] rounded-lg px-2 py-1 hover:bg-[#F5F4EF] hover:border-[#C9A050] transition-colors"
-                        >
-                          Completar visita
-                        </Link>
-                        <form action={cancelarVisitaAgendada.bind(null, v.obra_id, v.id)}>
-                          <button
-                            type="submit"
-                            className="text-[#B0402F] opacity-0 group-hover:opacity-100 transition-opacity"
-                            title="Cancelar visita agendada"
-                          >
-                            <X size={14} />
-                          </button>
-                        </form>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      <p className="text-[13px] font-medium text-[#4A4740] mb-3">Histórico</p>
       <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
-        {realizadas.length === 0 ? (
+        {todas.length === 0 ? (
           <p className="px-5 py-8 text-center text-[13px] text-[#8A8578]">Ainda sem visitas registadas.</p>
         ) : (
           <table className="w-full text-[13px]">
@@ -113,32 +48,76 @@ export default async function VisitasPage() {
               <tr className="text-left text-[#8A8578] border-b border-[#EDEBE2]">
                 <th className="px-5 py-3 font-medium">Data</th>
                 <th className="px-5 py-3 font-medium">Obra</th>
-                <th className="px-5 py-3 font-medium">Especialidades / notas</th>
+                <th className="px-5 py-3 font-medium">Notas / especialidades</th>
+                <th className="px-5 py-3 font-medium">Estado</th>
                 <th className="px-5 py-3 font-medium">Fotos</th>
                 <th className="px-5 py-3 font-medium">NC abertas</th>
                 <th className="px-5 py-3 font-medium" />
               </tr>
             </thead>
             <tbody>
-              {realizadas.map((v) => {
+              {todas.map((v) => {
+                const agendada = v.estado === "Agendada";
                 const relatorioId = relatorioPorVisita.get(v.id);
                 return (
-                  <tr key={v.id} className="border-b border-[#F2F0E8] last:border-0">
-                    <td className="px-5 py-3 font-mono text-[#14283A]">{formatarData(v.data)}</td>
+                  <tr key={v.id} className="border-b border-[#F2F0E8] last:border-0 group">
+                    <td className="px-5 py-3 font-mono text-[#14283A]">
+                      {formatarData(v.data)}
+                      {agendada && v.hora && (
+                        <span className="flex items-center gap-1 text-[11px] text-[#8A8578] font-mono mt-0.5">
+                          <Clock size={11} /> {v.hora.slice(0, 5)}
+                        </span>
+                      )}
+                    </td>
                     <td className="px-5 py-3 text-[#4A4740]">
                       <Link href={`/obras/${v.obra_id}`} className="hover:underline">
                         {v.obra_nome}
                       </Link>
                     </td>
-                    <td className="px-5 py-3 text-[#4A4740] max-w-[260px] truncate">{v.especialidades || "—"}</td>
-                    <td className="px-5 py-3 text-[#8A8578]">
-                      <span className="flex items-center gap-1.5">
-                        <Camera size={13} /> {v.fotos}
-                      </span>
+                    <td className="px-5 py-3 text-[#4A4740] max-w-[260px] truncate">
+                      {(agendada ? v.notas : v.especialidades) || "—"}
                     </td>
-                    <td className="px-5 py-3 text-[#8A8578]">{v.nc_abertas}</td>
+                    <td className="px-5 py-3">
+                      {agendada ? (
+                        <span className="text-[11px] font-medium text-[#8A4A17] bg-[#FBF0DC] border border-[#E8C98F] rounded px-1.5 py-0.5">
+                          Agendada
+                        </span>
+                      ) : (
+                        <span className="text-[11px] font-medium text-[#3E7A4D] bg-[#E9F5EC] border border-[#B9DCC2] rounded px-1.5 py-0.5">
+                          Realizada
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3 text-[#8A8578]">
+                      {agendada ? (
+                        "—"
+                      ) : (
+                        <span className="flex items-center gap-1.5">
+                          <Camera size={13} /> {v.fotos}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3 text-[#8A8578]">{agendada ? "—" : v.nc_abertas}</td>
                     <td className="px-5 py-3 text-right">
-                      {relatorioId ? (
+                      {agendada ? (
+                        <div className="flex items-center justify-end gap-2">
+                          <Link
+                            href={`/visitas/${v.id}/completar`}
+                            className="text-[11px] text-[#14283A] font-medium border border-[#DEDBD2] rounded-lg px-2 py-1 hover:bg-[#F5F4EF] hover:border-[#C9A050] transition-colors"
+                          >
+                            Completar visita
+                          </Link>
+                          <form action={cancelarVisitaAgendada.bind(null, v.obra_id, v.id)}>
+                            <button
+                              type="submit"
+                              className="text-[#B0402F] opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="Cancelar visita agendada"
+                            >
+                              <X size={14} />
+                            </button>
+                          </form>
+                        </div>
+                      ) : relatorioId ? (
                         <a href={`/api/relatorios/${relatorioId}/download`} className="text-[12px] text-[#14283A] font-medium">
                           Ver PDF
                         </a>
