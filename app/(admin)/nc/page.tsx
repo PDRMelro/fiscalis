@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { SeveridadeTag } from "@/components/ui/Tags";
@@ -73,11 +73,16 @@ export default async function NaoConformidadesPage() {
                       <GerarPdfNCButton ncId={n.id} pdfPath={n.pdf_path} />
                     </td>
                     <td className="px-5 py-3">
-                      <form action={eliminarNC.bind(null, n.id)}>
-                        <button type="submit" className="text-[#B0402F] opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Trash2 size={13} />
-                        </button>
-                      </form>
+                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Link href={`/nc/${n.id}/editar`} className="text-[#8A8578] hover:text-[#14283A]">
+                          <Pencil size={13} />
+                        </Link>
+                        <form action={eliminarNC.bind(null, n.id)}>
+                          <button type="submit" className="text-[#B0402F]">
+                            <Trash2 size={13} />
+                          </button>
+                        </form>
+                      </div>
                     </td>
                   </tr>
                 );

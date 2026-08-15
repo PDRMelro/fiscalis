@@ -56,7 +56,6 @@ export async function gerarRelatorio(visitaId: string, enviarCliente: boolean): 
 
     revalidatePath("/relatorios");
     revalidatePath("/visitas");
-    revalidatePath("/documentos");
     revalidatePath(`/obras/${obra.id}`);
     return { error: null };
   } catch (err) {

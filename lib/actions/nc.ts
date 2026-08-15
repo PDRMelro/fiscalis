@@ -61,11 +61,75 @@ export async function registarFotoNC(
       nome_ficheiro: foto.nome,
     });
     if (error) return { error: error.message };
+    await invalidarPdfNC(supabase, ncId);
     revalidatePath("/nc");
     return { error: null };
   } catch (err) {
     console.error("registarFotoNC falhou", err);
     return { error: "Não foi possível guardar a foto." };
+  }
+}
+
+export async function eliminarFotoNC(ncId: string, fotoId: string): Promise<ResultadoAcao> {
+  try {
+    const supabase = await createClient();
+    const { data: foto } = await supabase.from("nc_fotos").select("storage_path").eq("id", fotoId).single();
+    if (foto) await supabase.storage.from("nc-anexos").remove([foto.storage_path]);
+
+    const { error } = await supabase.from("nc_fotos").delete().eq("id", fotoId);
+    if (error) return { error: error.message };
+
+    await invalidarPdfNC(supabase, ncId);
+    revalidatePath(`/nc/${ncId}/editar`);
+    revalidatePath("/nc");
+    return { error: null };
+  } catch (err) {
+    console.error("eliminarFotoNC falhou", err);
+    return { error: "Não foi possível remover a foto." };
+  }
+}
+
+/** O PDF gerado deixa de corresponder ao conteúdo assim que a NC ou as suas fotos mudam. */
+async function invalidarPdfNC(supabase: Awaited<ReturnType<typeof createClient>>, ncId: string) {
+  const { data: nc } = await supabase.from("nao_conformidades").select("pdf_path").eq("id", ncId).single();
+  if (!nc?.pdf_path) return;
+  await supabase.storage.from("nc-anexos").remove([nc.pdf_path]);
+  await supabase.from("nao_conformidades").update({ pdf_path: null }).eq("id", ncId);
+}
+
+export async function editarNC(ncId: string, formData: FormData): Promise<ResultadoAcao> {
+  try {
+    const obraId = str(formData, "obra_id");
+    const descricao = str(formData, "descricao");
+    if (!obraId || !descricao) return { error: "Escolhe a obra e descreve a não conformidade." };
+
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("nao_conformidades")
+      .update({
+        obra_id: obraId,
+        data_deteccao: str(formData, "data_deteccao") || new Date().toISOString().slice(0, 10),
+        local_zona: str(formData, "local_zona") || null,
+        especialidade: str(formData, "especialidade") || null,
+        descricao,
+        requisito_incumprido: str(formData, "requisito_incumprido") || null,
+        acao_corretiva: str(formData, "acao_corretiva") || null,
+        severidade: (str(formData, "severidade") || "Média") as Severidade,
+        responsavel: str(formData, "responsavel") || null,
+        prazo: str(formData, "prazo") || null,
+      })
+      .eq("id", ncId);
+    if (error) return { error: error.message };
+
+    await invalidarPdfNC(supabase, ncId);
+
+    revalidatePath("/nc");
+    revalidatePath(`/nc/${ncId}/editar`);
+    revalidatePath("/dashboard");
+    return { error: null };
+  } catch (err) {
+    console.error("editarNC falhou", err);
+    return { error: "Não foi possível guardar as alterações. Tenta outra vez." };
   }
 }
 
@@ -143,7 +207,6 @@ export async function gerarPdfAutoNC(ncId: string, enviarCliente: boolean): Prom
     }
 
     revalidatePath("/nc");
-    revalidatePath("/documentos");
     return { error: null };
   } catch (err) {
     console.error("gerarPdfAutoNC falhou", err);

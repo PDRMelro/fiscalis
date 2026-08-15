@@ -6,6 +6,12 @@ import type { EstadoNC } from "@/lib/supabase/types";
 
 const ESTADOS: EstadoNC[] = ["Aberta", "Em correção", "Fechada"];
 
+const CORES_ESTADO: Record<EstadoNC, string> = {
+  Aberta: "text-[#B0402F] bg-[#FBEAE6] border-[#E8B9AC]",
+  "Em correção": "text-[#8A4A17] bg-[#FBF0DC] border-[#E8C98F]",
+  Fechada: "text-[#3E7A4D] bg-[#E9F5EC] border-[#B9DCC2]",
+};
+
 export function EstadoNCSelect({ id, estado }: { id: string; estado: EstadoNC }) {
   const [pending, startTransition] = useTransition();
 
@@ -14,10 +20,10 @@ export function EstadoNCSelect({ id, estado }: { id: string; estado: EstadoNC })
       defaultValue={estado}
       disabled={pending}
       onChange={(e) => startTransition(() => atualizarEstadoNC(id, e.target.value as EstadoNC))}
-      className="text-[11px] border border-[#E4E1D6] rounded px-1.5 py-1 bg-white disabled:opacity-60"
+      className={`text-[11px] font-medium border rounded px-1.5 py-1 disabled:opacity-60 ${CORES_ESTADO[estado]}`}
     >
       {ESTADOS.map((e) => (
-        <option key={e} value={e}>
+        <option key={e} value={e} className="bg-white text-[#1F1D19]">
           {e}
         </option>
       ))}

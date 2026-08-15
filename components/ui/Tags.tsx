@@ -2,8 +2,8 @@ import type { EstadoArea, EstadoNC, Severidade } from "@/lib/supabase/types";
 
 export function EstadoDot({ estado }: { estado: EstadoNC }) {
   const map: Record<EstadoNC, string> = {
-    Aberta: "#C4791E",
-    "Em correção": "#C9A050",
+    Aberta: "#B0402F",
+    "Em correção": "#C4791E",
     Fechada: "#2C6B45",
   };
   return (

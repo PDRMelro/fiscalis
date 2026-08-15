@@ -74,7 +74,6 @@ export async function registarDocumento(
     if (error) return { error: error.message };
 
     revalidatePath(`/obras/${obraId}`);
-    revalidatePath("/documentos");
     return { error: null };
   } catch (err) {
     console.error("registarDocumento falhou", err);
@@ -124,7 +123,6 @@ export async function registarDocumentoCliente(
 
     revalidatePath("/portal");
     revalidatePath(`/obras/${profile.obra_id}`);
-    revalidatePath("/documentos");
     return { error: null };
   } catch (err) {
     console.error("registarDocumentoCliente falhou", err);
@@ -148,7 +146,6 @@ export async function eliminarDocumento(obraId: string, documentoId: string) {
   }
 
   revalidatePath(`/obras/${obraId}`);
-  revalidatePath("/documentos");
 }
 
 export async function gerarTermoResponsabilidade(obraId: string): Promise<ResultadoAcao> {
@@ -186,7 +183,6 @@ export async function gerarTermoResponsabilidade(obraId: string): Promise<Result
     if (error) return { error: error.message };
 
     revalidatePath(`/obras/${obraId}`);
-    revalidatePath("/documentos");
     return { error: null };
   } catch (err) {
     console.error("gerarTermoResponsabilidade falhou", err);
