@@ -18,10 +18,12 @@
       "Bash(rm -f /tmp/admin_token.txt /tmp/teste.txt)",
       "Bash(curl -s \"https://zccxejalstjwlsrmxaoj.supabase.co/rest/v1/documentos?select=orcamento_id&limit=1\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjY3hlamFsc3Rqd2xzcm14YW9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MTIyMTQsImV4cCI6MjEwMjE4ODIxNH0.sbfVn6oB4VWzwYHWWeDnUtLGjTOu-8uzV-KZe_z2rwE\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpjY3hlamFsc3Rqd2xzcm14YW9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MTIyMTQsImV4cCI6MjEwMjE4ODIxNH0.sbfVn6oB4VWzwYHWWeDnUtLGjTOu-8uzV-KZe_z2rwE\")",
       "Bash(mkdir -p \"c:/Users/Pedro/Documents/Fiscalis/fiscalis/app/api/nc/[id]/download\")",
-      "PowerShell(Stop-Process -Id 22896,3536,18904,18872 -Force -ErrorAction SilentlyContinue)"
+      "PowerShell(Stop-Process -Id 22896,3536,18904,18872 -Force -ErrorAction SilentlyContinue)",
+      "Bash(mkdir -p \"c:\\\\Users\\\\Pedro\\\\Documents\\\\Fiscalis\\\\fiscalis\\\\app\\\\\\(admin\\)\\\\nc\\\\[id]\\\\editar\")"
     ],
     "additionalDirectories": [
-      "c:\\Users\\Pedro\\Documents\\Fiscalis\\fiscalis\\app\\api\\nc\\[id]"
+      "c:\\Users\\Pedro\\Documents\\Fiscalis\\fiscalis\\app\\api\\nc\\[id]",
+      "c:\\Users\\Pedro\\Documents\\Fiscalis\\fiscalis\\app\\(admin)\\nc\\[id]"
     ]
   }
 }
