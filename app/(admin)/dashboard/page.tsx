@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Calendar, Building2, Activity, AlertTriangle, CheckCircle2, Hammer, MapPin } from "lucide-react";
+import { Calendar, Building2, Activity, AlertTriangle, CheckCircle2, Hammer, MapPin, Clock, CalendarClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StatCard } from "@/components/ui/StatCard";
@@ -18,10 +18,16 @@ const CORES_ESTADO: Record<string, string> = {
 export default async function DashboardPage() {
   const supabase = await createClient();
 
-  const [{ data: obras }, { data: ncs }, { count: totalVisitas }] = await Promise.all([
+  const [{ data: obras }, { data: ncs }, { count: totalVisitas }, { data: visitasAgendadas }] = await Promise.all([
     supabase.from("obras").select("*").order("created_at", { ascending: false }),
     supabase.from("nao_conformidades").select("*, obras(nome)").order("created_at", { ascending: false }),
     supabase.from("visitas").select("*", { count: "exact", head: true }),
+    supabase
+      .from("visitas_resumo")
+      .select("*")
+      .eq("estado", "Agendada")
+      .order("data", { ascending: true })
+      .limit(5),
   ]);
 
   const todasObras = obras ?? [];

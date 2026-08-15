@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Clock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { formatarData } from "@/lib/format";
@@ -12,7 +12,7 @@ export default async function CalendarioPage() {
     .order("data", { ascending: true });
 
   const eventos = visitas ?? [];
-  const proximas = eventos.slice(0, 3);
+  const proximas = eventos.filter((v) => v.estado === "Agendada").slice(0, 3);
 
   return (
     <>
@@ -23,13 +23,18 @@ export default async function CalendarioPage() {
       ) : (
         <div className="grid grid-cols-3 gap-4">
           {proximas.map((v) => (
-            <Link key={v.id} href={`/obras/${v.obra_id}`} className="bg-white border border-[#E4E1D6] rounded-xl p-4 hover:border-[#C9A050] transition-colors">
+            <Link key={v.id} href={`/visitas/${v.id}/completar`} className="bg-white border border-[#E4E1D6] rounded-xl p-4 hover:border-[#C9A050] transition-colors">
               <div className="flex items-center gap-2 text-[#C9A050] mb-2">
                 <CalendarDays size={15} />
                 <span className="text-[12px] font-mono text-[#8A8578]">{formatarData(v.data)}</span>
+                {v.hora && (
+                  <span className="flex items-center gap-1 text-[12px] font-mono text-[#8A8578]">
+                    <Clock size={11} /> {v.hora.slice(0, 5)}
+                  </span>
+                )}
               </div>
               <p className="text-[14px] font-medium text-[#14283A]">{v.obra_nome}</p>
-              <p className="text-[12px] text-[#8A8578] mt-1">{v.especialidades || "—"}</p>
+              <p className="text-[12px] text-[#8A8578] mt-1">{v.notas || "—"}</p>
             </Link>
           ))}
         </div>
@@ -43,6 +48,7 @@ export default async function CalendarioPage() {
               <th className="px-5 py-3 font-medium">Data</th>
               <th className="px-5 py-3 font-medium">Obra</th>
               <th className="px-5 py-3 font-medium">Notas</th>
+              <th className="px-5 py-3 font-medium">Estado</th>
             </tr>
           </thead>
           <tbody>
@@ -54,12 +60,23 @@ export default async function CalendarioPage() {
                     {v.obra_nome}
                   </Link>
                 </td>
-                <td className="px-5 py-3 text-[#8A8578]">{v.especialidades || "—"}</td>
+                <td className="px-5 py-3 text-[#8A8578]">{v.especialidades || v.notas || "—"}</td>
+                <td className="px-5 py-3">
+                  {v.estado === "Agendada" ? (
+                    <span className="text-[11px] font-medium text-[#8A4A17] bg-[#FBF0DC] border border-[#E8C98F] rounded px-1.5 py-0.5">
+                      Agendada
+                    </span>
+                  ) : (
+                    <span className="text-[11px] font-medium text-[#3E7A4D] bg-[#E9F5EC] border border-[#B9DCC2] rounded px-1.5 py-0.5">
+                      Realizada
+                    </span>
+                  )}
+                </td>
               </tr>
             ))}
             {eventos.length === 0 && (
               <tr>
-                <td colSpan={3} className="px-5 py-6 text-center text-[#8A8578]">
+                <td colSpan={4} className="px-5 py-6 text-center text-[#8A8578]">
                   Sem visitas registadas.
                 </td>
               </tr>
