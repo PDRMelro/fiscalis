@@ -66,6 +66,35 @@ export default async function DashboardPage() {
         }
       />
 
+      {visitasAgendadas && visitasAgendadas.length > 0 && (
+        <div className="mb-6">
+          <p className="text-[13px] font-medium text-[#4A4740] mb-3 flex items-center gap-1.5">
+            <CalendarClock size={14} className="text-[#8A4A17]" /> Lembretes — próximas visitas agendadas
+          </p>
+          <div className="grid grid-cols-3 gap-4">
+            {visitasAgendadas.map((v) => (
+              <Link
+                key={v.id}
+                href={`/visitas/${v.id}/completar`}
+                className="bg-white border border-[#E4E1D6] rounded-xl p-4 hover:border-[#C9A050] transition-colors"
+              >
+                <div className="flex items-center gap-2 text-[#8A4A17] mb-2">
+                  <Calendar size={14} />
+                  <span className="text-[12px] font-mono">{formatarData(v.data)}</span>
+                  {v.hora && (
+                    <span className="flex items-center gap-1 text-[12px] font-mono text-[#8A8578]">
+                      <Clock size={11} /> {v.hora.slice(0, 5)}
+                    </span>
+                  )}
+                </div>
+                <p className="text-[14px] font-medium text-[#14283A]">{v.obra_nome}</p>
+                <p className="text-[12px] text-[#8A8578] mt-1 truncate">{v.notas || "—"}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex gap-4 mb-6">
         <StatCard label="Obras ativas" value={obrasAtivas} icon={Building2} />
         <StatCard label="Visitas realizadas" value={totalVisitas ?? 0} icon={Activity} />
