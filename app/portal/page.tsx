@@ -7,7 +7,7 @@ import { EstadoDot } from "@/components/ui/Tags";
 import { clientLogout } from "@/lib/actions/auth";
 import { DocumentosClienteSection } from "@/components/portal/DocumentosClienteSection";
 import { OrcamentoDocumentosClienteButton } from "@/components/portal/OrcamentoDocumentosClienteButton";
-import { CalendarioMensal } from "@/components/calendario/CalendarioMensal";
+import { CalendarioPortalCliente } from "@/components/portal/CalendarioPortalCliente";
 import { formatarData, formatarDinheiro, comIva } from "@/lib/format";
 
 export default async function PortalHomePage() {
@@ -135,7 +135,7 @@ export default async function PortalHomePage() {
                 <span className="w-2.5 h-2.5 rounded-sm bg-[#E9F5EC] border border-[#B9DCC2]" /> Realizada
               </span>
             </div>
-            <CalendarioMensal visitas={visitas ?? []} mostrarObra={false} clicavel={false} />
+            <CalendarioPortalCliente visitas={visitas ?? []} />
           </div>
 
           <DocumentosClienteSection
