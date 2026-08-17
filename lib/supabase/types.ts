@@ -27,6 +27,7 @@ export type ProfileRow = {
   pode_ver_financeiro: boolean;
   pode_ver_intervenientes: boolean;
   portal_visto_em: string | null;
+  tour_concluido: boolean;
   created_at: string;
 };
 

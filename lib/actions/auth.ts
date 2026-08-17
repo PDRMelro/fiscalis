@@ -160,6 +160,13 @@ export async function clientLogout() {
   redirect("/portal/login");
 }
 
+export async function concluirTourCliente() {
+  const supabase = await createClient();
+  const user = await getUserSafe(supabase);
+  if (!user) return;
+  await supabase.from("profiles").update({ tour_concluido: true }).eq("id", user.id);
+}
+
 export async function atualizarNomeCliente(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
   const nome = String(formData.get("nome") ?? "").trim();
   if (!nome) return { error: "O nome não pode ficar vazio." };

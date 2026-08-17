@@ -9,6 +9,8 @@ import { OrcamentoDocumentosClienteButton } from "@/components/portal/OrcamentoD
 import { CalendarioPortalCliente } from "@/components/portal/CalendarioPortalCliente";
 import { NCListaCliente } from "@/components/portal/NCListaCliente";
 import { ContaClienteModal } from "@/components/portal/ContaClienteModal";
+import { PortalTourController } from "@/components/portal/PortalTourController";
+import type { PassoTour } from "@/components/portal/TourOnboarding";
 import { formatarData, formatarDinheiro, comIva } from "@/lib/format";
 
 export default async function PortalHomePage() {
@@ -77,6 +79,53 @@ export default async function PortalHomePage() {
 
   await supabase.from("profiles").update({ portal_visto_em: new Date().toISOString() }).eq("id", user.id);
 
+  const passosTour: PassoTour[] = [
+    {
+      alvo: "tour-obra",
+      titulo: "A tua obra",
+      texto: `Aqui vês o nome, localização e o progresso de "${obra.nome}", atualizado pelo teu engenheiro fiscal.`,
+    },
+    {
+      alvo: "tour-relatorios",
+      titulo: "Relatórios",
+      texto: "Cada visita à obra pode gerar um relatório em PDF — encontras todos aqui, prontos a descarregar.",
+    },
+    {
+      alvo: "tour-nc",
+      titulo: "Não conformidades",
+      texto: "Sempre que for identificado algo a corrigir em obra, aparece aqui. Clica numa para ver todos os detalhes e fotos.",
+    },
+    {
+      alvo: "tour-calendario",
+      titulo: "Calendário de visitas",
+      texto: "Vês as visitas agendadas e já realizadas. Clica numa para ver as notas e as fotos tiradas em obra.",
+    },
+    {
+      alvo: "tour-documentos",
+      titulo: "Documentos",
+      texto: "Aqui trocamos ficheiros — os que recebes do teu engenheiro fiscal e os que lhe podes enviar, organizados por categoria.",
+    },
+  ];
+  if (temAcessoFinanceiro) {
+    passosTour.push({
+      alvo: "tour-financeiro",
+      titulo: "Financeiro",
+      texto: "Acompanha os orçamentos e a faturação associados à tua obra.",
+    });
+  }
+  if (profile.pode_ver_intervenientes && intervenientes && intervenientes.length > 0) {
+    passosTour.push({
+      alvo: "tour-intervenientes",
+      titulo: "Intervenientes",
+      texto: "Consulta os contactos de quem está envolvido na tua obra.",
+    });
+  }
+  passosTour.push({
+    alvo: "tour-conta",
+    titulo: "A tua conta",
+    texto: "Aqui podes sempre mudar o teu nome ou a palavra-passe.",
+  });
+
   return (
     <div className="w-full max-w-3xl">
       <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
@@ -89,6 +138,7 @@ export default async function PortalHomePage() {
             <span className="text-[11px] text-[#9FB0BF] flex items-center gap-1">
               <User size={12} /> {profile.nome}
             </span>
+            <PortalTourController passos={passosTour} nome={profile.nome} tourConcluido={profile.tour_concluido} />
             <ContaClienteModal nomeAtual={profile.nome} />
             <form action={clientLogout}>
               <button className="text-[11px] text-[#9FB0BF] hover:text-white underline underline-offset-2">
@@ -118,21 +168,24 @@ export default async function PortalHomePage() {
             </div>
           )}
 
-          <p className="text-[16px] font-semibold text-[#14283A]">{obra.nome}</p>
-          <p className="text-[12px] text-[#8A8578] flex items-center gap-1 mt-1">
-            <MapPin size={11} /> {obra.local}
-            {obra.inicio && <> · Início: {formatarData(obra.inicio)}</>}
-          </p>
+          <div id="tour-obra">
+            <p className="text-[12px] text-[#C9A050] font-medium mb-1">Bem-vindo, {profile.nome.split(" ")[0]}</p>
+            <p className="text-[16px] font-semibold text-[#14283A]">{obra.nome}</p>
+            <p className="text-[12px] text-[#8A8578] flex items-center gap-1 mt-1">
+              <MapPin size={11} /> {obra.local}
+              {obra.inicio && <> · Início: {formatarData(obra.inicio)}</>}
+            </p>
 
-          <div className="mt-4 flex items-center gap-3">
-            <div className="flex-1 h-2 bg-[#EDEBE2] rounded-full overflow-hidden">
-              <div className="h-full bg-[#C9A050] rounded-full" style={{ width: `${obra.progresso}%` }} />
+            <div className="mt-4 flex items-center gap-3">
+              <div className="flex-1 h-2 bg-[#EDEBE2] rounded-full overflow-hidden">
+                <div className="h-full bg-[#C9A050] rounded-full" style={{ width: `${obra.progresso}%` }} />
+              </div>
+              <span className="text-[13px] font-mono text-[#14283A] font-medium">{obra.progresso}%</span>
             </div>
-            <span className="text-[13px] font-mono text-[#14283A] font-medium">{obra.progresso}%</span>
           </div>
 
           <div className="grid grid-cols-2 gap-4 mt-6">
-            <div>
+            <div id="tour-relatorios">
               <p className="text-[12px] font-medium text-[#4A4740] mb-2">Relatórios disponíveis</p>
               <div className="space-y-1.5">
                 {(!relatorios || relatorios.length === 0) && (
@@ -151,13 +204,13 @@ export default async function PortalHomePage() {
               </div>
             </div>
 
-            <div>
+            <div id="tour-nc">
               <p className="text-[12px] font-medium text-[#4A4740] mb-2">Não conformidades</p>
               <NCListaCliente ncs={ncs ?? []} />
             </div>
           </div>
 
-          <div className="mt-6">
+          <div id="tour-calendario" className="mt-6">
             <p className="text-[12px] font-medium text-[#4A4740] mb-2">Calendário de visitas</p>
             <div className="flex items-center gap-4 mb-2">
               <span className="flex items-center gap-1.5 text-[11px] text-[#8A8578]">
@@ -170,14 +223,16 @@ export default async function PortalHomePage() {
             <CalendarioPortalCliente visitas={visitas ?? []} />
           </div>
 
-          <DocumentosClienteSection
-            obraId={obra.id}
-            documentos={documentos ?? []}
-            podeEnviar={profile.pode_ver_documentos}
-            orcamentos={orcamentos ?? []}
-          />
+          <div id="tour-documentos">
+            <DocumentosClienteSection
+              obraId={obra.id}
+              documentos={documentos ?? []}
+              podeEnviar={profile.pode_ver_documentos}
+              orcamentos={orcamentos ?? []}
+            />
+          </div>
           {temAcessoFinanceiro && (
-            <div className="mt-6">
+            <div id="tour-financeiro" className="mt-6">
               <p className="text-[12px] font-medium text-[#4A4740] mb-2">Financeiro</p>
               {orcamentos && orcamentos.length > 0 && (
                 <div className="bg-[#F5F4EF] rounded-lg overflow-hidden mb-2">
@@ -249,7 +304,7 @@ export default async function PortalHomePage() {
           )}
 
           {profile.pode_ver_intervenientes && intervenientes && intervenientes.length > 0 && (
-            <div className="mt-6">
+            <div id="tour-intervenientes" className="mt-6">
               <p className="text-[12px] font-medium text-[#4A4740] mb-2">Intervenientes</p>
               <div className="bg-[#F5F4EF] rounded-lg divide-y divide-[#E4E1D6]">
                 {intervenientes.map((p) => {

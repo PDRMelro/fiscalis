@@ -13,6 +13,7 @@ export function ContaClienteModal({ nomeAtual }: { nomeAtual: string }) {
   return (
     <>
       <button
+        id="tour-conta"
         type="button"
         onClick={() => setOpen(true)}
         className="text-[11px] text-[#9FB0BF] hover:text-white flex items-center gap-1"

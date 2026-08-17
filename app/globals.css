@@ -28,3 +28,12 @@ body {
 button:not(:disabled) {
   cursor: pointer;
 }
+
+.tour-destaque {
+  position: relative;
+  z-index: 45;
+  outline: 3px solid #c9a050;
+  outline-offset: 4px;
+  border-radius: 12px;
+  scroll-margin: 90px;
+}
