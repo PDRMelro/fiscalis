@@ -18,24 +18,29 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
   if (!profile || profile.role !== "admin") redirect("/login");
 
-  const hojeISO = new Date().toISOString().slice(0, 10);
+  let alertas: { id: string; descricao: string; prazo: string | null; obra: string; atrasada: boolean }[] = [];
+  try {
+    const hojeISO = new Date().toISOString().slice(0, 10);
 
-  const { data: alertasRaw } = await supabase
-    .from("nao_conformidades")
-    .select("id, descricao, prazo, obras(nome)")
-    .neq("estado", "Fechada")
-    .order("prazo", { ascending: true, nullsFirst: false })
-    .limit(6);
+    const { data: alertasRaw } = await supabase
+      .from("nao_conformidades")
+      .select("id, descricao, prazo, obras(nome)")
+      .neq("estado", "Fechada")
+      .order("prazo", { ascending: true, nullsFirst: false })
+      .limit(6);
 
-  const alertas = (alertasRaw ?? [])
-    .map((n) => ({
-      id: n.id as string,
-      descricao: n.descricao as string,
-      prazo: n.prazo as string | null,
-      obra: (n.obras as unknown as { nome: string } | null)?.nome ?? "—",
-      atrasada: !!n.prazo && (n.prazo as string) < hojeISO,
-    }))
-    .sort((a, b) => Number(b.atrasada) - Number(a.atrasada));
+    alertas = (alertasRaw ?? [])
+      .map((n) => ({
+        id: n.id as string,
+        descricao: n.descricao as string,
+        prazo: n.prazo as string | null,
+        obra: (n.obras as unknown as { nome: string } | null)?.nome ?? "—",
+        atrasada: !!n.prazo && (n.prazo as string) < hojeISO,
+      }))
+      .sort((a, b) => Number(b.atrasada) - Number(a.atrasada));
+  } catch (err) {
+    console.error("AdminLayout: falha ao carregar alertas", err);
+  }
 
   const nome = profile.nome || "Administrador";
   const iniciais = nome
