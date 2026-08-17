@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Calendar, Building2, Activity, AlertTriangle, CheckCircle2, Hammer, MapPin, Clock, CalendarClock } from "lucide-react";
+import { Calendar, Building2, Activity, AlertTriangle, CheckCircle2, Hammer, MapPin, Clock, CalendarClock, AlarmClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StatCard } from "@/components/ui/StatCard";
@@ -36,6 +36,9 @@ export default async function DashboardPage() {
   const ncAbertas = todasNcs.filter((n) => n.estado === "Aberta").length;
   const ncFechadas = todasNcs.filter((n) => n.estado === "Fechada").length;
 
+  const hojeISO = new Date().toISOString().slice(0, 10);
+  const ncsAtrasadas = todasNcs.filter((n) => n.estado !== "Fechada" && n.prazo && n.prazo < hojeISO);
+
   const ncPorEstado = (["Aberta", "Em correção", "Fechada"] as const).map((estado) => ({
     nome: estado === "Aberta" ? "Abertas" : estado === "Em correção" ? "Em correção" : "Fechadas",
     valor: todasNcs.filter((n) => n.estado === estado).length,
@@ -65,6 +68,32 @@ export default async function DashboardPage() {
           </div>
         }
       />
+
+      {ncsAtrasadas.length > 0 && (
+        <div className="mb-6">
+          <p className="text-[13px] font-medium text-[#4A4740] mb-3 flex items-center gap-1.5">
+            <AlarmClock size={14} className="text-[#B0402F]" /> Não conformidades com prazo em atraso
+          </p>
+          <div className="grid grid-cols-3 gap-4">
+            {ncsAtrasadas.slice(0, 3).map((n) => (
+              <Link
+                key={n.id}
+                href={`/nc/${n.id}/editar`}
+                className="bg-white border border-[#F0CFC6] rounded-xl p-4 hover:border-[#B0402F] transition-colors"
+              >
+                <div className="flex items-center gap-2 text-[#B0402F] mb-2">
+                  <AlarmClock size={14} />
+                  <span className="text-[12px] font-mono">Prazo {formatarData(n.prazo)}</span>
+                </div>
+                <p className="text-[14px] font-medium text-[#14283A]">
+                  {(n.obras as unknown as { nome: string } | null)?.nome}
+                </p>
+                <p className="text-[12px] text-[#8A8578] mt-1 truncate">{n.descricao}</p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {visitasAgendadas && visitasAgendadas.length > 0 && (
         <div className="mb-6">

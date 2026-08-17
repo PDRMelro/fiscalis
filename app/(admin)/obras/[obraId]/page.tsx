@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, KeyRound } from "lucide-react";
+import { ChevronLeft, KeyRound, Eye } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ConfirmSubmitButton } from "@/components/ui/ConfirmSubmitButton";
 import { EditarObraModal } from "@/components/obras/EditarObraModal";
 import { eliminarObra } from "@/lib/actions/obras";
-import { formatarData } from "@/lib/format";
+import { formatarData, formatarTempoRelativo } from "@/lib/format";
 import { GeralTab } from "@/components/obras/tabs/GeralTab";
 import { VisitasTab } from "@/components/obras/tabs/VisitasTab";
 import { DocumentosTab } from "@/components/obras/tabs/DocumentosTab";
@@ -29,7 +29,10 @@ export default async function ObraDetalhePage({
   const tab: Tab = TABS.includes(tabParam as Tab) ? (tabParam as Tab) : "Geral";
 
   const supabase = await createClient();
-  const { data: obra } = await supabase.from("obras").select("*").eq("id", obraId).single();
+  const [{ data: obra }, { data: clientes }] = await Promise.all([
+    supabase.from("obras").select("*").eq("id", obraId).single(),
+    supabase.from("profiles").select("nome, portal_visto_em, ativo").eq("obra_id", obraId).eq("role", "client"),
+  ]);
   if (!obra) notFound();
 
   return (
@@ -55,11 +58,32 @@ export default async function ObraDetalhePage({
         }
       />
 
-      <div className="flex items-center gap-1.5 text-[12px] text-[#8A8578] bg-[#F5F4EF] border border-[#E4E1D6] rounded-lg px-3 py-2 mb-5 max-w-xl">
+      <div className="flex items-center gap-1.5 text-[12px] text-[#8A8578] bg-[#F5F4EF] border border-[#E4E1D6] rounded-lg px-3 py-2 mb-2 max-w-xl">
         <KeyRound size={13} />
         Código de acesso do cliente ao portal:
         <span className="font-mono font-medium text-[#14283A]">{obra.codigo_acesso}</span>
       </div>
+
+      {clientes && clientes.length > 0 && (
+        <div className="flex items-center gap-1.5 text-[12px] text-[#8A8578] bg-[#F5F4EF] border border-[#E4E1D6] rounded-lg px-3 py-2 mb-5 max-w-xl flex-wrap">
+          <Eye size={13} className="shrink-0" />
+          {clientes.map((c, i) => (
+            <span key={c.nome + i}>
+              {i > 0 && <span className="mx-1">·</span>}
+              {c.nome}
+              {!c.ativo ? (
+                <span className="text-[#B0402F]"> (inativo)</span>
+              ) : (
+                <>
+                  {" "}
+                  no portal:{" "}
+                  <span className="font-medium text-[#14283A]">{formatarTempoRelativo(c.portal_visto_em)}</span>
+                </>
+              )}
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="flex gap-5 border-b border-[#E4E1D6] mb-5">
         {TABS.map((t) => (

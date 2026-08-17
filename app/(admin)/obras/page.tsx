@@ -4,22 +4,52 @@ import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { NovaObraModal } from "@/components/obras/NovaObraModal";
 
-export default async function ObrasPage() {
+export default async function ObrasPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ estado?: string }>;
+}) {
+  const { estado } = await searchParams;
+  const verConcluidas = estado === "concluidas";
+
   const supabase = await createClient();
-  const { data: obras } = await supabase.from("obras").select("*").order("created_at", { ascending: false });
+  const { data: todasObras } = await supabase.from("obras").select("*").order("created_at", { ascending: false });
+
+  const concluidas = (todasObras ?? []).filter((o) => o.estado === "Concluída");
+  const obras = (todasObras ?? []).filter((o) => o.estado !== "Concluída");
+  const listaAtual = verConcluidas ? concluidas : obras;
 
   return (
     <>
       <PageHeader title="Obras" subtitle="Todas as obras em fiscalização" action={<NovaObraModal />} />
 
-      {(!obras || obras.length === 0) && (
+      <div className="flex gap-5 border-b border-[#E4E1D6] mb-5">
+        <Link
+          href="/obras"
+          className={`pb-2.5 -mb-px border-b-2 text-[13px] ${
+            !verConcluidas ? "border-[#C9A050] text-[#14283A] font-medium" : "border-transparent text-[#8A8578]"
+          }`}
+        >
+          Em curso ({obras.length})
+        </Link>
+        <Link
+          href="/obras?estado=concluidas"
+          className={`pb-2.5 -mb-px border-b-2 text-[13px] ${
+            verConcluidas ? "border-[#C9A050] text-[#14283A] font-medium" : "border-transparent text-[#8A8578]"
+          }`}
+        >
+          Concluídas ({concluidas.length})
+        </Link>
+      </div>
+
+      {listaAtual.length === 0 && (
         <div className="bg-white border border-dashed border-[#C7C3B6] rounded-xl p-8 text-center text-[13px] text-[#8A8578]">
-          Ainda sem obras. Cria a primeira com o botão &ldquo;Nova obra&rdquo;.
+          {verConcluidas ? "Ainda sem obras concluídas." : 'Ainda sem obras. Cria a primeira com o botão "Nova obra".'}
         </div>
       )}
 
       <div className="grid grid-cols-3 gap-4">
-        {obras?.map((o) => (
+        {listaAtual.map((o) => (
           <Link
             key={o.id}
             href={`/obras/${o.id}`}

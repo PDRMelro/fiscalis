@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, AlarmClock } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { SeveridadeTag } from "@/components/ui/Tags";
@@ -14,6 +14,8 @@ export default async function NaoConformidadesPage() {
     .from("nao_conformidades")
     .select("*, obras(id, nome)")
     .order("created_at", { ascending: false });
+
+  const hojeISO = new Date().toISOString().slice(0, 10);
 
   return (
     <>
@@ -50,8 +52,12 @@ export default async function NaoConformidadesPage() {
             <tbody>
               {ncs.map((n) => {
                 const obra = n.obras as unknown as { id: string; nome: string } | null;
+                const atrasada = n.estado !== "Fechada" && !!n.prazo && n.prazo < hojeISO;
                 return (
-                  <tr key={n.id} className="border-b border-[#F2F0E8] last:border-0 group">
+                  <tr
+                    key={n.id}
+                    className={`border-b border-[#F2F0E8] last:border-0 group ${atrasada ? "bg-[#FCF3F1]" : ""}`}
+                  >
                     <td className="px-5 py-3 font-mono text-[#14283A]">{n.codigo}</td>
                     <td className="px-5 py-3 text-[#4A4740]">
                       {obra && (
@@ -65,7 +71,12 @@ export default async function NaoConformidadesPage() {
                       <SeveridadeTag nivel={n.severidade} />
                     </td>
                     <td className="px-5 py-3 text-[#8A8578]">{n.responsavel || "—"}</td>
-                    <td className="px-5 py-3 text-[#8A8578] font-mono">{formatarData(n.prazo)}</td>
+                    <td className={`px-5 py-3 font-mono ${atrasada ? "text-[#B0402F] font-medium" : "text-[#8A8578]"}`}>
+                      <span className="flex items-center gap-1">
+                        {atrasada && <AlarmClock size={12} />}
+                        {formatarData(n.prazo)}
+                      </span>
+                    </td>
                     <td className="px-5 py-3">
                       <EstadoNCSelect id={n.id} estado={n.estado} />
                     </td>
