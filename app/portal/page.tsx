@@ -1,13 +1,14 @@
 import { redirect } from "next/navigation";
-import { MapPin, User, ExternalLink, ShieldCheck, Users } from "lucide-react";
+import { MapPin, User, ExternalLink, ShieldCheck, Users, Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { LOGO_SRC } from "@/lib/branding";
-import { EstadoDot } from "@/components/ui/Tags";
 import { clientLogout } from "@/lib/actions/auth";
 import { DocumentosClienteSection } from "@/components/portal/DocumentosClienteSection";
 import { OrcamentoDocumentosClienteButton } from "@/components/portal/OrcamentoDocumentosClienteButton";
 import { CalendarioPortalCliente } from "@/components/portal/CalendarioPortalCliente";
+import { NCListaCliente } from "@/components/portal/NCListaCliente";
+import { ContaClienteModal } from "@/components/portal/ContaClienteModal";
 import { formatarData, formatarDinheiro, comIva } from "@/lib/format";
 
 export default async function PortalHomePage() {
@@ -57,6 +58,25 @@ export default async function PortalHomePage() {
 
   const temAcessoFinanceiro = (orcamentos && orcamentos.length > 0) || (autos && autos.length > 0);
 
+  // Compara com o "último visto" ANTES de o atualizar, para saber o que é
+  // novo desde a última vez que o cliente entrou no portal. Numa conta
+  // nova (primeiro login, portal_visto_em ainda nulo) não mostra nada —
+  // não faz sentido "novidades" para tudo o que já existia.
+  const ultimaVisita = profile.portal_visto_em;
+  let novidades: { relatorios: number; ncs: number; documentos: number; visitas: number } | null = null;
+  if (ultimaVisita) {
+    const desde = new Date(ultimaVisita).getTime();
+    novidades = {
+      relatorios: (relatorios ?? []).filter((r) => new Date(r.created_at).getTime() > desde).length,
+      ncs: (ncs ?? []).filter((n) => new Date(n.created_at).getTime() > desde).length,
+      documentos: (documentos ?? []).filter((d) => d.direcao === "enviado" && new Date(d.created_at).getTime() > desde).length,
+      visitas: (visitas ?? []).filter((v) => new Date(v.created_at).getTime() > desde).length,
+    };
+  }
+  const totalNovidades = novidades ? novidades.relatorios + novidades.ncs + novidades.documentos + novidades.visitas : 0;
+
+  await supabase.from("profiles").update({ portal_visto_em: new Date().toISOString() }).eq("id", user.id);
+
   return (
     <div className="w-full max-w-3xl">
       <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
@@ -69,6 +89,7 @@ export default async function PortalHomePage() {
             <span className="text-[11px] text-[#9FB0BF] flex items-center gap-1">
               <User size={12} /> {profile.nome}
             </span>
+            <ContaClienteModal nomeAtual={profile.nome} />
             <form action={clientLogout}>
               <button className="text-[11px] text-[#9FB0BF] hover:text-white underline underline-offset-2">
                 Sair
@@ -78,6 +99,25 @@ export default async function PortalHomePage() {
         </div>
 
         <div className="p-6">
+          {totalNovidades > 0 && novidades && (
+            <div className="flex items-start gap-2.5 bg-[#FBF7EC] border border-[#E9CE8F] rounded-lg px-4 py-3 mb-5">
+              <Sparkles size={16} className="text-[#8A4A17] mt-0.5 shrink-0" />
+              <div className="text-[12px] text-[#4A4740]">
+                <p className="font-medium text-[#14283A] mb-0.5">Novidades desde a tua última visita</p>
+                <p>
+                  {[
+                    novidades.relatorios > 0 && `${novidades.relatorios} relatório${novidades.relatorios > 1 ? "s" : ""}`,
+                    novidades.ncs > 0 && `${novidades.ncs} não conformidade${novidades.ncs > 1 ? "s" : ""}`,
+                    novidades.documentos > 0 && `${novidades.documentos} documento${novidades.documentos > 1 ? "s" : ""}`,
+                    novidades.visitas > 0 && `${novidades.visitas} visita${novidades.visitas > 1 ? "s" : ""} agendada${novidades.visitas > 1 ? "s" : ""}`,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+              </div>
+            </div>
+          )}
+
           <p className="text-[16px] font-semibold text-[#14283A]">{obra.nome}</p>
           <p className="text-[12px] text-[#8A8578] flex items-center gap-1 mt-1">
             <MapPin size={11} /> {obra.local}
@@ -113,15 +153,7 @@ export default async function PortalHomePage() {
 
             <div>
               <p className="text-[12px] font-medium text-[#4A4740] mb-2">Não conformidades</p>
-              <div className="space-y-1.5">
-                {(!ncs || ncs.length === 0) && <p className="text-[12px] text-[#8A8578]">Sem registos.</p>}
-                {ncs?.map((n) => (
-                  <div key={n.id} className="flex items-center justify-between text-[12px] bg-[#F5F4EF] rounded-lg px-3 py-2">
-                    <span className="text-[#1F1D19] truncate max-w-[160px]">{n.descricao}</span>
-                    <EstadoDot estado={n.estado} />
-                  </div>
-                ))}
-              </div>
+              <NCListaCliente ncs={ncs ?? []} />
             </div>
           </div>
 

@@ -6,6 +6,14 @@ import { getUserSafe } from "@/lib/supabase/getUserSafe";
 
 export type ResultadoCriarVisita = { visitaId: string | null; error: string | null };
 export type ResultadoAcao = { error: string | null };
+export type FotoComUrl = { id: string; nome: string; url: string | null };
+export type DetalheVisita = {
+  data: string;
+  hora: string | null;
+  notas: string | null;
+  estado: string;
+  fotos: FotoComUrl[];
+};
 
 export async function criarVisita(obraId: string, data: string, notas: string): Promise<ResultadoCriarVisita> {
   try {
@@ -144,5 +152,39 @@ export async function registarFotoVisita(
   } catch (err) {
     console.error("registarFotoVisita falhou", err);
     return { error: "Não foi possível guardar a foto." };
+  }
+}
+
+/**
+ * Usado pelo calendário (admin e portal do cliente) para mostrar notas e
+ * fotos de uma visita ao clicar nela, sem ter de carregar tudo à partida.
+ * A RLS já limita o que cada sessão consegue ler.
+ */
+export async function obterDetalheVisita(visitaId: string): Promise<{ detalhe: DetalheVisita | null; error: string | null }> {
+  try {
+    const supabase = await createClient();
+    const { data: visita, error } = await supabase.from("visitas").select("*").eq("id", visitaId).single();
+    if (error || !visita) return { detalhe: null, error: "Visita não encontrada." };
+
+    const { data: fotos } = await supabase
+      .from("visita_fotos")
+      .select("*")
+      .eq("visita_id", visitaId)
+      .order("created_at", { ascending: true });
+
+    const fotosComUrl = await Promise.all(
+      (fotos ?? []).map(async (f) => {
+        const { data } = await supabase.storage.from("visita-fotos").createSignedUrl(f.storage_path, 3600);
+        return { id: f.id, nome: f.nome_ficheiro, url: data?.signedUrl ?? null };
+      })
+    );
+
+    return {
+      detalhe: { data: visita.data, hora: visita.hora, notas: visita.notas, estado: visita.estado, fotos: fotosComUrl },
+      error: null,
+    };
+  } catch (err) {
+    console.error("obterDetalheVisita falhou", err);
+    return { detalhe: null, error: "Não foi possível carregar os detalhes da visita." };
   }
 }

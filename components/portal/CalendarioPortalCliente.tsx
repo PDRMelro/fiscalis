@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import { CalendarioMensal } from "@/components/calendario/CalendarioMensal";
+import { VisitaDetalheModal } from "@/components/portal/VisitaDetalheModal";
 import type { VisitaResumoRow } from "@/lib/supabase/types";
 
 const DIAS_SEMANA = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -23,6 +24,7 @@ function gerarSemana(hoje: Date) {
 
 export function CalendarioPortalCliente({ visitas }: { visitas: VisitaResumoRow[] }) {
   const [expandido, setExpandido] = useState(false);
+  const [selecionada, setSelecionada] = useState<VisitaResumoRow | null>(null);
 
   const hoje = new Date();
   const hojeISO = paraISO(hoje);
@@ -57,15 +59,27 @@ export function CalendarioPortalCliente({ visitas }: { visitas: VisitaResumoRow[
       </div>
 
       {expandido ? (
-        <CalendarioMensal visitas={visitas} mostrarObra={false} clicavel={false} semMoldura />
+        <CalendarioMensal visitas={visitas} mostrarObra={false} semMoldura aoClicarVisita={setSelecionada} />
       ) : (
-        <SemanaCompacta visitas={visitas} hoje={hoje} hojeISO={hojeISO} />
+        <SemanaCompacta visitas={visitas} hoje={hoje} hojeISO={hojeISO} aoClicarVisita={setSelecionada} />
       )}
+
+      {selecionada && <VisitaDetalheModal visita={selecionada} onClose={() => setSelecionada(null)} />}
     </div>
   );
 }
 
-function SemanaCompacta({ visitas, hoje, hojeISO }: { visitas: VisitaResumoRow[]; hoje: Date; hojeISO: string }) {
+function SemanaCompacta({
+  visitas,
+  hoje,
+  hojeISO,
+  aoClicarVisita,
+}: {
+  visitas: VisitaResumoRow[];
+  hoje: Date;
+  hojeISO: string;
+  aoClicarVisita: (visita: VisitaResumoRow) => void;
+}) {
   const semana = gerarSemana(hoje);
 
   const porDia = new Map<string, VisitaResumoRow[]>();
@@ -106,18 +120,20 @@ function SemanaCompacta({ visitas, hoje, hojeISO }: { visitas: VisitaResumoRow[]
 
               <div className="mt-1 space-y-1">
                 {eventos.slice(0, 3).map((v) => (
-                  <div
+                  <button
                     key={v.id}
+                    type="button"
+                    onClick={() => aoClicarVisita(v)}
                     title={`${v.hora ? v.hora.slice(0, 5) + " · " : ""}${v.estado}`}
-                    className={`flex items-center gap-0.5 truncate text-[10px] font-medium px-1.5 py-0.5 rounded border ${
+                    className={`flex items-center gap-0.5 w-full truncate text-[10px] font-medium px-1.5 py-0.5 rounded border transition-colors ${
                       v.estado === "Agendada"
-                        ? "text-[#8A4A17] bg-[#FBF0DC] border-[#E8C98F]"
-                        : "text-[#3E7A4D] bg-[#E9F5EC] border-[#B9DCC2]"
+                        ? "text-[#8A4A17] bg-[#FBF0DC] border-[#E8C98F] hover:bg-[#F5E7C6]"
+                        : "text-[#3E7A4D] bg-[#E9F5EC] border-[#B9DCC2] hover:bg-[#DCEFE1]"
                     }`}
                   >
                     {v.hora && <Clock size={9} className="shrink-0" />}
                     <span className="truncate">{v.estado}</span>
-                  </div>
+                  </button>
                 ))}
                 {eventos.length > 3 && <p className="text-[10px] text-[#8A8578] px-1">+{eventos.length - 3} mais</p>}
               </div>

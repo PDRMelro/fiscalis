@@ -1,8 +1,10 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import type { AuthError } from "@supabase/supabase-js";
 
 export type ActionResult = { error: string } | { error: null };
@@ -156,4 +158,41 @@ export async function clientLogout() {
   await supabase.auth.signOut();
   (await cookies()).delete(COOKIE_LEMBRAR);
   redirect("/portal/login");
+}
+
+export async function atualizarNomeCliente(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
+  const nome = String(formData.get("nome") ?? "").trim();
+  if (!nome) return { error: "O nome não pode ficar vazio." };
+
+  const supabase = await createClient();
+  const user = await getUserSafe(supabase);
+  if (!user) return { error: "A tua sessão expirou. Volta a entrar." };
+
+  const { error } = await supabase.from("profiles").update({ nome }).eq("id", user.id);
+  if (error) return { error: "Não foi possível guardar. Tenta outra vez." };
+
+  revalidatePath("/portal");
+  return { error: null };
+}
+
+export async function atualizarPasswordCliente(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
+  const passwordAtual = String(formData.get("passwordAtual") ?? "");
+  const novaPassword = String(formData.get("novaPassword") ?? "");
+  const confirmar = String(formData.get("confirmar") ?? "");
+
+  if (!passwordAtual || !novaPassword) return { error: "Preenche todos os campos." };
+  if (novaPassword !== confirmar) return { error: "As palavras-passe novas não coincidem." };
+  if (novaPassword.length < 6) return { error: "A nova palavra-passe deve ter pelo menos 6 caracteres." };
+
+  const supabase = await createClient();
+  const user = await getUserSafe(supabase);
+  if (!user?.email) return { error: "A tua sessão expirou. Volta a entrar." };
+
+  const { error: verifyError } = await supabase.auth.signInWithPassword({ email: user.email, password: passwordAtual });
+  if (verifyError) return { error: "A palavra-passe atual está incorreta." };
+
+  const { error } = await supabase.auth.updateUser({ password: novaPassword });
+  if (error) return { error: "Não foi possível mudar a palavra-passe. Tenta outra vez." };
+
+  return { error: null };
 }

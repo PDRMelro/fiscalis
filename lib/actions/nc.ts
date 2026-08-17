@@ -9,6 +9,7 @@ import type { EstadoNC, Severidade } from "@/lib/supabase/types";
 
 export type ResultadoAcao = { error: string | null };
 export type ResultadoCriarNC = { ncId: string | null; error: string | null };
+export type FotoComUrl = { id: string; nome: string; url: string | null };
 
 function str(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
@@ -72,6 +73,34 @@ export async function registarFotoNC(
   } catch (err) {
     console.error("registarFotoNC falhou", err);
     return { error: "Não foi possível guardar a foto." };
+  }
+}
+
+/**
+ * Usado pelo modal de detalhe da NC (admin e portal do cliente) para
+ * mostrar as fotos sem as carregar todas à partida. A RLS já limita o que
+ * cada sessão consegue ler.
+ */
+export async function listarFotosNC(ncId: string): Promise<{ fotos: FotoComUrl[]; error: string | null }> {
+  try {
+    const supabase = await createClient();
+    const { data: fotos, error } = await supabase
+      .from("nc_fotos")
+      .select("*")
+      .eq("nc_id", ncId)
+      .order("created_at", { ascending: true });
+    if (error) return { fotos: [], error: error.message };
+
+    const fotosComUrl = await Promise.all(
+      (fotos ?? []).map(async (f) => {
+        const { data } = await supabase.storage.from("nc-anexos").createSignedUrl(f.storage_path, 3600);
+        return { id: f.id, nome: f.nome_ficheiro, url: data?.signedUrl ?? null };
+      })
+    );
+    return { fotos: fotosComUrl, error: null };
+  } catch (err) {
+    console.error("listarFotosNC falhou", err);
+    return { fotos: [], error: "Não foi possível carregar as fotos." };
   }
 }
 

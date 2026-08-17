@@ -31,6 +31,7 @@ export function CalendarioMensal({
   mostrarObra = true,
   clicavel = true,
   semMoldura = false,
+  aoClicarVisita,
 }: {
   visitas: VisitaResumoRow[];
   /** No portal do cliente é sempre a mesma obra — mostra a hora/estado em vez de repetir o nome. */
@@ -39,6 +40,8 @@ export function CalendarioMensal({
   clicavel?: boolean;
   /** Quando já vem dentro de outro cartão (ex: portal do cliente), não duplica o contorno. */
   semMoldura?: boolean;
+  /** Quando definido, o clique abre isto em vez de navegar (tem prioridade sobre "clicavel"). */
+  aoClicarVisita?: (visita: VisitaResumoRow) => void;
 }) {
   const hoje = new Date();
   const [mesAtual, setMesAtual] = useState(new Date(hoje.getFullYear(), hoje.getMonth(), 1));
@@ -114,10 +117,11 @@ export function CalendarioMensal({
 
               <div className="mt-1 space-y-1">
                 {eventos.slice(0, 3).map((v) => {
-                  const classes = `flex items-center gap-0.5 truncate text-[10px] font-medium px-1.5 py-0.5 rounded border transition-colors ${
+                  const interativo = clicavel || !!aoClicarVisita;
+                  const classes = `flex items-center gap-0.5 w-full truncate text-[10px] font-medium px-1.5 py-0.5 rounded border transition-colors ${
                     v.estado === "Agendada"
-                      ? `text-[#8A4A17] bg-[#FBF0DC] border-[#E8C98F] ${clicavel ? "hover:bg-[#F5E7C6]" : ""}`
-                      : `text-[#3E7A4D] bg-[#E9F5EC] border-[#B9DCC2] ${clicavel ? "hover:bg-[#DCEFE1]" : ""}`
+                      ? `text-[#8A4A17] bg-[#FBF0DC] border-[#E8C98F] ${interativo ? "hover:bg-[#F5E7C6]" : ""}`
+                      : `text-[#3E7A4D] bg-[#E9F5EC] border-[#B9DCC2] ${interativo ? "hover:bg-[#DCEFE1]" : ""}`
                   }`;
                   const conteudo = (
                     <>
@@ -126,6 +130,14 @@ export function CalendarioMensal({
                     </>
                   );
                   const titulo = `${v.obra_nome}${v.hora ? " · " + v.hora.slice(0, 5) : ""} — ${v.estado}`;
+
+                  if (aoClicarVisita) {
+                    return (
+                      <button key={v.id} type="button" onClick={() => aoClicarVisita(v)} title={titulo} className={classes}>
+                        {conteudo}
+                      </button>
+                    );
+                  }
 
                   return clicavel ? (
                     <Link

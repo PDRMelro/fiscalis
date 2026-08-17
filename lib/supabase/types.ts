@@ -26,6 +26,7 @@ export type ProfileRow = {
   pode_ver_documentos: boolean;
   pode_ver_financeiro: boolean;
   pode_ver_intervenientes: boolean;
+  portal_visto_em: string | null;
   created_at: string;
 };
 
