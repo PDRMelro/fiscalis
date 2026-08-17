@@ -75,7 +75,8 @@ export function NovaVisitaForm({
       } catch (err) {
         console.error("NovaVisitaForm falhou", err);
         setProgresso(null);
-        setErro("Falha inesperada. Verifica a ligação e tenta outra vez.");
+        const msg = err instanceof Error ? err.message : String(err);
+        setErro(`Falha inesperada: ${msg}`);
       }
     });
   }
