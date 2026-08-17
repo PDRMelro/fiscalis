@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarDays, Clock, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import { CalendarioMensal } from "@/components/calendario/CalendarioMensal";
 import type { VisitaResumoRow } from "@/lib/supabase/types";
 
@@ -24,23 +24,48 @@ function gerarSemana(hoje: Date) {
 export function CalendarioPortalCliente({ visitas }: { visitas: VisitaResumoRow[] }) {
   const [expandido, setExpandido] = useState(false);
 
-  if (expandido) {
-    return (
-      <div>
-        <button
-          type="button"
-          onClick={() => setExpandido(false)}
-          className="flex items-center gap-1 text-[11px] text-[#8A8578] hover:text-[#14283A] mb-2"
-        >
-          <ChevronUp size={13} /> Ver só esta semana
-        </button>
-        <CalendarioMensal visitas={visitas} mostrarObra={false} clicavel={false} />
-      </div>
-    );
-  }
-
   const hoje = new Date();
   const hojeISO = paraISO(hoje);
+  const proximasAgendadas = visitas.filter((v) => v.estado === "Agendada" && v.data >= hojeISO).length;
+
+  return (
+    <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#EDEBE2]">
+        <div className="flex items-center gap-2">
+          <p className="text-[12px] font-medium text-[#4A4740]">{expandido ? "Calendário" : "Esta semana"}</p>
+          {proximasAgendadas > 0 && (
+            <span className="text-[11px] font-medium text-[#8A4A17] bg-[#FBF0DC] border border-[#E8C98F] rounded px-1.5 py-0.5">
+              {proximasAgendadas} agendamento{proximasAgendadas > 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={() => setExpandido((v) => !v)}
+          className="flex items-center gap-1 text-[11px] font-medium text-[#14283A] border border-[#DEDBD2] rounded-lg px-2.5 py-1 hover:bg-[#F5F4EF] transition-colors"
+        >
+          {expandido ? (
+            <>
+              Fechar <ChevronUp size={13} />
+            </>
+          ) : (
+            <>
+              Abrir <ChevronDown size={13} />
+            </>
+          )}
+        </button>
+      </div>
+
+      {expandido ? (
+        <CalendarioMensal visitas={visitas} mostrarObra={false} clicavel={false} semMoldura />
+      ) : (
+        <SemanaCompacta visitas={visitas} hoje={hoje} hojeISO={hojeISO} />
+      )}
+    </div>
+  );
+}
+
+function SemanaCompacta({ visitas, hoje, hojeISO }: { visitas: VisitaResumoRow[]; hoje: Date; hojeISO: string }) {
   const semana = gerarSemana(hoje);
 
   const porDia = new Map<string, VisitaResumoRow[]>();
@@ -50,23 +75,8 @@ export function CalendarioPortalCliente({ visitas }: { visitas: VisitaResumoRow[
     porDia.set(v.data, lista);
   }
 
-  const proximasAgendadas = visitas.filter((v) => v.estado === "Agendada" && v.data >= hojeISO).length;
-
   return (
-    <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[#EDEBE2]">
-        <p className="text-[12px] font-medium text-[#4A4740]">Esta semana</p>
-        <button
-          type="button"
-          onClick={() => setExpandido(true)}
-          className="flex items-center gap-1.5 text-[11px] font-medium text-[#8A4A17] bg-[#FBF0DC] border border-[#E8C98F] rounded-lg px-2.5 py-1 hover:bg-[#F5E7C6] transition-colors"
-          title="Ver calendário completo"
-        >
-          <CalendarDays size={12} />
-          {proximasAgendadas > 0 ? `${proximasAgendadas} agendamento${proximasAgendadas > 1 ? "s" : ""}` : "Ver mês"}
-        </button>
-      </div>
-
+    <>
       <div className="grid grid-cols-7 border-b border-[#EDEBE2]">
         {DIAS_SEMANA.map((d) => (
           <div key={d} className="text-[11px] font-medium text-[#8A8578] text-center py-2">
@@ -115,6 +125,6 @@ export function CalendarioPortalCliente({ visitas }: { visitas: VisitaResumoRow[
           );
         })}
       </div>
-    </div>
+    </>
   );
 }

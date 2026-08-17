@@ -30,12 +30,15 @@ export function CalendarioMensal({
   visitas,
   mostrarObra = true,
   clicavel = true,
+  semMoldura = false,
 }: {
   visitas: VisitaResumoRow[];
   /** No portal do cliente é sempre a mesma obra — mostra a hora/estado em vez de repetir o nome. */
   mostrarObra?: boolean;
   /** No portal do cliente as etiquetas não levam a páginas do administrador. */
   clicavel?: boolean;
+  /** Quando já vem dentro de outro cartão (ex: portal do cliente), não duplica o contorno. */
+  semMoldura?: boolean;
 }) {
   const hoje = new Date();
   const [mesAtual, setMesAtual] = useState(new Date(hoje.getFullYear(), hoje.getMonth(), 1));
@@ -51,7 +54,7 @@ export function CalendarioMensal({
   }
 
   return (
-    <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
+    <div className={semMoldura ? "" : "bg-white border border-[#E4E1D6] rounded-xl overflow-hidden"}>
       <div className="flex items-center justify-between px-5 py-3 border-b border-[#EDEBE2]">
         <p className="text-[14px] font-semibold text-[#14283A]">
           {NOMES_MES[mesAtual.getMonth()]} {mesAtual.getFullYear()}
