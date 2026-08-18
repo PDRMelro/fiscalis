@@ -155,6 +155,25 @@ export async function registarFotoVisita(
   }
 }
 
+export async function eliminarFotoVisita(visitaId: string, obraId: string, fotoId: string): Promise<ResultadoAcao> {
+  try {
+    const supabase = await createClient();
+    const { data: foto } = await supabase.from("visita_fotos").select("storage_path").eq("id", fotoId).single();
+    if (foto) await supabase.storage.from("visita-fotos").remove([foto.storage_path]);
+
+    const { error } = await supabase.from("visita_fotos").delete().eq("id", fotoId);
+    if (error) return { error: error.message };
+
+    revalidatePath(`/visitas/${visitaId}/completar`);
+    revalidatePath("/visitas");
+    revalidatePath(`/obras/${obraId}`);
+    return { error: null };
+  } catch (err) {
+    console.error("eliminarFotoVisita falhou", err);
+    return { error: "Não foi possível remover a foto." };
+  }
+}
+
 /**
  * Usado pelo calendário (admin e portal do cliente) para mostrar notas e
  * fotos de uma visita ao clicar nela, sem ter de carregar tudo à partida.

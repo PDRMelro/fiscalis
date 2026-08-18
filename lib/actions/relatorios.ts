@@ -26,12 +26,34 @@ export async function gerarRelatorio(visitaId: string, enviarCliente: boolean): 
 
     const user = await getUserSafe(supabase);
 
-    const { data: relatorio, error } = await supabase
+    // Se já existir um relatório para esta visita, atualiza-o (mantém o
+    // mesmo código/ficheiro) em vez de criar um duplicado — é assim que
+    // "editar a visita e gerar novo PDF" deve funcionar.
+    const { data: existente } = await supabase
       .from("relatorios")
-      .insert({ obra_id: obra.id, visita_id: visitaId, data: visita.data, created_by: user?.id ?? null })
-      .select("*")
-      .single();
-    if (error || !relatorio) return { error: error?.message ?? "Não foi possível criar o relatório." };
+      .select("id, codigo")
+      .eq("visita_id", visitaId)
+      .maybeSingle();
+
+    let relatorio: { id: string; codigo: string | null };
+    if (existente) {
+      const { data: atualizado, error: erroAtualizar } = await supabase
+        .from("relatorios")
+        .update({ data: visita.data })
+        .eq("id", existente.id)
+        .select("id, codigo")
+        .single();
+      if (erroAtualizar || !atualizado) return { error: erroAtualizar?.message ?? "Não foi possível atualizar o relatório." };
+      relatorio = atualizado;
+    } else {
+      const { data: novo, error } = await supabase
+        .from("relatorios")
+        .insert({ obra_id: obra.id, visita_id: visitaId, data: visita.data, created_by: user?.id ?? null })
+        .select("id, codigo")
+        .single();
+      if (error || !novo) return { error: error?.message ?? "Não foi possível criar o relatório." };
+      relatorio = novo;
+    }
 
     const buffer = await gerarPdfRelatorioVisita(relatorio.codigo ?? relatorio.id, obra, visita, ncs ?? [], numFotos ?? 0);
     const path = `${obra.id}/${relatorio.id}.pdf`;

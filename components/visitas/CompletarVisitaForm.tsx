@@ -2,14 +2,24 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { completarVisita, registarFotoVisita } from "@/lib/actions/visitas";
+import { completarVisita, registarFotoVisita, eliminarFotoVisita } from "@/lib/actions/visitas";
 import { FotoPicker, type FotoSelecionada } from "@/components/visitas/FotoPicker";
 import { nomeSeguro } from "@/lib/nomeSeguro";
 import type { VisitaRow } from "@/lib/supabase/types";
 
-export function CompletarVisitaForm({ visita, obraNome }: { visita: VisitaRow; obraNome: string }) {
+export function CompletarVisitaForm({
+  visita,
+  obraNome,
+  fotosExistentes,
+}: {
+  visita: VisitaRow;
+  obraNome: string;
+  fotosExistentes: { id: string; nome_ficheiro: string; url: string | null }[];
+}) {
   const router = useRouter();
+  const jaRealizada = visita.estado === "Realizada";
   const [data, setData] = useState(visita.data);
   const [notas, setNotas] = useState(visita.notas ?? "");
   const [fotos, setFotos] = useState<FotoSelecionada[]>([]);
@@ -59,7 +69,7 @@ export function CompletarVisitaForm({ visita, obraNome }: { visita: VisitaRow; o
 
         setProgresso(null);
         if (erros.length > 0) {
-          setErro(`Visita completada, mas houve problemas com algumas fotos: ${erros.join(" · ")}`);
+          setErro(`Visita guardada, mas houve problemas com algumas fotos: ${erros.join(" · ")}`);
           return;
         }
 
@@ -100,8 +110,33 @@ export function CompletarVisitaForm({ visita, obraNome }: { visita: VisitaRow; o
         className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white focus:outline-none focus:border-[#14283A] resize-none mb-4"
       />
 
+      {fotosExistentes.length > 0 && (
+        <div className="mb-4">
+          <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Fotos já anexadas</label>
+          <div className="grid grid-cols-4 gap-2">
+            {fotosExistentes.map((f) => (
+              <div key={f.id} className="relative group aspect-square rounded-lg overflow-hidden border border-[#E4E1D6]">
+                {f.url && <img src={f.url} alt={f.nome_ficheiro} className="w-full h-full object-cover" />}
+                <form
+                  action={async () => {
+                    await eliminarFotoVisita(visita.id, visita.obra_id, f.id);
+                  }}
+                >
+                  <button
+                    type="submit"
+                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={12} />
+                  </button>
+                </form>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <label className="text-[12px] font-medium text-[#4A4740] block mb-1">
-        Registo fotográfico {fotos.length > 0 && `(${fotos.length})`}
+        Adicionar fotos {fotos.length > 0 && `(${fotos.length})`}
       </label>
       <FotoPicker fotos={fotos} onChange={setFotos} />
 
@@ -115,12 +150,19 @@ export function CompletarVisitaForm({ visita, obraNome }: { visita: VisitaRow; o
           disabled={pending}
           className="px-4 py-2.5 rounded-lg bg-[#14283A] text-white text-[13px] font-medium disabled:opacity-60"
         >
-          {pending ? "A guardar..." : "Completar visita"}
+          {pending ? "A guardar..." : jaRealizada ? "Guardar alterações" : "Completar visita"}
         </button>
         <a href="/visitas" className="px-4 py-2.5 rounded-lg text-[13px] text-[#8A8578]">
           Cancelar
         </a>
       </div>
+
+      {jaRealizada && (
+        <p className="text-[11px] text-[#8A8578] mt-3">
+          Se já tiveres um relatório gerado para esta visita, usa o botão de atualizar (ao lado de &ldquo;Ver
+          PDF&rdquo;, na lista de Visitas) depois de guardares, para o PDF refletir estas alterações.
+        </p>
+      )}
     </div>
   );
 }

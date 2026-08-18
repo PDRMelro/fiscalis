@@ -10,18 +10,29 @@ export default async function CompletarVisitaPage({ params }: { params: Promise<
   const { id } = await params;
   const supabase = await createClient();
 
-  const [{ data: visita }, { data: ncs }] = await Promise.all([
+  const [{ data: visita }, { data: ncs }, { data: fotos }] = await Promise.all([
     supabase.from("visitas").select("*, obras(nome)").eq("id", id).single(),
     supabase.from("nao_conformidades").select("*").eq("visita_id", id).order("created_at", { ascending: false }),
+    supabase.from("visita_fotos").select("*").eq("visita_id", id).order("created_at", { ascending: true }),
   ]);
   if (!visita) notFound();
 
   const obraNome = (visita.obras as unknown as { nome: string } | null)?.nome ?? "";
 
+  const fotosExistentes = await Promise.all(
+    (fotos ?? []).map(async (f) => {
+      const { data } = await supabase.storage.from("visita-fotos").createSignedUrl(f.storage_path, 3600);
+      return { id: f.id, nome_ficheiro: f.nome_ficheiro, url: data?.signedUrl ?? null };
+    })
+  );
+
   return (
     <>
-      <PageHeader title="Completar visita" subtitle="Confirma a data, junta notas e as fotos tiradas em obra" />
-      <CompletarVisitaForm visita={visita} obraNome={obraNome} />
+      <PageHeader
+        title={visita.estado === "Realizada" ? "Editar visita" : "Completar visita"}
+        subtitle="Confirma a data, junta notas e as fotos tiradas em obra"
+      />
+      <CompletarVisitaForm visita={visita} obraNome={obraNome} fotosExistentes={fotosExistentes} />
 
       <div className="max-w-xl mt-6">
         <div className="flex items-center justify-between mb-3">
