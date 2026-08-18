@@ -96,7 +96,9 @@ export function NovaNCForm({
       )}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Obra</label>
+          <label className="text-[12px] font-medium text-[#4A4740] block mb-1">
+            Obra<span className="text-[#B0402F]"> *</span>
+          </label>
           {visitaId ? (
             <>
               <input type="hidden" name="obra_id" value={obraId} />
@@ -124,7 +126,9 @@ export function NovaNCForm({
           )}
         </div>
         <div>
-          <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Data de deteção</label>
+          <label className="text-[12px] font-medium text-[#4A4740] block mb-1">
+            Data de deteção<span className="text-[#B0402F]"> *</span>
+          </label>
           <input
             name="data_deteccao"
             type="date"

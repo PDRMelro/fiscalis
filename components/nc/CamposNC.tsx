@@ -5,6 +5,10 @@ const campo = "w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] b
 const rotulo = "text-[12px] font-medium text-[#4A4740] block mb-1";
 const seccao = "text-[11px] font-semibold text-[#8A4A17] uppercase tracking-wide pt-1";
 
+function Obrigatorio() {
+  return <span className="text-[#B0402F]"> *</span>;
+}
+
 export function CamposNC({ defaults }: { defaults?: Partial<NaoConformidadeRow> }) {
   return (
     <>
@@ -65,7 +69,10 @@ export function CamposNC({ defaults }: { defaults?: Partial<NaoConformidadeRow> 
       </div>
 
       <div>
-        <label className={rotulo}>2. Descrição da não conformidade</label>
+        <label className={rotulo}>
+          2. Descrição da não conformidade
+          <Obrigatorio />
+        </label>
         <textarea
           name="descricao"
           defaultValue={defaults?.descricao ?? ""}
@@ -78,10 +85,14 @@ export function CamposNC({ defaults }: { defaults?: Partial<NaoConformidadeRow> 
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className={rotulo}>3. Requisito não cumprido</label>
+          <label className={rotulo}>
+            3. Requisito não cumprido
+            <Obrigatorio />
+          </label>
           <textarea
             name="requisito_incumprido"
             defaultValue={defaults?.requisito_incumprido ?? ""}
+            required
             rows={2}
             placeholder="Requisito contratual, normativo ou legal não cumprido..."
             className={`${campo} resize-none`}

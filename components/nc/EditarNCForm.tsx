@@ -85,7 +85,9 @@ export function EditarNCForm({
     <form action={guardar} className="bg-white border border-[#E4E1D6] rounded-xl p-5 max-w-2xl space-y-4">
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Obra</label>
+          <label className="text-[12px] font-medium text-[#4A4740] block mb-1">
+            Obra<span className="text-[#B0402F]"> *</span>
+          </label>
           <select
             name="obra_id"
             value={obraId}
@@ -101,7 +103,9 @@ export function EditarNCForm({
           </select>
         </div>
         <div>
-          <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Data de deteção</label>
+          <label className="text-[12px] font-medium text-[#4A4740] block mb-1">
+            Data de deteção<span className="text-[#B0402F]"> *</span>
+          </label>
           <input
             name="data_deteccao"
             type="date"
