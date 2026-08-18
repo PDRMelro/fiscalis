@@ -4,12 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { GerarComEnvioButton } from "@/components/ui/GerarComEnvioButton";
 import { formatarData } from "@/lib/format";
+import { acaoFalsaTeste } from "@/lib/actions/_teste";
 import type { ReactNode } from "react";
-
-async function acaoFalsa(_visitaId: string, _enviarCliente: boolean) {
-  "use server";
-  return { error: null };
-}
 
 export default async function VisitasPage() {
   let linhas: ReactNode[] = [];
@@ -50,7 +46,7 @@ export default async function VisitasPage() {
                 label="Gerar relatório (teste)"
                 icon={FileText}
                 categoriaLabel="Relatórios"
-                onGerar={acaoFalsa.bind(null, v.id)}
+                onGerar={acaoFalsaTeste.bind(null, v.id)}
               />
             )}
           </td>
