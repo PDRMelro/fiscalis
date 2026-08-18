@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { FileText } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { GerarComEnvioButton } from "@/components/ui/GerarComEnvioButton";
 import { formatarData } from "@/lib/format";
+import { gerarRelatorio } from "@/lib/actions/relatorios";
 import type { ReactNode } from "react";
 
 export default async function VisitasPage() {
@@ -10,32 +13,54 @@ export default async function VisitasPage() {
 
   try {
     const supabase = await createClient();
-    const { data: visitas, error } = await supabase.from("visitas_resumo").select("*").order("data", { ascending: false });
-    if (error) throw new Error(error.message);
+    const [{ data: visitas, error: erroVisitas }, { data: relatorios, error: erroRelatorios }] = await Promise.all([
+      supabase.from("visitas_resumo").select("*").order("data", { ascending: false }),
+      supabase.from("relatorios").select("id, visita_id"),
+    ]);
+    if (erroVisitas) throw new Error(`visitas_resumo: ${erroVisitas.message}`);
+    if (erroRelatorios) throw new Error(`relatorios: ${erroRelatorios.message}`);
 
     const todas = visitas ?? [];
+    const relatorioPorVisita = new Map(
+      (relatorios ?? []).filter((r) => r.visita_id).map((r) => [r.visita_id as string, r.id])
+    );
 
-    linhas = todas.map((v) => (
-      <tr key={v.id} className="border-b border-[#F2F0E8] last:border-0">
-        <td className="px-5 py-3 font-mono text-[#14283A]">{formatarData(v.data)}</td>
-        <td className="px-5 py-3 text-[#4A4740]">
-          <Link href={`/obras/${v.obra_id}`} className="hover:underline">
-            {v.obra_nome}
-          </Link>
-        </td>
-        <td className="px-5 py-3 text-[#4A4740]">{v.estado}</td>
-        <td className="px-5 py-3 text-[#8A8578]">{v.fotos}</td>
-        <td className="px-5 py-3 text-[#8A8578]">{v.nc_abertas}</td>
-      </tr>
-    ));
+    linhas = todas.map((v) => {
+      const relatorioId = relatorioPorVisita.get(v.id);
+      return (
+        <tr key={v.id} className="border-b border-[#F2F0E8] last:border-0">
+          <td className="px-5 py-3 font-mono text-[#14283A]">{formatarData(v.data)}</td>
+          <td className="px-5 py-3 text-[#4A4740]">
+            <Link href={`/obras/${v.obra_id}`} className="hover:underline">
+              {v.obra_nome}
+            </Link>
+          </td>
+          <td className="px-5 py-3 text-[#4A4740]">{v.estado}</td>
+          <td className="px-5 py-3 text-right">
+            {relatorioId ? (
+              <a href={`/api/relatorios/${relatorioId}/download`} className="text-[12px] text-[#14283A] font-medium">
+                Ver PDF
+              </a>
+            ) : (
+              <GerarComEnvioButton
+                label="Gerar relatório"
+                icon={FileText}
+                categoriaLabel="Relatórios"
+                onGerar={gerarRelatorio.bind(null, v.id)}
+              />
+            )}
+          </td>
+        </tr>
+      );
+    });
   } catch (err) {
-    console.error("VisitasPage (debug 3) falhou", err);
+    console.error("VisitasPage (debug 4) falhou", err);
     erroCarregar = err instanceof Error ? err.message : String(err);
   }
 
   return (
     <>
-      <PageHeader title="Visitas (debug 3)" subtitle="Tabela simples, sem botões complexos" />
+      <PageHeader title="Visitas (debug 4)" subtitle="Com botão de Gerar relatório" />
 
       {erroCarregar && (
         <div className="bg-white border border-[#F0CFC6] rounded-xl p-4 mb-4 text-[13px] text-[#B0402F]">
@@ -50,8 +75,7 @@ export default async function VisitasPage() {
               <th className="px-5 py-3 font-medium">Data</th>
               <th className="px-5 py-3 font-medium">Obra</th>
               <th className="px-5 py-3 font-medium">Estado</th>
-              <th className="px-5 py-3 font-medium">Fotos</th>
-              <th className="px-5 py-3 font-medium">NC abertas</th>
+              <th className="px-5 py-3 font-medium" />
             </tr>
           </thead>
           <tbody>{linhas}</tbody>
