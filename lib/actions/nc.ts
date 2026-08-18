@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { gerarPdfAutoNaoConformidade } from "@/lib/pdf/autoNaoConformidade";
 import { copiarParaDocumentosEnviados } from "@/lib/actions/documentos";
-import type { EstadoNC, Severidade } from "@/lib/supabase/types";
+import type { EstadoNC, Severidade, ResultadoVerificacao } from "@/lib/supabase/types";
 
 export type ResultadoAcao = { error: string | null };
 export type ResultadoCriarNC = { ncId: string | null; error: string | null };
@@ -29,13 +29,22 @@ export async function criarNC(formData: FormData): Promise<ResultadoCriarNC> {
         visita_id: str(formData, "visita_id") || null,
         data_deteccao: str(formData, "data_deteccao") || new Date().toISOString().slice(0, 10),
         local_zona: str(formData, "local_zona") || null,
+        frente_fase: str(formData, "frente_fase") || null,
+        contrato_numero: str(formData, "contrato_numero") || null,
         especialidade: str(formData, "especialidade") || null,
+        origem: str(formData, "origem") || null,
         descricao,
         requisito_incumprido: str(formData, "requisito_incumprido") || null,
+        evidencias: str(formData, "evidencias") || null,
         acao_corretiva: str(formData, "acao_corretiva") || null,
-        severidade: (str(formData, "severidade") || "Média") as Severidade,
+        severidade: (str(formData, "severidade") || "Maior") as Severidade,
+        classificacao_justificacao: str(formData, "classificacao_justificacao") || null,
         responsavel: str(formData, "responsavel") || null,
         prazo: str(formData, "prazo") || null,
+        data_verificacao: str(formData, "data_verificacao") || null,
+        resultado_verificacao: (str(formData, "resultado_verificacao") || null) as ResultadoVerificacao | null,
+        evidencias_verificacao: str(formData, "evidencias_verificacao") || null,
+        observacoes_recomendacoes: str(formData, "observacoes_recomendacoes") || null,
       })
       .select("id")
       .single();
@@ -144,13 +153,22 @@ export async function editarNC(ncId: string, formData: FormData): Promise<Result
         obra_id: obraId,
         data_deteccao: str(formData, "data_deteccao") || new Date().toISOString().slice(0, 10),
         local_zona: str(formData, "local_zona") || null,
+        frente_fase: str(formData, "frente_fase") || null,
+        contrato_numero: str(formData, "contrato_numero") || null,
         especialidade: str(formData, "especialidade") || null,
+        origem: str(formData, "origem") || null,
         descricao,
         requisito_incumprido: str(formData, "requisito_incumprido") || null,
+        evidencias: str(formData, "evidencias") || null,
         acao_corretiva: str(formData, "acao_corretiva") || null,
-        severidade: (str(formData, "severidade") || "Média") as Severidade,
+        severidade: (str(formData, "severidade") || "Maior") as Severidade,
+        classificacao_justificacao: str(formData, "classificacao_justificacao") || null,
         responsavel: str(formData, "responsavel") || null,
         prazo: str(formData, "prazo") || null,
+        data_verificacao: str(formData, "data_verificacao") || null,
+        resultado_verificacao: (str(formData, "resultado_verificacao") || null) as ResultadoVerificacao | null,
+        evidencias_verificacao: str(formData, "evidencias_verificacao") || null,
+        observacoes_recomendacoes: str(formData, "observacoes_recomendacoes") || null,
       })
       .eq("id", ncId);
     if (error) return { error: error.message };

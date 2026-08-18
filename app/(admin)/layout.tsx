@@ -25,7 +25,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     const { data: alertasRaw } = await supabase
       .from("nao_conformidades")
       .select("id, descricao, prazo, obras(nome)")
-      .neq("estado", "Fechada")
+      .neq("estado", "Encerrada")
       .order("prazo", { ascending: true, nullsFirst: false })
       .limit(6);
 

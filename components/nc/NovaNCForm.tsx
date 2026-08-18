@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { criarNC, registarFotoNC } from "@/lib/actions/nc";
 import { FotoPicker, type FotoSelecionada } from "@/components/visitas/FotoPicker";
+import { CamposNC } from "@/components/nc/CamposNC";
 import { nomeSeguro } from "@/lib/nomeSeguro";
-import { ESPECIALIDADES_OBRA } from "@/lib/especialidadesObra";
 import { formatarData } from "@/lib/format";
 
 export function NovaNCForm({
@@ -135,77 +135,7 @@ export function NovaNCForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Localização / zona na obra</label>
-          <input
-            name="local_zona"
-            placeholder="Ex: Piso 1, fachada norte"
-            className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
-          />
-        </div>
-        <div>
-          <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Especialidade</label>
-          <select name="especialidade" defaultValue="" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white">
-            <option value="">— Não especificada —</option>
-            {ESPECIALIDADES_OBRA.map((e) => (
-              <option key={e} value={e}>
-                {e}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Descrição da não conformidade</label>
-        <textarea
-          name="descricao"
-          required
-          rows={3}
-          placeholder="O que foi observado em obra..."
-          className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] resize-none"
-        />
-      </div>
-
-      <div>
-        <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Requisito / norma não cumprido</label>
-        <textarea
-          name="requisito_incumprido"
-          rows={2}
-          placeholder="O que deveria ter sido executado, segundo o projeto/regulamento..."
-          className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] resize-none"
-        />
-      </div>
-
-      <div>
-        <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Ação corretiva proposta</label>
-        <textarea
-          name="acao_corretiva"
-          rows={2}
-          placeholder="O que tem de ser feito para corrigir..."
-          className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] resize-none"
-        />
-      </div>
-
-      <div className="grid grid-cols-3 gap-3">
-        <div>
-          <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Severidade</label>
-          <select name="severidade" defaultValue="Média" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white">
-            <option value="Alta">Alta</option>
-            <option value="Média">Média</option>
-            <option value="Baixa">Baixa</option>
-          </select>
-        </div>
-        <div>
-          <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Responsável pela correção</label>
-          <input name="responsavel" placeholder="Ex: Empreiteiro Geral" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
-        </div>
-        <div>
-          <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Prazo de resolução</label>
-          <input name="prazo" type="date" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
-        </div>
-      </div>
+      <CamposNC />
 
       <div>
         <label className="text-[12px] font-medium text-[#4A4740] block mb-1">

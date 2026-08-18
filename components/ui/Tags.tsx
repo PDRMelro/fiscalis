@@ -4,7 +4,8 @@ export function EstadoDot({ estado }: { estado: EstadoNC }) {
   const map: Record<EstadoNC, string> = {
     Aberta: "#B0402F",
     "Em correção": "#C4791E",
-    Fechada: "#2C6B45",
+    Corrigida: "#2E5C8A",
+    Encerrada: "#2C6B45",
   };
   return (
     <span className="inline-flex items-center gap-1.5 text-[12px] font-medium" style={{ color: map[estado] }}>
@@ -32,11 +33,11 @@ export function AreaEstadoTag({ estado }: { estado: EstadoArea }) {
 
 export function SeveridadeTag({ nivel }: { nivel: Severidade }) {
   const map: Record<Severidade, { bg: string; fg: string }> = {
-    Alta: { bg: "#FBE3E1", fg: "#B0402F" },
-    Média: { bg: "#FBEAD9", fg: "#8A4A17" },
-    Baixa: { bg: "#EDEBE2", fg: "#8A8578" },
+    Crítica: { bg: "#FBE3E1", fg: "#B0402F" },
+    Maior: { bg: "#FBEAD9", fg: "#8A4A17" },
+    Menor: { bg: "#EDEBE2", fg: "#8A8578" },
   };
-  const s = map[nivel] ?? map.Baixa;
+  const s = map[nivel] ?? map.Menor;
   return (
     <span className="text-[11px] font-medium px-2 py-0.5 rounded" style={{ backgroundColor: s.bg, color: s.fg }}>
       {nivel}

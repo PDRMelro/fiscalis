@@ -52,7 +52,7 @@ export default async function NaoConformidadesPage() {
             <tbody>
               {ncs.map((n) => {
                 const obra = n.obras as unknown as { id: string; nome: string } | null;
-                const atrasada = n.estado !== "Fechada" && !!n.prazo && n.prazo < hojeISO;
+                const atrasada = n.estado !== "Encerrada" && !!n.prazo && n.prazo < hojeISO;
                 return (
                   <tr
                     key={n.id}

@@ -10,9 +10,10 @@ import { formatarData } from "@/lib/format";
 import type { ObraAreaRow } from "@/lib/supabase/types";
 
 const CORES_ESTADO: Record<string, string> = {
-  Aberta: "#C4791E",
-  "Em correção": "#C9A050",
-  Fechada: "#2C6B45",
+  Aberta: "#B0402F",
+  "Em correção": "#C4791E",
+  Corrigida: "#2E5C8A",
+  Encerrada: "#2C6B45",
 };
 
 export default async function DashboardPage() {
@@ -34,13 +35,13 @@ export default async function DashboardPage() {
   const todasNcs = ncs ?? [];
   const obrasAtivas = todasObras.filter((o) => o.estado === "Em curso").length;
   const ncAbertas = todasNcs.filter((n) => n.estado === "Aberta").length;
-  const ncFechadas = todasNcs.filter((n) => n.estado === "Fechada").length;
+  const ncEncerradas = todasNcs.filter((n) => n.estado === "Encerrada").length;
 
   const hojeISO = new Date().toISOString().slice(0, 10);
-  const ncsAtrasadas = todasNcs.filter((n) => n.estado !== "Fechada" && n.prazo && n.prazo < hojeISO);
+  const ncsAtrasadas = todasNcs.filter((n) => n.estado !== "Encerrada" && n.prazo && n.prazo < hojeISO);
 
-  const ncPorEstado = (["Aberta", "Em correção", "Fechada"] as const).map((estado) => ({
-    nome: estado === "Aberta" ? "Abertas" : estado === "Em correção" ? "Em correção" : "Fechadas",
+  const ncPorEstado = (["Aberta", "Em correção", "Corrigida", "Encerrada"] as const).map((estado) => ({
+    nome: estado === "Em correção" ? "Em correção" : `${estado}s`,
     valor: todasNcs.filter((n) => n.estado === estado).length,
     cor: CORES_ESTADO[estado],
   }));
@@ -128,7 +129,7 @@ export default async function DashboardPage() {
         <StatCard label="Obras ativas" value={obrasAtivas} icon={Building2} />
         <StatCard label="Visitas realizadas" value={totalVisitas ?? 0} icon={Activity} />
         <StatCard label="Não conformidades abertas" value={ncAbertas} tone="warn" icon={AlertTriangle} />
-        <StatCard label="Conformidades fechadas" value={ncFechadas} tone="ok" icon={CheckCircle2} />
+        <StatCard label="Não conformidades encerradas" value={ncEncerradas} tone="ok" icon={CheckCircle2} />
       </div>
 
       <div className="grid grid-cols-5 gap-4 mb-6">
