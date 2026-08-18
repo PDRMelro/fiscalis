@@ -1,8 +1,15 @@
 import Link from "next/link";
+import { FileText } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { GerarComEnvioButton } from "@/components/ui/GerarComEnvioButton";
 import { formatarData } from "@/lib/format";
 import type { ReactNode } from "react";
+
+async function acaoFalsa(_visitaId: string, _enviarCliente: boolean) {
+  "use server";
+  return { error: null };
+}
 
 export default async function VisitasPage() {
   let linhas: ReactNode[] = [];
@@ -39,20 +46,25 @@ export default async function VisitasPage() {
                 Ver PDF
               </a>
             ) : (
-              <span className="text-[12px] text-[#8A8578]">Sem relatório</span>
+              <GerarComEnvioButton
+                label="Gerar relatório (teste)"
+                icon={FileText}
+                categoriaLabel="Relatórios"
+                onGerar={acaoFalsa.bind(null, v.id)}
+              />
             )}
           </td>
         </tr>
       );
     });
   } catch (err) {
-    console.error("VisitasPage (debug 5) falhou", err);
+    console.error("VisitasPage (debug 6) falhou", err);
     erroCarregar = err instanceof Error ? err.message : String(err);
   }
 
   return (
     <>
-      <PageHeader title="Visitas (debug 5)" subtitle="Sem o botão Gerar relatório" />
+      <PageHeader title="Visitas (debug 6)" subtitle="Botão com ação falsa, sem lib/actions/relatorios" />
 
       {erroCarregar && (
         <div className="bg-white border border-[#F0CFC6] rounded-xl p-4 mb-4 text-[13px] text-[#B0402F]">
