@@ -15,27 +15,41 @@ function aguardar(ms: number) {
 
 /**
  * O Supabase, por instantes, pode devolver "JWT issued at future" por um
- * pequeníssimo desfasamento de relógio entre serviços — passa sozinho.
- * Uma nova tentativa breve evita mostrar um erro por causa disso.
+ * pequeníssimo desfasamento de relógio entre serviços — intermitente e
+ * mais provável quando há pedidos em paralelo a renovar o token ao mesmo
+ * tempo. Por isso as duas consultas correm uma a seguir à outra (não em
+ * Promise.all), e há até 3 tentativas com pequenas pausas antes de
+ * desistir e mostrar erro.
  */
-async function buscarDadosComRetry() {
+async function buscarDadosComRetry(tentativas = 3): Promise<{
+  visitas: VisitaResumoRow[];
+  relatorios: { id: string; visita_id: string | null }[];
+}> {
   let ultimoErro: Error | null = null;
-  for (let tentativa = 0; tentativa < 2; tentativa++) {
+
+  for (let tentativa = 0; tentativa < tentativas; tentativa++) {
     try {
       const supabase = await createClient();
-      const [{ data: visitas, error: erroVisitas }, { data: relatorios, error: erroRelatorios }] = await Promise.all([
-        supabase.from("visitas_resumo").select("*").order("data", { ascending: false }),
-        supabase.from("relatorios").select("id, visita_id"),
-      ]);
+
+      const { data: visitas, error: erroVisitas } = await supabase
+        .from("visitas_resumo")
+        .select("*")
+        .order("data", { ascending: false });
       if (erroVisitas) throw new Error(`visitas_resumo: ${erroVisitas.message}`);
+
+      const { data: relatorios, error: erroRelatorios } = await supabase
+        .from("relatorios")
+        .select("id, visita_id");
       if (erroRelatorios) throw new Error(`relatorios: ${erroRelatorios.message}`);
+
       return { visitas: visitas ?? [], relatorios: relatorios ?? [] };
     } catch (err) {
       ultimoErro = err instanceof Error ? err : new Error(String(err));
-      console.error(`VisitasPage: tentativa ${tentativa + 1} falhou`, err);
-      if (tentativa === 0) await aguardar(400);
+      console.error(`VisitasPage: tentativa ${tentativa + 1}/${tentativas} falhou`, err);
+      if (tentativa < tentativas - 1) await aguardar(300 * (tentativa + 1));
     }
   }
+
   throw ultimoErro;
 }
 
@@ -46,12 +60,11 @@ export default async function VisitasPage() {
   try {
     const { visitas, relatorios } = await buscarDadosComRetry();
 
-    const todas: VisitaResumoRow[] = visitas;
     const relatorioPorVisita = new Map(
       relatorios.filter((r) => r.visita_id).map((r) => [r.visita_id as string, r.id])
     );
 
-    linhas = todas.map((v) => {
+    linhas = visitas.map((v) => {
       const agendada = v.estado === "Agendada";
       const relatorioId = relatorioPorVisita.get(v.id);
       return (
