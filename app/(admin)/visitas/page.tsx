@@ -1,10 +1,7 @@
 import Link from "next/link";
-import { FileText } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
-import { GerarComEnvioButton } from "@/components/ui/GerarComEnvioButton";
 import { formatarData } from "@/lib/format";
-import { gerarRelatorio } from "@/lib/actions/relatorios";
 import type { ReactNode } from "react";
 
 export default async function VisitasPage() {
@@ -42,25 +39,20 @@ export default async function VisitasPage() {
                 Ver PDF
               </a>
             ) : (
-              <GerarComEnvioButton
-                label="Gerar relatório"
-                icon={FileText}
-                categoriaLabel="Relatórios"
-                onGerar={gerarRelatorio.bind(null, v.id)}
-              />
+              <span className="text-[12px] text-[#8A8578]">Sem relatório</span>
             )}
           </td>
         </tr>
       );
     });
   } catch (err) {
-    console.error("VisitasPage (debug 4) falhou", err);
+    console.error("VisitasPage (debug 5) falhou", err);
     erroCarregar = err instanceof Error ? err.message : String(err);
   }
 
   return (
     <>
-      <PageHeader title="Visitas (debug 4)" subtitle="Com botão de Gerar relatório" />
+      <PageHeader title="Visitas (debug 5)" subtitle="Sem o botão Gerar relatório" />
 
       {erroCarregar && (
         <div className="bg-white border border-[#F0CFC6] rounded-xl p-4 mb-4 text-[13px] text-[#B0402F]">
