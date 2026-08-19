@@ -128,6 +128,36 @@ export async function cancelarVisitaAgendada(obraId: string, visitaId: string) {
 }
 
 /**
+ * Elimina uma visita já realizada. As fotos (base de dados + storage) vão
+ * com ela; não conformidades e relatórios já gerados ficam — só perdem a
+ * ligação a esta visita (visita_id passa a null, por desenho da FK).
+ */
+export async function eliminarVisita(obraId: string, visitaId: string): Promise<ResultadoAcao> {
+  try {
+    const supabase = await createClient();
+
+    const { data: fotos } = await supabase.from("visita_fotos").select("storage_path").eq("visita_id", visitaId);
+    if (fotos && fotos.length > 0) {
+      await supabase.storage.from("visita-fotos").remove(fotos.map((f) => f.storage_path));
+    }
+
+    const { error } = await supabase.from("visitas").delete().eq("id", visitaId);
+    if (error) return { error: error.message };
+
+    revalidatePath("/visitas");
+    revalidatePath("/calendario");
+    revalidatePath("/dashboard");
+    revalidatePath(`/obras/${obraId}`);
+    revalidatePath("/relatorios");
+    revalidatePath("/nc");
+    return { error: null };
+  } catch (err) {
+    console.error("eliminarVisita falhou", err);
+    return { error: "Não foi possível eliminar a visita agora. Tenta outra vez." };
+  }
+}
+
+/**
  * O ficheiro em si vai diretamente do browser para o Supabase Storage (o
  * Vercel rejeita pedidos a Server Actions acima de ~4.5MB, insuficiente
  * para fotos de obra) — isto só grava os metadados depois de já enviado.
