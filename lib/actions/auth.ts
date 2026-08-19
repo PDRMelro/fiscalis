@@ -165,6 +165,7 @@ export async function concluirTourCliente() {
   const user = await getUserSafe(supabase);
   if (!user) return;
   await supabase.from("profiles").update({ tour_concluido: true }).eq("id", user.id);
+  revalidatePath("/portal");
 }
 
 export async function atualizarNomeCliente(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
