@@ -29,7 +29,7 @@ export function DocumentosClienteSection({
     <div className="mt-6">
       <p className="text-[12px] font-medium text-[#4A4740] mb-2">Documentos do projeto</p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-sm lg:max-w-none">
         {CATEGORIAS_DOC.map((categoria) => (
           <GrupoDocumentosClienteCard
             key={categoria}
@@ -61,7 +61,7 @@ export function DocumentosClienteSection({
 
       <p className="text-[12px] font-medium text-[#4A4740] mt-5 mb-2">Documentos enviados pelo fiscal</p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-sm lg:max-w-none">
         {CATEGORIAS_ENVIADO_DOC.map((categoria) => (
           <GrupoDocumentosClienteCard
             key={categoria}

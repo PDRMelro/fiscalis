@@ -191,7 +191,7 @@ export default async function PortalHomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:contents">
               <div
                 id="tour-relatorios"
-                className="lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
+                className="lg:col-span-1 lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
               >
                 <p className="text-[12px] font-medium text-[#4A4740] mb-2 lg:shrink-0">Relatórios disponíveis</p>
                 <div className="space-y-1.5 lg:flex-1 lg:overflow-y-auto lg:min-h-0">
@@ -213,7 +213,7 @@ export default async function PortalHomePage() {
 
               <div
                 id="tour-nc"
-                className="lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
+                className="lg:col-span-1 lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
               >
                 <p className="text-[12px] font-medium text-[#4A4740] mb-2 lg:shrink-0">Não conformidades</p>
                 <div className="lg:flex-1 lg:overflow-y-auto lg:min-h-0">
@@ -224,7 +224,7 @@ export default async function PortalHomePage() {
 
             <div
               id="tour-calendario"
-              className="mt-6 lg:mt-0 lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
+              className="mt-6 lg:mt-0 lg:col-span-1 lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
             >
               <p className="text-[12px] font-medium text-[#4A4740] mb-2 lg:shrink-0">Calendário de visitas</p>
               <div className="lg:flex-1 lg:overflow-y-auto lg:min-h-0">
@@ -242,7 +242,7 @@ export default async function PortalHomePage() {
 
             <div
               id="tour-documentos"
-              className="lg:self-start lg:max-h-full lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-y-auto"
+              className="lg:col-span-1 lg:self-start lg:max-h-full lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-y-auto"
             >
               <DocumentosClienteSection
                 obraId={obra.id}
@@ -254,7 +254,7 @@ export default async function PortalHomePage() {
             {temAcessoFinanceiro && (
               <div
                 id="tour-financeiro"
-                className="mt-6 lg:mt-0 lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
+                className="mt-6 lg:mt-0 lg:col-span-1 lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
               >
                 <p className="text-[12px] font-medium text-[#4A4740] mb-2 lg:shrink-0">Financeiro</p>
                 <div className="lg:flex-1 lg:overflow-y-auto lg:min-h-0">
@@ -331,7 +331,7 @@ export default async function PortalHomePage() {
             {profile.pode_ver_intervenientes && intervenientes && intervenientes.length > 0 && (
               <div
                 id="tour-intervenientes"
-                className="mt-6 lg:mt-0 lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
+                className="mt-6 lg:mt-0 lg:col-span-1 lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
               >
                 <p className="text-[12px] font-medium text-[#4A4740] mb-2 lg:shrink-0">Intervenientes</p>
                 <div className="lg:flex-1 lg:overflow-y-auto lg:min-h-0">
