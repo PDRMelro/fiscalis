@@ -19,10 +19,20 @@ export async function gerarRelatorio(visitaId: string, enviarCliente: boolean): 
 
     const obra = visita.obras as unknown as import("@/lib/supabase/types").ObraRow;
 
-    const [{ data: ncs }, { count: numFotos }] = await Promise.all([
+    const [{ data: ncs }, { data: fotosRows }, { data: perfil }] = await Promise.all([
       supabase.from("nao_conformidades").select("*").eq("visita_id", visitaId),
-      supabase.from("visita_fotos").select("*", { count: "exact", head: true }).eq("visita_id", visitaId),
+      supabase.from("visita_fotos").select("*").eq("visita_id", visitaId),
+      supabase.from("perfil_fiscal").select("nome").eq("id", true).maybeSingle(),
     ]);
+
+    const fotosBase64: string[] = [];
+    for (const foto of fotosRows ?? []) {
+      const { data: blob } = await supabase.storage.from("visita-fotos").download(foto.storage_path);
+      if (!blob) continue;
+      const buffer = Buffer.from(await blob.arrayBuffer());
+      const tipo = blob.type || "image/jpeg";
+      fotosBase64.push(`data:${tipo};base64,${buffer.toString("base64")}`);
+    }
 
     const user = await getUserSafe(supabase);
 
@@ -55,7 +65,14 @@ export async function gerarRelatorio(visitaId: string, enviarCliente: boolean): 
       relatorio = novo;
     }
 
-    const buffer = await gerarPdfRelatorioVisita(relatorio.codigo ?? relatorio.id, obra, visita, ncs ?? [], numFotos ?? 0);
+    const buffer = await gerarPdfRelatorioVisita(
+      relatorio.codigo ?? relatorio.id,
+      obra,
+      visita,
+      ncs ?? [],
+      fotosBase64,
+      perfil?.nome ?? ""
+    );
     const path = `${obra.id}/${relatorio.id}.pdf`;
 
     const { error: uploadError } = await supabase.storage
