@@ -242,16 +242,14 @@ export default async function PortalHomePage() {
 
             <div
               id="tour-documentos"
-              className="lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
+              className="lg:self-start lg:max-h-full lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-y-auto"
             >
-              <div className="lg:flex-1 lg:overflow-y-auto lg:min-h-0">
-                <DocumentosClienteSection
-                  obraId={obra.id}
-                  documentos={documentos ?? []}
-                  podeEnviar={profile.pode_ver_documentos}
-                  orcamentos={orcamentos ?? []}
-                />
-              </div>
+              <DocumentosClienteSection
+                obraId={obra.id}
+                documentos={documentos ?? []}
+                podeEnviar={profile.pode_ver_documentos}
+                orcamentos={orcamentos ?? []}
+              />
             </div>
             {temAcessoFinanceiro && (
               <div
@@ -366,7 +364,7 @@ export default async function PortalHomePage() {
         </div>
       </div>
 
-      <div className="max-w-3xl mt-3 flex items-start gap-2 text-[12px] text-[#8A8578] bg-[#EAF0F7] border border-[#CFE0EE] rounded-lg px-3 py-2.5 lg:shrink-0">
+      <div className="mt-3 flex items-start gap-2 text-[12px] text-[#8A8578] bg-[#EAF0F7] border border-[#CFE0EE] rounded-lg px-3 py-2.5 lg:shrink-0">
         <ShieldCheck size={14} className="text-[#2E5C8A] mt-0.5 shrink-0" />
         Só vês os dados da tua obra. O acesso é validado do lado do servidor (Supabase Row Level
         Security) e não apenas escondido na interface.
