@@ -127,9 +127,9 @@ export default async function PortalHomePage() {
   });
 
   return (
-    <div className="w-full max-w-3xl">
-      <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
-        <div className="bg-[#14283A] px-4 sm:px-6 py-4 sm:py-5 flex flex-wrap items-center justify-between gap-y-2">
+    <div className="w-full max-w-3xl lg:max-w-6xl lg:h-[calc(100vh-3rem)] lg:flex lg:flex-col">
+      <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden lg:flex-1 lg:flex lg:flex-col lg:min-h-0">
+        <div className="bg-[#14283A] px-4 sm:px-6 py-4 sm:py-5 flex flex-wrap items-center justify-between gap-y-2 lg:shrink-0">
           <div className="flex items-center gap-2">
             <img src={LOGO_SRC} alt="Fiscalis" className="h-7 w-auto" />
             <span className="hidden sm:inline text-white text-[13px] font-medium">Fiscalis Engenharia</span>
@@ -148,9 +148,9 @@ export default async function PortalHomePage() {
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 lg:flex-1 lg:flex lg:flex-col lg:min-h-0 lg:overflow-hidden">
           {totalNovidades > 0 && novidades && (
-            <div className="flex items-start gap-2.5 bg-[#FBF7EC] border border-[#E9CE8F] rounded-lg px-4 py-3 mb-5">
+            <div className="flex items-start gap-2.5 bg-[#FBF7EC] border border-[#E9CE8F] rounded-lg px-4 py-3 mb-5 lg:shrink-0">
               <Sparkles size={16} className="text-[#8A4A17] mt-0.5 shrink-0" />
               <div className="text-[12px] text-[#4A4740]">
                 <p className="font-medium text-[#14283A] mb-0.5">Novidades desde a tua última visita</p>
@@ -168,7 +168,7 @@ export default async function PortalHomePage() {
             </div>
           )}
 
-          <div id="tour-obra">
+          <div id="tour-obra" className="lg:shrink-0">
             <p className="text-[12px] text-[#C9A050] font-medium mb-1">Bem-vindo, {profile.nome.split(" ")[0]}</p>
             <p className="text-[16px] font-semibold text-[#14283A] break-words">{obra.nome}</p>
             <p className="text-[12px] text-[#8A8578] flex items-start gap-1 mt-1 break-words">
@@ -187,58 +187,81 @@ export default async function PortalHomePage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-            <div id="tour-relatorios">
-              <p className="text-[12px] font-medium text-[#4A4740] mb-2">Relatórios disponíveis</p>
-              <div className="space-y-1.5">
-                {(!relatorios || relatorios.length === 0) && (
-                  <p className="text-[12px] text-[#8A8578]">Ainda sem relatórios.</p>
-                )}
-                {relatorios?.map((r) => (
-                  <a
-                    key={r.id}
-                    href={r.storage_path ? `/api/relatorios/${r.id}/download` : undefined}
-                    className="flex items-center justify-between text-[12px] bg-[#F5F4EF] rounded-lg px-3 py-2 hover:bg-[#EDEBE2]"
-                  >
-                    <span className="text-[#1F1D19]">{formatarData(r.data)}</span>
-                    <ExternalLink size={12} className="text-[#8A8578]" />
-                  </a>
-                ))}
+          <div className="mt-6 lg:mt-4 lg:flex-1 lg:min-h-0 lg:grid lg:grid-cols-3 lg:auto-rows-fr lg:gap-4 lg:overflow-hidden">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:contents">
+              <div
+                id="tour-relatorios"
+                className="lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
+              >
+                <p className="text-[12px] font-medium text-[#4A4740] mb-2 lg:shrink-0">Relatórios disponíveis</p>
+                <div className="space-y-1.5 lg:flex-1 lg:overflow-y-auto lg:min-h-0">
+                  {(!relatorios || relatorios.length === 0) && (
+                    <p className="text-[12px] text-[#8A8578]">Ainda sem relatórios.</p>
+                  )}
+                  {relatorios?.map((r) => (
+                    <a
+                      key={r.id}
+                      href={r.storage_path ? `/api/relatorios/${r.id}/download` : undefined}
+                      className="flex items-center justify-between text-[12px] bg-[#F5F4EF] rounded-lg px-3 py-2 hover:bg-[#EDEBE2]"
+                    >
+                      <span className="text-[#1F1D19]">{formatarData(r.data)}</span>
+                      <ExternalLink size={12} className="text-[#8A8578]" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              <div
+                id="tour-nc"
+                className="lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
+              >
+                <p className="text-[12px] font-medium text-[#4A4740] mb-2 lg:shrink-0">Não conformidades</p>
+                <div className="lg:flex-1 lg:overflow-y-auto lg:min-h-0">
+                  <NCListaCliente ncs={ncs ?? []} />
+                </div>
               </div>
             </div>
 
-            <div id="tour-nc">
-              <p className="text-[12px] font-medium text-[#4A4740] mb-2">Não conformidades</p>
-              <NCListaCliente ncs={ncs ?? []} />
+            <div
+              id="tour-calendario"
+              className="mt-6 lg:mt-0 lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
+            >
+              <p className="text-[12px] font-medium text-[#4A4740] mb-2 lg:shrink-0">Calendário de visitas</p>
+              <div className="lg:flex-1 lg:overflow-y-auto lg:min-h-0">
+                <div className="flex items-center gap-4 mb-2">
+                  <span className="flex items-center gap-1.5 text-[11px] text-[#8A8578]">
+                    <span className="w-2.5 h-2.5 rounded-sm bg-[#FBF0DC] border border-[#E8C98F]" /> Agendada
+                  </span>
+                  <span className="flex items-center gap-1.5 text-[11px] text-[#8A8578]">
+                    <span className="w-2.5 h-2.5 rounded-sm bg-[#E9F5EC] border border-[#B9DCC2]" /> Realizada
+                  </span>
+                </div>
+                <CalendarioPortalCliente visitas={visitas ?? []} />
+              </div>
             </div>
-          </div>
 
-          <div id="tour-calendario" className="mt-6">
-            <p className="text-[12px] font-medium text-[#4A4740] mb-2">Calendário de visitas</p>
-            <div className="flex items-center gap-4 mb-2">
-              <span className="flex items-center gap-1.5 text-[11px] text-[#8A8578]">
-                <span className="w-2.5 h-2.5 rounded-sm bg-[#FBF0DC] border border-[#E8C98F]" /> Agendada
-              </span>
-              <span className="flex items-center gap-1.5 text-[11px] text-[#8A8578]">
-                <span className="w-2.5 h-2.5 rounded-sm bg-[#E9F5EC] border border-[#B9DCC2]" /> Realizada
-              </span>
+            <div
+              id="tour-documentos"
+              className="lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
+            >
+              <div className="lg:flex-1 lg:overflow-y-auto lg:min-h-0">
+                <DocumentosClienteSection
+                  obraId={obra.id}
+                  documentos={documentos ?? []}
+                  podeEnviar={profile.pode_ver_documentos}
+                  orcamentos={orcamentos ?? []}
+                />
+              </div>
             </div>
-            <CalendarioPortalCliente visitas={visitas ?? []} />
-          </div>
-
-          <div id="tour-documentos">
-            <DocumentosClienteSection
-              obraId={obra.id}
-              documentos={documentos ?? []}
-              podeEnviar={profile.pode_ver_documentos}
-              orcamentos={orcamentos ?? []}
-            />
-          </div>
-          {temAcessoFinanceiro && (
-            <div id="tour-financeiro" className="mt-6">
-              <p className="text-[12px] font-medium text-[#4A4740] mb-2">Financeiro</p>
-              {orcamentos && orcamentos.length > 0 && (
-                <div className="bg-[#F5F4EF] rounded-lg overflow-x-auto mb-2">
+            {temAcessoFinanceiro && (
+              <div
+                id="tour-financeiro"
+                className="mt-6 lg:mt-0 lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
+              >
+                <p className="text-[12px] font-medium text-[#4A4740] mb-2 lg:shrink-0">Financeiro</p>
+                <div className="lg:flex-1 lg:overflow-y-auto lg:min-h-0">
+                {orcamentos && orcamentos.length > 0 && (
+                  <div className="bg-[#F5F4EF] rounded-lg overflow-x-auto mb-2">
                   <table className="w-full text-[12px]">
                     <thead>
                       <tr className="text-left text-[#8A8578] border-b border-[#E4E1D6]">
@@ -303,13 +326,18 @@ export default async function PortalHomePage() {
                   ))}
                 </div>
               )}
-            </div>
-          )}
+                </div>
+              </div>
+            )}
 
-          {profile.pode_ver_intervenientes && intervenientes && intervenientes.length > 0 && (
-            <div id="tour-intervenientes" className="mt-6">
-              <p className="text-[12px] font-medium text-[#4A4740] mb-2">Intervenientes</p>
-              <div className="bg-[#F5F4EF] rounded-lg divide-y divide-[#E4E1D6]">
+            {profile.pode_ver_intervenientes && intervenientes && intervenientes.length > 0 && (
+              <div
+                id="tour-intervenientes"
+                className="mt-6 lg:mt-0 lg:h-full lg:min-h-0 lg:flex lg:flex-col lg:bg-white lg:border lg:border-[#E4E1D6] lg:rounded-lg lg:p-3 lg:overflow-hidden"
+              >
+                <p className="text-[12px] font-medium text-[#4A4740] mb-2 lg:shrink-0">Intervenientes</p>
+                <div className="lg:flex-1 lg:overflow-y-auto lg:min-h-0">
+                <div className="bg-[#F5F4EF] rounded-lg divide-y divide-[#E4E1D6]">
                 {intervenientes.map((p) => {
                   const detalhe =
                     p.tipo === "Construtora" && p.empresa
@@ -330,13 +358,15 @@ export default async function PortalHomePage() {
                     </div>
                   );
                 })}
+                </div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="max-w-3xl mt-3 flex items-start gap-2 text-[12px] text-[#8A8578] bg-[#EAF0F7] border border-[#CFE0EE] rounded-lg px-3 py-2.5">
+      <div className="max-w-3xl mt-3 flex items-start gap-2 text-[12px] text-[#8A8578] bg-[#EAF0F7] border border-[#CFE0EE] rounded-lg px-3 py-2.5 lg:shrink-0">
         <ShieldCheck size={14} className="text-[#2E5C8A] mt-0.5 shrink-0" />
         Só vês os dados da tua obra. O acesso é validado do lado do servidor (Supabase Row Level
         Security) e não apenas escondido na interface.
