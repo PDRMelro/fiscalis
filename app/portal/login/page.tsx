@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { LOGO_SRC } from "@/lib/branding";
 import { clientLogin, type ActionResult } from "@/lib/actions/auth";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 
 const initialState: ActionResult = { error: null };
 
@@ -25,15 +26,14 @@ export default function PortalLoginPage() {
               type="email"
               required
               placeholder="o-teu-email@exemplo.com"
-              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white focus:outline-none focus:border-[#14283A] mb-3"
+              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] text-[#1F1D19] bg-white focus:outline-none focus:border-[#14283A] mb-3"
             />
             <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Palavra-passe</label>
-            <input
+            <PasswordInput
               name="password"
-              type="password"
               required
               placeholder="••••••••"
-              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white focus:outline-none focus:border-[#14283A]"
+              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] text-[#1F1D19] bg-white focus:outline-none focus:border-[#14283A]"
             />
 
             <label className="flex items-center gap-2 text-[12px] text-[#4A4740] mt-3">

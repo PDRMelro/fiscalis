@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { UserCog, Check } from "lucide-react";
 import { ModalShell } from "@/components/ui/Modal";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 import { atualizarNomeCliente, atualizarPasswordCliente, type ActionResult } from "@/lib/actions/auth";
 
 const inicial: ActionResult = { error: null };
@@ -52,7 +53,7 @@ function FormNome({ nomeAtual }: { nomeAtual: string }) {
         name="nome"
         defaultValue={nomeAtual}
         required
-        className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white focus:outline-none focus:border-[#14283A]"
+        className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] text-[#1F1D19] bg-white focus:outline-none focus:border-[#14283A]"
       />
       {state.error && <p className="text-[12px] text-[#B0402F]">{state.error}</p>}
       <div className="flex items-center gap-2">
@@ -87,26 +88,23 @@ function FormPassword() {
       className="space-y-2"
     >
       <label className="text-[12px] font-medium text-[#4A4740] block">Mudar palavra-passe</label>
-      <input
+      <PasswordInput
         name="passwordAtual"
-        type="password"
         placeholder="Palavra-passe atual"
         required
-        className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white focus:outline-none focus:border-[#14283A]"
+        className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] text-[#1F1D19] bg-white focus:outline-none focus:border-[#14283A]"
       />
-      <input
+      <PasswordInput
         name="novaPassword"
-        type="password"
         placeholder="Nova palavra-passe"
         required
-        className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white focus:outline-none focus:border-[#14283A]"
+        className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] text-[#1F1D19] bg-white focus:outline-none focus:border-[#14283A]"
       />
-      <input
+      <PasswordInput
         name="confirmar"
-        type="password"
         placeholder="Confirmar nova palavra-passe"
         required
-        className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white focus:outline-none focus:border-[#14283A]"
+        className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] text-[#1F1D19] bg-white focus:outline-none focus:border-[#14283A]"
       />
       {state.error && <p className="text-[12px] text-[#B0402F]">{state.error}</p>}
       <div className="flex items-center gap-2">

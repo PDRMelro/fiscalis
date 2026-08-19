@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { LOGO_SRC } from "@/lib/branding";
 import { adminLogin, type ActionResult } from "@/lib/actions/auth";
+import { PasswordInput } from "@/components/ui/PasswordInput";
 
 const initialState: ActionResult = { error: null };
 
@@ -33,17 +34,16 @@ export default function AdminLoginPage() {
                 type="email"
                 required
                 autoComplete="username"
-                className="mt-1 w-full border border-[#E4E1D6] rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#C9A050]"
+                className="mt-1 w-full border border-[#E4E1D6] rounded-lg px-3 py-2 text-[13px] text-[#1F1D19] bg-white outline-none focus:border-[#C9A050]"
               />
             </div>
             <div>
               <label className="text-[12px] text-[#4A4740] font-medium">Palavra-passe</label>
-              <input
+              <PasswordInput
                 name="password"
-                type="password"
                 required
                 autoComplete="current-password"
-                className="mt-1 w-full border border-[#E4E1D6] rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#C9A050]"
+                className="mt-1 w-full border border-[#E4E1D6] rounded-lg px-3 py-2 text-[13px] text-[#1F1D19] bg-white outline-none focus:border-[#C9A050]"
               />
             </div>
 
