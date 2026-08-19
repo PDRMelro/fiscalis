@@ -129,13 +129,13 @@ export default async function PortalHomePage() {
   return (
     <div className="w-full max-w-3xl">
       <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
-        <div className="bg-[#14283A] px-6 py-5 flex items-center justify-between">
+        <div className="bg-[#14283A] px-4 sm:px-6 py-4 sm:py-5 flex flex-wrap items-center justify-between gap-y-2">
           <div className="flex items-center gap-2">
             <img src={LOGO_SRC} alt="Fiscalis" className="h-7 w-auto" />
-            <span className="text-white text-[13px] font-medium">Fiscalis Engenharia</span>
+            <span className="hidden sm:inline text-white text-[13px] font-medium">Fiscalis Engenharia</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-[11px] text-[#9FB0BF] flex items-center gap-1">
+            <span className="hidden sm:flex text-[11px] text-[#9FB0BF] items-center gap-1">
               <User size={12} /> {profile.nome}
             </span>
             <PortalTourController passos={passosTour} nome={profile.nome} tourConcluido={profile.tour_concluido} />
@@ -184,7 +184,7 @@ export default async function PortalHomePage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
             <div id="tour-relatorios">
               <p className="text-[12px] font-medium text-[#4A4740] mb-2">Relatórios disponíveis</p>
               <div className="space-y-1.5">
@@ -235,7 +235,7 @@ export default async function PortalHomePage() {
             <div id="tour-financeiro" className="mt-6">
               <p className="text-[12px] font-medium text-[#4A4740] mb-2">Financeiro</p>
               {orcamentos && orcamentos.length > 0 && (
-                <div className="bg-[#F5F4EF] rounded-lg overflow-hidden mb-2">
+                <div className="bg-[#F5F4EF] rounded-lg overflow-x-auto mb-2">
                   <table className="w-full text-[12px]">
                     <thead>
                       <tr className="text-left text-[#8A8578] border-b border-[#E4E1D6]">

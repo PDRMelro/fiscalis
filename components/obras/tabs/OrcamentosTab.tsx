@@ -55,6 +55,7 @@ export function OrcamentosTab({
       </div>
 
       <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-[13px]">
           <thead>
             <tr className="text-left text-[#8A8578] border-b border-[#EDEBE2]">
@@ -135,6 +136,7 @@ export function OrcamentosTab({
             )}
           </tbody>
         </table>
+        </div>
 
         <form
           action={adicionarOrcamento.bind(null, obraId)}

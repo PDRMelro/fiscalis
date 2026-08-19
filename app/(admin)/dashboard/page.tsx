@@ -75,7 +75,7 @@ export default async function DashboardPage() {
           <p className="text-[13px] font-medium text-[#4A4740] mb-3 flex items-center gap-1.5">
             <AlarmClock size={14} className="text-[#B0402F]" /> Não conformidades com prazo em atraso
           </p>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {ncsAtrasadas.slice(0, 3).map((n) => (
               <Link
                 key={n.id}
@@ -101,7 +101,7 @@ export default async function DashboardPage() {
           <p className="text-[13px] font-medium text-[#4A4740] mb-3 flex items-center gap-1.5">
             <CalendarClock size={14} className="text-[#8A4A17]" /> Lembretes — próximas visitas agendadas
           </p>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {visitasAgendadas.map((v) => (
               <Link
                 key={v.id}
@@ -125,15 +125,15 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      <div className="flex gap-4 mb-6">
+      <div className="flex flex-wrap gap-4 mb-6">
         <StatCard label="Obras ativas" value={obrasAtivas} icon={Building2} />
         <StatCard label="Visitas realizadas" value={totalVisitas ?? 0} icon={Activity} />
         <StatCard label="Não conformidades abertas" value={ncAbertas} tone="warn" icon={AlertTriangle} />
         <StatCard label="Não conformidades encerradas" value={ncEncerradas} tone="ok" icon={CheckCircle2} />
       </div>
 
-      <div className="grid grid-cols-5 gap-4 mb-6">
-        <div className="col-span-3 bg-white border border-[#E4E1D6] rounded-xl p-5">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
+        <div className="lg:col-span-3 bg-white border border-[#E4E1D6] rounded-xl p-5">
           <div className="flex items-center justify-between mb-4">
             <p className="text-[13px] font-medium text-[#4A4740]">Progresso das obras</p>
             <span className="flex items-center gap-1 text-[11px] text-[#8A8578]">
@@ -147,7 +147,7 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        <div className="col-span-2 bg-white border border-[#E4E1D6] rounded-xl p-5">
+        <div className="lg:col-span-2 bg-white border border-[#E4E1D6] rounded-xl p-5">
           <p className="text-[13px] font-medium text-[#4A4740] mb-4">Não conformidades por estado</p>
           <NcDonutChart dados={ncPorEstado} total={todasNcs.length} />
           <div className="flex justify-center gap-3 mt-1">
@@ -162,12 +162,13 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-5 gap-4">
-        <div className="col-span-3 bg-white border border-[#E4E1D6] rounded-xl p-5">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <div className="lg:col-span-3 bg-white border border-[#E4E1D6] rounded-xl p-5">
           <p className="text-[13px] font-medium text-[#4A4740] mb-4">Não conformidades recentes</p>
           {todasNcs.length === 0 ? (
             <p className="text-[13px] text-[#8A8578] py-6 text-center">Sem não conformidades registadas.</p>
           ) : (
+            <div className="overflow-x-auto">
             <table className="w-full text-[12px]">
               <thead>
                 <tr className="text-left text-[#8A8578] border-b border-[#EDEBE2]">
@@ -192,10 +193,11 @@ export default async function DashboardPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </div>
 
-        <div className="col-span-2 bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
+        <div className="lg:col-span-2 bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
           {obraDestaque ? (
             <>
               <Link

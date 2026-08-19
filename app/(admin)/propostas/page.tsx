@@ -17,40 +17,68 @@ export default async function PropostasPage() {
         {(!propostas || propostas.length === 0) ? (
           <p className="px-5 py-8 text-center text-[13px] text-[#8A8578]">Ainda sem propostas registadas.</p>
         ) : (
-          <table className="w-full text-[13px]">
-            <thead>
-              <tr className="text-left text-[#8A8578] border-b border-[#EDEBE2]">
-                <th className="px-5 py-3 font-medium">ID</th>
-                <th className="px-5 py-3 font-medium">Cliente</th>
-                <th className="px-5 py-3 font-medium">Tipo de obra</th>
-                <th className="px-5 py-3 font-medium">Local</th>
-                <th className="px-5 py-3 font-medium">Enviada</th>
-                <th className="px-5 py-3 font-medium">Estado</th>
-                <th className="px-5 py-3 font-medium" />
-              </tr>
-            </thead>
-            <tbody>
+          <>
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full text-[13px]">
+                <thead>
+                  <tr className="text-left text-[#8A8578] border-b border-[#EDEBE2]">
+                    <th className="px-5 py-3 font-medium">ID</th>
+                    <th className="px-5 py-3 font-medium">Cliente</th>
+                    <th className="px-5 py-3 font-medium">Tipo de obra</th>
+                    <th className="px-5 py-3 font-medium">Local</th>
+                    <th className="px-5 py-3 font-medium">Enviada</th>
+                    <th className="px-5 py-3 font-medium">Estado</th>
+                    <th className="px-5 py-3 font-medium" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {propostas.map((p) => (
+                    <tr key={p.id} className="border-b border-[#F2F0E8] last:border-0 group">
+                      <td className="px-5 py-3 font-mono text-[#14283A]">{p.codigo}</td>
+                      <td className="px-5 py-3 text-[#1F1D19]">{p.cliente_nome}</td>
+                      <td className="px-5 py-3 text-[#4A4740]">{p.tipo_obra}</td>
+                      <td className="px-5 py-3 text-[#4A4740]">{p.local}</td>
+                      <td className="px-5 py-3 text-[#8A8578] font-mono">{formatarData(p.enviada_em)}</td>
+                      <td className="px-5 py-3">
+                        <EstadoPropostaSelect id={p.id} estado={p.estado} />
+                      </td>
+                      <td className="px-5 py-3">
+                        <form action={eliminarProposta.bind(null, p.id)}>
+                          <button type="submit" className="text-[#B0402F] opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Trash2 size={13} />
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="md:hidden divide-y divide-[#F2F0E8]">
               {propostas.map((p) => (
-                <tr key={p.id} className="border-b border-[#F2F0E8] last:border-0 group">
-                  <td className="px-5 py-3 font-mono text-[#14283A]">{p.codigo}</td>
-                  <td className="px-5 py-3 text-[#1F1D19]">{p.cliente_nome}</td>
-                  <td className="px-5 py-3 text-[#4A4740]">{p.tipo_obra}</td>
-                  <td className="px-5 py-3 text-[#4A4740]">{p.local}</td>
-                  <td className="px-5 py-3 text-[#8A8578] font-mono">{formatarData(p.enviada_em)}</td>
-                  <td className="px-5 py-3">
-                    <EstadoPropostaSelect id={p.id} estado={p.estado} />
-                  </td>
-                  <td className="px-5 py-3">
+                <div key={p.id} className="p-4 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-mono text-[13px] text-[#14283A]">{p.codigo}</p>
+                      <p className="text-[13px] text-[#1F1D19]">{p.cliente_nome}</p>
+                    </div>
                     <form action={eliminarProposta.bind(null, p.id)}>
-                      <button type="submit" className="text-[#B0402F] opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button type="submit" className="text-[#B0402F]">
                         <Trash2 size={13} />
                       </button>
                     </form>
-                  </td>
-                </tr>
+                  </div>
+                  <p className="text-[13px] text-[#4A4740]">
+                    {p.tipo_obra} · {p.local}
+                  </p>
+                  <div className="flex items-center justify-between pt-1 border-t border-[#F2F0E8]">
+                    <span className="text-[12px] text-[#8A8578] font-mono">{formatarData(p.enviada_em)}</span>
+                    <EstadoPropostaSelect id={p.id} estado={p.estado} />
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </>
         )}
       </div>
     </>
