@@ -48,7 +48,7 @@ export default async function ObrasPage({
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="flex flex-col gap-4">
         {listaAtual.map((o) => (
           <Link
             key={o.id}

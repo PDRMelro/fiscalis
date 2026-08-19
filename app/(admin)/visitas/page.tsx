@@ -52,57 +52,10 @@ async function buscarDadosComRetry(tentativas = 3): Promise<{
   throw ultimoErro;
 }
 
-function LinhaVisita({ v, agendada, relatorioId }: { v: VisitaResumoRow; agendada: boolean; relatorioId: string | undefined }) {
-  return (
-    <tr className="border-b border-[#F2F0E8] last:border-0 group">
-      <td className="px-5 py-3 font-mono text-[#14283A]">
-        {formatarData(v.data)}
-        {agendada && v.hora && (
-          <span className="flex items-center gap-1 text-[11px] text-[#8A8578] font-mono mt-0.5">
-            <Clock size={11} /> {v.hora.slice(0, 5)}
-          </span>
-        )}
-      </td>
-      <td className="px-5 py-3 text-[#4A4740]">
-        <Link href={`/obras/${v.obra_id}`} className="hover:underline">
-          {v.obra_nome}
-        </Link>
-      </td>
-      <td className="px-5 py-3 text-[#4A4740] max-w-[260px] truncate">
-        {(agendada ? v.notas : v.especialidades) || "—"}
-      </td>
-      <td className="px-5 py-3">
-        {agendada ? (
-          <span className="text-[11px] font-medium text-[#8A4A17] bg-[#FBF0DC] border border-[#E8C98F] rounded px-1.5 py-0.5">
-            Agendada
-          </span>
-        ) : (
-          <span className="text-[11px] font-medium text-[#3E7A4D] bg-[#E9F5EC] border border-[#B9DCC2] rounded px-1.5 py-0.5">
-            Realizada
-          </span>
-        )}
-      </td>
-      <td className="px-5 py-3 text-[#8A8578]">
-        {agendada ? (
-          "—"
-        ) : (
-          <span className="flex items-center gap-1.5">
-            <Camera size={13} /> {v.fotos}
-          </span>
-        )}
-      </td>
-      <td className="px-5 py-3 text-[#8A8578]">{agendada ? "—" : v.nc_abertas}</td>
-      <td className="px-5 py-3 text-right">
-        {agendada ? <AcoesAgendada v={v} /> : <AcoesRealizada v={v} relatorioId={relatorioId} />}
-      </td>
-    </tr>
-  );
-}
-
 function CartaoVisita({ v, agendada, relatorioId }: { v: VisitaResumoRow; agendada: boolean; relatorioId: string | undefined }) {
   return (
-    <div className="p-4 space-y-2.5">
-      <div className="flex items-start justify-between gap-2">
+    <div className="bg-white border border-[#E4E1D6] rounded-xl p-4 space-y-2.5">
+      <div className="flex items-start justify-between gap-2 flex-wrap">
         <div>
           <p className="font-mono text-[13px] text-[#14283A]">{formatarData(v.data)}</p>
           {agendada && v.hora && (
@@ -133,16 +86,16 @@ function CartaoVisita({ v, agendada, relatorioId }: { v: VisitaResumoRow; agenda
           <span>{v.nc_abertas} NC aberta(s)</span>
         </div>
       )}
-      <div className="pt-1 border-t border-[#F2F0E8]">
-        {agendada ? <AcoesAgendada v={v} mobile /> : <AcoesRealizada v={v} relatorioId={relatorioId} mobile />}
+      <div className="pt-2 border-t border-[#F2F0E8]">
+        {agendada ? <AcoesAgendada v={v} /> : <AcoesRealizada v={v} relatorioId={relatorioId} />}
       </div>
     </div>
   );
 }
 
-function AcoesAgendada({ v, mobile }: { v: VisitaResumoRow; mobile?: boolean }) {
+function AcoesAgendada({ v }: { v: VisitaResumoRow }) {
   return (
-    <div className={`flex items-center gap-2 ${mobile ? "flex-wrap" : "justify-end"}`}>
+    <div className="flex items-center gap-3 flex-wrap">
       <Link
         href={`/visitas/${v.id}/completar`}
         className="text-[11px] text-[#14283A] font-medium border border-[#DEDBD2] rounded-lg px-2 py-1 hover:bg-[#F5F4EF] hover:border-[#C9A050] transition-colors"
@@ -150,11 +103,7 @@ function AcoesAgendada({ v, mobile }: { v: VisitaResumoRow; mobile?: boolean }) 
         Completar visita
       </Link>
       <form action={cancelarVisitaAgendada.bind(null, v.obra_id, v.id)}>
-        <button
-          type="submit"
-          className={`text-[#B0402F] transition-opacity ${mobile ? "" : "opacity-0 group-hover:opacity-100"}`}
-          title="Cancelar visita agendada"
-        >
+        <button type="submit" className="text-[#B0402F]" title="Cancelar visita agendada">
           <X size={14} />
         </button>
       </form>
@@ -162,17 +111,16 @@ function AcoesAgendada({ v, mobile }: { v: VisitaResumoRow; mobile?: boolean }) 
   );
 }
 
-function AcoesRealizada({ v, relatorioId, mobile }: { v: VisitaResumoRow; relatorioId: string | undefined; mobile?: boolean }) {
-  const hover = mobile ? "" : "opacity-0 group-hover:opacity-100 transition-opacity";
+function AcoesRealizada({ v, relatorioId }: { v: VisitaResumoRow; relatorioId: string | undefined }) {
   return (
-    <div className={`flex items-center gap-2 ${mobile ? "flex-wrap" : "justify-end"}`}>
-      <Link href={`/visitas/${v.id}/completar`} title="Editar visita" className={`text-[#8A8578] ${hover} hover:text-[#14283A]`}>
+    <div className="flex items-center gap-3 flex-wrap">
+      <Link href={`/visitas/${v.id}/completar`} title="Editar visita" className="text-[#8A8578] hover:text-[#14283A]">
         <Pencil size={13} />
       </Link>
       <Link
         href={`/nc/nova?visitaId=${v.id}`}
         title="Nova não conformidade nesta visita"
-        className={`text-[#8A8578] ${hover} hover:text-[#B0402F]`}
+        className="text-[#8A8578] hover:text-[#B0402F]"
       >
         <AlertTriangle size={14} />
       </Link>
@@ -190,7 +138,7 @@ function AcoesRealizada({ v, relatorioId, mobile }: { v: VisitaResumoRow; relato
             <button
               type="submit"
               title="Gerar novo PDF com as alterações mais recentes"
-              className={`text-[#8A8578] ${hover} hover:text-[#14283A]`}
+              className="text-[#8A8578] hover:text-[#14283A]"
             >
               <RefreshCw size={13} />
             </button>
@@ -214,7 +162,7 @@ function AcoesRealizada({ v, relatorioId, mobile }: { v: VisitaResumoRow; relato
           await eliminarVisita(v.obra_id, v.id);
         }}
       >
-        <button type="submit" title="Eliminar visita" className={`text-[#8A8578] ${hover} hover:text-[#B0402F]`}>
+        <button type="submit" title="Eliminar visita" className="text-[#8A8578] hover:text-[#B0402F]">
           <Trash2 size={13} />
         </button>
       </form>
@@ -223,7 +171,6 @@ function AcoesRealizada({ v, relatorioId, mobile }: { v: VisitaResumoRow; relato
 }
 
 export default async function VisitasPage() {
-  const linhas: ReactNode[] = [];
   const cartoes: ReactNode[] = [];
   let erroCarregar: string | null = null;
 
@@ -234,13 +181,6 @@ export default async function VisitasPage() {
       relatorios.filter((r) => r.visita_id).map((r) => [r.visita_id as string, r.id])
     );
 
-    linhas.push(
-      ...visitas.map((v) => {
-        const agendada = v.estado === "Agendada";
-        const relatorioId = relatorioPorVisita.get(v.id);
-        return <LinhaVisita key={v.id} v={v} agendada={agendada} relatorioId={relatorioId} />;
-      })
-    );
     cartoes.push(
       ...visitas.map((v) => {
         const agendada = v.estado === "Agendada";
@@ -282,33 +222,13 @@ export default async function VisitasPage() {
         </div>
       )}
 
-      <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
-        {linhas.length === 0 ? (
-          <p className="px-5 py-8 text-center text-[13px] text-[#8A8578]">
-            {erroCarregar ? "—" : "Ainda sem visitas registadas."}
-          </p>
-        ) : (
-          <>
-            <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-[13px]">
-                <thead>
-                  <tr className="text-left text-[#8A8578] border-b border-[#EDEBE2]">
-                    <th className="px-5 py-3 font-medium">Data</th>
-                    <th className="px-5 py-3 font-medium">Obra</th>
-                    <th className="px-5 py-3 font-medium">Notas / especialidades</th>
-                    <th className="px-5 py-3 font-medium">Estado</th>
-                    <th className="px-5 py-3 font-medium">Fotos</th>
-                    <th className="px-5 py-3 font-medium">NC abertas</th>
-                    <th className="px-5 py-3 font-medium" />
-                  </tr>
-                </thead>
-                <tbody>{linhas}</tbody>
-              </table>
-            </div>
-            <div className="md:hidden divide-y divide-[#F2F0E8]">{cartoes}</div>
-          </>
-        )}
-      </div>
+      {cartoes.length === 0 ? (
+        <div className="bg-white border border-[#E4E1D6] rounded-xl p-8 text-center text-[13px] text-[#8A8578]">
+          {erroCarregar ? "—" : "Ainda sem visitas registadas."}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">{cartoes}</div>
+      )}
     </>
   );
 }
