@@ -2,8 +2,7 @@ import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { Topbar } from "@/components/layout/Topbar";
+import { AdminShell } from "@/components/layout/AdminShell";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient();
@@ -51,15 +50,8 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     .toUpperCase();
 
   return (
-    <div
-      className="w-full min-h-screen bg-[#F5F4EF] flex text-[#1F1D19]"
-      style={{ fontFamily: "Inter, system-ui, sans-serif" }}
-    >
-      <Sidebar nome={nome} cargo="Eng.º Civil" />
-      <div className="flex-1 flex flex-col min-w-0">
-        <Topbar nome={nome} empresa="Fiscalis Engenharia" iniciais={iniciais || "AD"} alertas={alertas} />
-        <div className="flex-1 overflow-y-auto p-6">{children}</div>
-      </div>
-    </div>
+    <AdminShell nome={nome} cargo="Eng.º Civil" empresa="Fiscalis Engenharia" iniciais={iniciais || "AD"} alertas={alertas}>
+      {children}
+    </AdminShell>
   );
 }

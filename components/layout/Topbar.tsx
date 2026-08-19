@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, ChevronDown, LogOut } from "lucide-react";
+import { Bell, ChevronDown, LogOut, Menu } from "lucide-react";
 import { adminLogout } from "@/lib/actions/auth";
 import { PesquisaGlobal } from "@/components/layout/PesquisaGlobal";
 
@@ -12,19 +12,26 @@ export function Topbar({
   empresa,
   iniciais,
   alertas,
+  onAbrirMenu,
 }: {
   nome: string;
   empresa: string;
   iniciais: string;
   alertas: Alerta[];
+  onAbrirMenu: () => void;
 }) {
   const [alertasAbertos, setAlertasAbertos] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
   const temAtrasadas = alertas.some((a) => a.atrasada);
 
   return (
-    <div className="h-16 bg-white border-b border-[#E4E1D6] flex items-center justify-between px-6 shrink-0 shadow-[0_1px_3px_rgba(20,40,58,0.04)] relative z-10">
-      <PesquisaGlobal />
+    <div className="h-16 bg-white border-b border-[#E4E1D6] flex items-center justify-between gap-3 px-4 md:px-6 shrink-0 shadow-[0_1px_3px_rgba(20,40,58,0.04)] relative z-10">
+      <button type="button" onClick={onAbrirMenu} className="md:hidden text-[#4A4740] shrink-0">
+        <Menu size={20} />
+      </button>
+      <div className="hidden md:block flex-1 min-w-0">
+        <PesquisaGlobal />
+      </div>
       <div className="flex items-center gap-4">
         <div className="relative">
           <button
@@ -46,7 +53,7 @@ export function Topbar({
             )}
           </button>
           {alertasAbertos && (
-            <div className="absolute right-0 top-8 w-80 bg-white border border-[#E4E1D6] rounded-xl shadow-lg z-20 overflow-hidden">
+            <div className="absolute right-0 top-8 w-[85vw] max-w-80 bg-white border border-[#E4E1D6] rounded-xl shadow-lg z-20 overflow-hidden">
               <p className="text-[12px] font-medium text-[#4A4740] px-4 py-3 border-b border-[#EDEBE2]">
                 Prazos de não conformidades
               </p>
@@ -82,7 +89,7 @@ export function Topbar({
             <div className="w-8 h-8 rounded-full bg-[#14283A] text-white flex items-center justify-center text-[12px] font-medium">
               {iniciais}
             </div>
-            <div className="leading-tight text-left">
+            <div className="hidden sm:block leading-tight text-left">
               <p className="text-[13px] font-medium">{nome}</p>
               <p className="text-[11px] text-[#8A8578]">{empresa}</p>
             </div>
