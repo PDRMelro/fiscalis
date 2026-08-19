@@ -32,7 +32,7 @@ export function GrupoDocumentosClienteCard({
             <FolderOpen size={13} />
           </div>
           <div className="min-w-0">
-            <p className="text-[12px] font-medium text-[#14283A]">{categoria}</p>
+            <p className="text-[12px] font-medium text-[#14283A] break-words">{categoria}</p>
             <p className="text-[10px] text-[#8A8578] truncate">{resumoGrupo(docsDoGrupo)}</p>
           </div>
         </div>

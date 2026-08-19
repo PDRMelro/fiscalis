@@ -170,10 +170,13 @@ export default async function PortalHomePage() {
 
           <div id="tour-obra">
             <p className="text-[12px] text-[#C9A050] font-medium mb-1">Bem-vindo, {profile.nome.split(" ")[0]}</p>
-            <p className="text-[16px] font-semibold text-[#14283A]">{obra.nome}</p>
-            <p className="text-[12px] text-[#8A8578] flex items-center gap-1 mt-1">
-              <MapPin size={11} /> {obra.local}
-              {obra.inicio && <> · Início: {formatarData(obra.inicio)}</>}
+            <p className="text-[16px] font-semibold text-[#14283A] break-words">{obra.nome}</p>
+            <p className="text-[12px] text-[#8A8578] flex items-start gap-1 mt-1 break-words">
+              <MapPin size={11} className="shrink-0 mt-0.5" />
+              <span>
+                {obra.local}
+                {obra.inicio && <> · Início: {formatarData(obra.inicio)}</>}
+              </span>
             </p>
 
             <div className="mt-4 flex items-center gap-3">
@@ -318,8 +321,8 @@ export default async function PortalHomePage() {
                     <div key={p.id} className="flex items-center gap-2.5 px-3 py-2.5">
                       <Users size={13} className="text-[#8A8578] shrink-0" />
                       <div className="min-w-0">
-                        <p className="text-[12px] text-[#1F1D19]">{p.nome}</p>
-                        <p className="text-[11px] text-[#8A8578]">
+                        <p className="text-[12px] text-[#1F1D19] break-words">{p.nome}</p>
+                        <p className="text-[11px] text-[#8A8578] break-words">
                           {p.papel} {p.contacto && <>· {p.contacto}</>}
                           {detalhe && <> · {detalhe}</>}
                         </p>
