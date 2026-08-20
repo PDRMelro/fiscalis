@@ -1,20 +1,25 @@
 "use client";
 
+import { useActionState } from "react";
 import dynamic from "next/dynamic";
 import { Plus } from "lucide-react";
 import { ModalTrigger } from "@/components/ui/Modal";
-import { criarObra } from "@/lib/actions/obras";
+import { criarObra, type ResultadoObra } from "@/lib/actions/obras";
 
 const LocalizacaoObraPicker = dynamic(
   () => import("@/components/obras/LocalizacaoObraPicker").then((m) => m.LocalizacaoObraPicker),
   { ssr: false, loading: () => <div className="h-[220px] sm:h-[280px] rounded-lg border border-[#DEDBD2] bg-[#F5F4EF]" /> }
 );
 
+const inicial: ResultadoObra = { error: null };
+
 export function NovaObraModal() {
+  const [state, formAction, pending] = useActionState(criarObra, inicial);
+
   return (
     <ModalTrigger label="Nova obra" icon={Plus} maxWidth="max-w-xl">
       {() => (
-        <form action={criarObra} className="p-6 space-y-3">
+        <form action={formAction} className="p-6 space-y-3">
           <h2 className="text-[15px] font-semibold text-[#14283A] mb-1">Nova obra</h2>
           <div>
             <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Nome da obra</label>
@@ -63,8 +68,13 @@ export function NovaObraModal() {
               />
             </div>
           </div>
-          <button type="submit" className="w-full mt-2 py-2.5 rounded-lg bg-[#14283A] text-white text-[13px] font-medium">
-            Criar obra
+          {state.error && <p className="text-[12px] text-[#B0402F]">{state.error}</p>}
+          <button
+            type="submit"
+            disabled={pending}
+            className="w-full mt-2 py-2.5 rounded-lg bg-[#14283A] text-white text-[13px] font-medium disabled:opacity-60"
+          >
+            {pending ? "A criar..." : "Criar obra"}
           </button>
         </form>
       )}

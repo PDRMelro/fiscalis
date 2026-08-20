@@ -1,9 +1,10 @@
 "use client";
 
+import { useActionState } from "react";
 import dynamic from "next/dynamic";
 import { Pencil } from "lucide-react";
 import { ModalTrigger } from "@/components/ui/Modal";
-import { atualizarObra } from "@/lib/actions/obras";
+import { atualizarObra, type ResultadoObra } from "@/lib/actions/obras";
 import { paraInputDate } from "@/lib/format";
 import type { ObraRow } from "@/lib/supabase/types";
 
@@ -12,13 +13,16 @@ const LocalizacaoObraPicker = dynamic(
   { ssr: false, loading: () => <div className="h-[220px] sm:h-[280px] rounded-lg border border-[#DEDBD2] bg-[#F5F4EF]" /> }
 );
 
+const inicial: ResultadoObra = { error: null };
+
 export function EditarObraModal({ obra }: { obra: ObraRow }) {
   const acao = atualizarObra.bind(null, obra.id);
+  const [state, formAction, pending] = useActionState(acao, inicial);
 
   return (
     <ModalTrigger label="Editar" icon={Pencil} variant="secondary" maxWidth="max-w-xl">
       {() => (
-        <form action={acao} className="p-6 space-y-3">
+        <form action={formAction} className="p-6 space-y-3">
           <h2 className="text-[15px] font-semibold text-[#14283A] mb-1">Editar obra</h2>
 
           <div className="grid grid-cols-2 gap-3">
@@ -96,8 +100,13 @@ export function EditarObraModal({ obra }: { obra: ObraRow }) {
             </div>
           </div>
 
-          <button type="submit" className="w-full mt-2 py-2.5 rounded-lg bg-[#14283A] text-white text-[13px] font-medium">
-            Guardar alterações
+          {state.error && <p className="text-[12px] text-[#B0402F]">{state.error}</p>}
+          <button
+            type="submit"
+            disabled={pending}
+            className="w-full mt-2 py-2.5 rounded-lg bg-[#14283A] text-white text-[13px] font-medium disabled:opacity-60"
+          >
+            {pending ? "A guardar..." : "Guardar alterações"}
           </button>
         </form>
       )}

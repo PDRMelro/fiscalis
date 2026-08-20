@@ -20,7 +20,9 @@ function numOuNull(formData: FormData, key: string) {
   return Number.isFinite(n) ? n : null;
 }
 
-export async function criarObra(formData: FormData) {
+export type ResultadoObra = { error: string | null };
+
+export async function criarObra(_prev: ResultadoObra, formData: FormData): Promise<ResultadoObra> {
   const supabase = await createClient();
   const nome = str(formData, "nome");
   const cliente_nome = str(formData, "cliente_nome");
@@ -42,7 +44,7 @@ export async function criarObra(formData: FormData) {
     .select("id")
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error || !data) return { error: error?.message ?? "Não foi possível criar a obra." };
 
   revalidatePath("/obras");
   redirect(`/obras/${data.id}`);
@@ -56,7 +58,7 @@ export async function eliminarObra(obraId: string) {
   redirect("/obras");
 }
 
-export async function atualizarObra(obraId: string, formData: FormData) {
+export async function atualizarObra(obraId: string, _prev: ResultadoObra, formData: FormData): Promise<ResultadoObra> {
   const supabase = await createClient();
   const { error } = await supabase
     .from("obras")
@@ -74,8 +76,10 @@ export async function atualizarObra(obraId: string, formData: FormData) {
       termo_requerimento: str(formData, "termo_requerimento") || null,
     })
     .eq("id", obraId);
-  if (error) throw new Error(error.message);
+  if (error) return { error: error.message };
   revalidatePath(`/obras/${obraId}`);
+  revalidatePath("/obras");
+  return { error: null };
 }
 
 // --- Áreas (separador "Geral") -------------------------------------------
