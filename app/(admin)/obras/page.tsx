@@ -3,6 +3,7 @@ import { MapPin } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { NovaObraModal } from "@/components/obras/NovaObraModal";
+import { ObrasMapaCliente } from "@/components/obras/ObrasMapaCliente";
 
 export default async function ObrasPage({
   searchParams,
@@ -22,6 +23,8 @@ export default async function ObrasPage({
   return (
     <>
       <PageHeader title="Obras" subtitle="Todas as obras em fiscalização" action={<NovaObraModal />} />
+
+      <ObrasMapaCliente obras={todasObras ?? []} />
 
       <div className="flex gap-5 border-b border-[#E4E1D6] mb-5">
         <Link

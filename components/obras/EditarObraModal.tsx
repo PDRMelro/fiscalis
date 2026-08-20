@@ -1,16 +1,22 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Pencil } from "lucide-react";
 import { ModalTrigger } from "@/components/ui/Modal";
 import { atualizarObra } from "@/lib/actions/obras";
 import { paraInputDate } from "@/lib/format";
 import type { ObraRow } from "@/lib/supabase/types";
 
+const LocalizacaoObraPicker = dynamic(
+  () => import("@/components/obras/LocalizacaoObraPicker").then((m) => m.LocalizacaoObraPicker),
+  { ssr: false, loading: () => <div className="h-[220px] sm:h-[280px] rounded-lg border border-[#DEDBD2] bg-[#F5F4EF]" /> }
+);
+
 export function EditarObraModal({ obra }: { obra: ObraRow }) {
   const acao = atualizarObra.bind(null, obra.id);
 
   return (
-    <ModalTrigger label="Editar" icon={Pencil} variant="secondary">
+    <ModalTrigger label="Editar" icon={Pencil} variant="secondary" maxWidth="max-w-xl">
       {() => (
         <form action={acao} className="p-6 space-y-3">
           <h2 className="text-[15px] font-semibold text-[#14283A] mb-1">Editar obra</h2>
@@ -28,6 +34,10 @@ export function EditarObraModal({ obra }: { obra: ObraRow }) {
           <div>
             <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Localização</label>
             <input name="local" defaultValue={obra.local} required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+          </div>
+          <div>
+            <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Localização exata no mapa</label>
+            <LocalizacaoObraPicker defaultLat={obra.latitude} defaultLng={obra.longitude} />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>

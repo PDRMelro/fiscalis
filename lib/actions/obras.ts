@@ -13,6 +13,12 @@ function num(formData: FormData, key: string) {
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
 }
+function numOuNull(formData: FormData, key: string) {
+  const v = str(formData, key);
+  if (!v) return null;
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+}
 
 export async function criarObra(formData: FormData) {
   const supabase = await createClient();
@@ -30,6 +36,8 @@ export async function criarObra(formData: FormData) {
       local,
       inicio: inicio || null,
       honorario_mensal: honorario ? Number(honorario) : null,
+      latitude: numOuNull(formData, "latitude"),
+      longitude: numOuNull(formData, "longitude"),
     })
     .select("id")
     .single();
@@ -58,6 +66,8 @@ export async function atualizarObra(obraId: string, formData: FormData) {
       local: str(formData, "local"),
       inicio: str(formData, "inicio") || null,
       estado: str(formData, "estado") as EstadoObra,
+      latitude: numOuNull(formData, "latitude"),
+      longitude: numOuNull(formData, "longitude"),
       termo_descricao_obra: str(formData, "termo_descricao_obra") || null,
       termo_freguesia: str(formData, "termo_freguesia") || null,
       termo_processo: str(formData, "termo_processo") || null,

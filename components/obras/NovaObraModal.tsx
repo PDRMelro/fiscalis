@@ -1,12 +1,18 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Plus } from "lucide-react";
 import { ModalTrigger } from "@/components/ui/Modal";
 import { criarObra } from "@/lib/actions/obras";
 
+const LocalizacaoObraPicker = dynamic(
+  () => import("@/components/obras/LocalizacaoObraPicker").then((m) => m.LocalizacaoObraPicker),
+  { ssr: false, loading: () => <div className="h-[220px] sm:h-[280px] rounded-lg border border-[#DEDBD2] bg-[#F5F4EF]" /> }
+);
+
 export function NovaObraModal() {
   return (
-    <ModalTrigger label="Nova obra" icon={Plus}>
+    <ModalTrigger label="Nova obra" icon={Plus} maxWidth="max-w-xl">
       {() => (
         <form action={criarObra} className="p-6 space-y-3">
           <h2 className="text-[15px] font-semibold text-[#14283A] mb-1">Nova obra</h2>
@@ -33,6 +39,10 @@ export function NovaObraModal() {
               required
               className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] focus:outline-none focus:border-[#14283A]"
             />
+          </div>
+          <div>
+            <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Localização exata no mapa</label>
+            <LocalizacaoObraPicker />
           </div>
           <div className="flex gap-3">
             <div className="flex-1">

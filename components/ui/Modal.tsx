@@ -43,11 +43,13 @@ export function ModalTrigger({
   icon: Icon,
   children,
   variant = "primary",
+  maxWidth,
 }: {
   label: string;
   icon?: React.ComponentType<{ size?: number }>;
   children: (close: () => void) => ReactNode;
   variant?: "primary" | "secondary";
+  maxWidth?: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -63,7 +65,7 @@ export function ModalTrigger({
       >
         {Icon && <Icon size={14} />} {label}
       </button>
-      <ModalShell open={open} onClose={() => setOpen(false)}>
+      <ModalShell open={open} onClose={() => setOpen(false)} maxWidth={maxWidth}>
         {children}
       </ModalShell>
     </>
