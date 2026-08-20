@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Maximize2, X } from "lucide-react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { ObraRow } from "@/lib/supabase/types";
@@ -62,6 +62,9 @@ function MapaObras({ obras }: { obras: (ObraRow & { latitude: number; longitude:
       <AjustarAosMarcadores pontos={obras.map((o) => [o.latitude, o.longitude])} />
       {obras.map((o) => (
         <Marker key={o.id} position={[o.latitude, o.longitude]} icon={iconePorEstado(o.estado, o.codigo)}>
+          <Tooltip direction="top" offset={[0, -12]} opacity={1}>
+            {o.codigo ? `${o.codigo} — ${o.nome}` : o.nome}
+          </Tooltip>
           <Popup>
             <div style={{ fontSize: 13, lineHeight: 1.5 }}>
               <span style={{ fontFamily: "ui-monospace, monospace", color: "#8A8578" }}>{o.codigo ?? "—"}</span>
