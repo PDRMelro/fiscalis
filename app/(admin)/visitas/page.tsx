@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Plus, CalendarPlus, Camera, FileText, AlertTriangle, Clock, X, Pencil, RefreshCw, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { VerPdfButton } from "@/components/ui/VerPdfButton";
 import { formatarData } from "@/lib/format";
 import { gerarRelatorio } from "@/lib/actions/relatorios";
 import { cancelarVisitaAgendada, eliminarVisita } from "@/lib/actions/visitas";
@@ -126,9 +127,9 @@ function AcoesRealizada({ v, relatorioId }: { v: VisitaResumoRow; relatorioId: s
       </Link>
       {relatorioId ? (
         <>
-          <a href={`/api/relatorios/${relatorioId}/download`} className="text-[12px] text-[#14283A] font-medium">
+          <VerPdfButton href={`/api/relatorios/${relatorioId}/download`} className="text-[12px] text-[#14283A] font-medium">
             Ver PDF
-          </a>
+          </VerPdfButton>
           <form
             action={async () => {
               "use server";

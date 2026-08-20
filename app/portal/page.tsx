@@ -9,6 +9,7 @@ import { OrcamentoDocumentosClienteButton } from "@/components/portal/OrcamentoD
 import { CalendarioPortalCliente } from "@/components/portal/CalendarioPortalCliente";
 import { NCListaCliente } from "@/components/portal/NCListaCliente";
 import { ContaClienteModal } from "@/components/portal/ContaClienteModal";
+import { VerPdfButton } from "@/components/ui/VerPdfButton";
 import { PortalTourController } from "@/components/portal/PortalTourController";
 import type { PassoTour } from "@/components/portal/TourOnboarding";
 import { formatarData, formatarDinheiro, comIva } from "@/lib/format";
@@ -198,16 +199,22 @@ export default async function PortalHomePage() {
                   {(!relatorios || relatorios.length === 0) && (
                     <p className="text-[12px] text-[#8A8578]">Ainda sem relatórios.</p>
                   )}
-                  {relatorios?.map((r) => (
-                    <a
-                      key={r.id}
-                      href={r.storage_path ? `/api/relatorios/${r.id}/download` : undefined}
-                      className="flex items-center justify-between text-[12px] bg-[#F5F4EF] rounded-lg px-3 py-2 hover:bg-[#EDEBE2]"
-                    >
-                      <span className="text-[#1F1D19]">{formatarData(r.data)}</span>
-                      <ExternalLink size={12} className="text-[#8A8578]" />
-                    </a>
-                  ))}
+                  {relatorios?.map((r) =>
+                    r.storage_path ? (
+                      <VerPdfButton
+                        key={r.id}
+                        href={`/api/relatorios/${r.id}/download`}
+                        className="w-full flex items-center justify-between text-[12px] bg-[#F5F4EF] rounded-lg px-3 py-2 hover:bg-[#EDEBE2]"
+                      >
+                        <span className="text-[#1F1D19]">{formatarData(r.data)}</span>
+                        <ExternalLink size={12} className="text-[#8A8578]" />
+                      </VerPdfButton>
+                    ) : (
+                      <div key={r.id} className="flex items-center justify-between text-[12px] bg-[#F5F4EF] rounded-lg px-3 py-2 opacity-60">
+                        <span className="text-[#1F1D19]">{formatarData(r.data)}</span>
+                      </div>
+                    )
+                  )}
                 </div>
               </div>
 

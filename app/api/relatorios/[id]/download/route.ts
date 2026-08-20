@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
-export async function GET(_request: Request, context: RouteContext<"/api/relatorios/[id]/download">) {
+export async function GET(request: Request, context: RouteContext<"/api/relatorios/[id]/download">) {
   const { id } = await context.params;
+  const preview = new URL(request.url).searchParams.get("preview") === "1";
   const supabase = await createClient();
 
   const { data: rel } = await supabase.from("relatorios").select("storage_path, codigo").eq("id", id).single();
@@ -10,7 +11,7 @@ export async function GET(_request: Request, context: RouteContext<"/api/relator
 
   const { data, error } = await supabase.storage
     .from("relatorios")
-    .createSignedUrl(rel.storage_path, 60, { download: `${rel.codigo ?? "relatorio"}.pdf` });
+    .createSignedUrl(rel.storage_path, 60, preview ? undefined : { download: `${rel.codigo ?? "relatorio"}.pdf` });
 
   if (error || !data) return NextResponse.json({ error: "Sem acesso a este ficheiro." }, { status: 403 });
 

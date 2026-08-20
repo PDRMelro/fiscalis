@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { FileText, Loader2, MapPin, Wrench, ClipboardList, CalendarClock } from "lucide-react";
 import { ModalShell } from "@/components/ui/Modal";
+import { VerPdfButton } from "@/components/ui/VerPdfButton";
 import { EstadoDot, SeveridadeTag } from "@/components/ui/Tags";
 import { listarFotosNC, type FotoComUrl } from "@/lib/actions/nc";
 import { formatarData } from "@/lib/format";
@@ -105,12 +106,12 @@ export function NCDetalheModal({ nc, onClose }: { nc: NaoConformidadeRow; onClos
           </div>
 
           {nc.pdf_path && (
-            <a
+            <VerPdfButton
               href={`/api/nc/${nc.id}/download`}
               className="inline-flex items-center gap-1.5 text-[12px] text-[#14283A] font-medium border border-[#DEDBD2] rounded-lg px-3 py-1.5 hover:bg-[#F5F4EF] hover:border-[#C9A050] transition-colors"
             >
-              <FileText size={13} /> Descarregar Auto em PDF
-            </a>
+              <FileText size={13} /> Ver Auto em PDF
+            </VerPdfButton>
           )}
         </div>
       )}

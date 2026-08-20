@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Pencil, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { VerPdfButton } from "@/components/ui/VerPdfButton";
 import { eliminarRelatorio } from "@/lib/actions/relatorios";
 import { formatarData } from "@/lib/format";
 
@@ -44,9 +45,9 @@ export default async function RelatoriosPage() {
                       <Pencil size={13} />
                     </Link>
                   )}
-                  <a href={`/api/relatorios/${r.id}/download`} className="text-[12px] text-[#14283A] font-medium">
+                  <VerPdfButton href={`/api/relatorios/${r.id}/download`} className="text-[12px] text-[#14283A] font-medium">
                     Ver PDF
-                  </a>
+                  </VerPdfButton>
                   <form action={eliminarRelatorio.bind(null, r.id)}>
                     <button type="submit" className="text-[#B0402F]">
                       <Trash2 size={13} />
