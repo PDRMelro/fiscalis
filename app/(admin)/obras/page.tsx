@@ -61,7 +61,10 @@ export default async function ObrasPage({
             <span className="absolute -right-6 -top-6 w-20 h-20 rounded-full bg-[#F5EFDD] opacity-0 group-hover:opacity-60 transition-opacity" />
             <div className="flex items-start justify-between relative">
               <div className="min-w-0">
-                <p className="text-[14px] font-medium text-[#14283A]">{o.nome}</p>
+                <p className="text-[14px] font-medium text-[#14283A]">
+                  {o.codigo && <span className="text-[11px] font-mono text-[#8A8578] mr-1.5">{o.codigo}</span>}
+                  {o.nome}
+                </p>
                 <p className="text-[12px] text-[#8A8578] flex items-center gap-1 mt-1">
                   <MapPin size={11} /> {o.local} · {o.cliente_nome}
                 </p>

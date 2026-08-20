@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -34,11 +34,22 @@ export function LocalizacaoObraPicker({
   const [posicao, setPosicao] = useState<{ lat: number; lng: number } | null>(
     defaultLat != null && defaultLng != null ? { lat: defaultLat, lng: defaultLng } : null
   );
+  const latRef = useRef<HTMLInputElement>(null);
+  const lngRef = useRef<HTMLInputElement>(null);
+
+  // Escreve o valor diretamente no DOM (em vez de depender só do value=
+  // controlado pelo React), para garantir que o FormData apanha sempre a
+  // posição mais recente ao submeter, mesmo vindo de um componente
+  // carregado dinamicamente (next/dynamic ssr:false).
+  useEffect(() => {
+    if (latRef.current) latRef.current.value = posicao ? String(posicao.lat) : "";
+    if (lngRef.current) lngRef.current.value = posicao ? String(posicao.lng) : "";
+  }, [posicao]);
 
   return (
     <div>
-      <input type="hidden" name="latitude" value={posicao?.lat ?? ""} />
-      <input type="hidden" name="longitude" value={posicao?.lng ?? ""} />
+      <input ref={latRef} type="hidden" name="latitude" defaultValue={posicao?.lat ?? ""} />
+      <input ref={lngRef} type="hidden" name="longitude" defaultValue={posicao?.lng ?? ""} />
       <div className="rounded-lg overflow-hidden border border-[#DEDBD2] h-[220px] sm:h-[280px]">
         <MapContainer
           center={posicao ?? CENTRO_PORTUGAL}

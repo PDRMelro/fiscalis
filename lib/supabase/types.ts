@@ -43,6 +43,7 @@ export type ObraRow = {
   honorario_mensal: number | null;
   latitude: number | null;
   longitude: number | null;
+  codigo: string | null;
   codigo_acesso: string;
   termo_descricao_obra: string | null;
   termo_freguesia: string | null;

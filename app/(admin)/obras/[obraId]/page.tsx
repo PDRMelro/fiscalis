@@ -41,7 +41,7 @@ export default async function ObraDetalhePage({
         <ChevronLeft size={15} /> Voltar às obras
       </Link>
       <PageHeader
-        title={obra.nome}
+        title={obra.codigo ? `${obra.codigo} — ${obra.nome}` : obra.nome}
         subtitle={`${obra.local} · Cliente: ${obra.cliente_nome}${obra.inicio ? ` · Início: ${formatarData(obra.inicio)}` : ""}`}
         action={
           <div className="flex items-center gap-2">
