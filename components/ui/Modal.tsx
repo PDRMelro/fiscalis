@@ -27,8 +27,14 @@ export function ModalShell({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-6">
-      <div className={`bg-white rounded-xl shadow-xl w-full ${maxWidth} max-h-[85vh] overflow-y-auto relative`}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-6"
+      onClick={onClose}
+    >
+      <div
+        className={`bg-white rounded-xl shadow-xl w-full ${maxWidth} max-h-[85vh] overflow-y-auto relative`}
+        onClick={(e) => e.stopPropagation()}
+      >
         <button onClick={onClose} className="absolute right-4 top-4 text-[#8A8578] hover:text-[#14283A]">
           <X size={16} />
         </button>

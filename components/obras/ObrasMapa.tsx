@@ -122,8 +122,14 @@ export function ObrasMapa({ obras }: { obras: ObraRow[] }) {
       </div>
 
       {expandido && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-3 sm:p-6">
-          <div className="bg-white rounded-xl shadow-xl w-full h-full max-w-6xl relative overflow-hidden">
+        <div
+          className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-3 sm:p-6"
+          onClick={() => setExpandido(false)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-xl w-full h-full max-w-6xl relative overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               type="button"
               onClick={() => setExpandido(false)}
