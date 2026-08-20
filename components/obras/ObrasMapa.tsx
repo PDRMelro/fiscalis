@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { Maximize2, X } from "lucide-react";
 import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap } from "react-leaflet";
@@ -121,27 +122,29 @@ export function ObrasMapa({ obras }: { obras: ObraRow[] }) {
         </button>
       </div>
 
-      {expandido && (
-        <div
-          className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-3 sm:p-6"
-          onClick={() => setExpandido(false)}
-        >
+      {expandido &&
+        createPortal(
           <div
-            className="bg-white rounded-xl shadow-xl w-full h-full max-w-6xl relative overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[9999] bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6"
+            onClick={() => setExpandido(false)}
           >
-            <button
-              type="button"
-              onClick={() => setExpandido(false)}
-              title="Fechar"
-              className="absolute top-3 right-3 z-[1000] bg-white border border-[#DEDBD2] rounded-lg p-1.5 text-[#14283A] shadow-sm hover:border-[#C9A050]"
+            <div
+              className="bg-white rounded-xl shadow-2xl w-full h-full max-w-6xl relative overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
             >
-              <X size={16} />
-            </button>
-            <MapaObras obras={comLocalizacao} />
-          </div>
-        </div>
-      )}
+              <button
+                type="button"
+                onClick={() => setExpandido(false)}
+                title="Fechar"
+                className="absolute top-3 right-3 z-[1000] bg-white border border-[#DEDBD2] rounded-lg p-1.5 text-[#14283A] shadow-sm hover:border-[#C9A050]"
+              >
+                <X size={16} />
+              </button>
+              <MapaObras obras={comLocalizacao} />
+            </div>
+          </div>,
+          document.body
+        )}
     </>
   );
 }
