@@ -50,7 +50,7 @@ export function LocalizacaoObraPicker({
     <div>
       <input ref={latRef} type="hidden" name="latitude" defaultValue={posicao?.lat ?? ""} />
       <input ref={lngRef} type="hidden" name="longitude" defaultValue={posicao?.lng ?? ""} />
-      <div className="rounded-lg overflow-hidden border border-[#DEDBD2] h-[220px] sm:h-[280px]">
+      <div className="relative isolate rounded-lg overflow-hidden border border-[#DEDBD2] h-[220px] sm:h-[280px]">
         <MapContainer
           center={posicao ?? CENTRO_PORTUGAL}
           zoom={posicao ? 15 : 7}

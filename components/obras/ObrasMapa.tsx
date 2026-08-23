@@ -110,7 +110,7 @@ export function ObrasMapa({ obras }: { obras: ObraRow[] }) {
 
   return (
     <>
-      <div className="relative rounded-xl overflow-hidden border border-[#E4E1D6] h-[240px] sm:h-[320px] md:h-[380px] mb-4">
+      <div className="relative isolate rounded-xl overflow-hidden border border-[#E4E1D6] h-[240px] sm:h-[320px] md:h-[380px] mb-4">
         <MapaObras obras={comLocalizacao} />
         <button
           type="button"
@@ -129,7 +129,7 @@ export function ObrasMapa({ obras }: { obras: ObraRow[] }) {
             onClick={() => setExpandido(false)}
           >
             <div
-              className="bg-white rounded-xl shadow-2xl w-full h-full max-w-6xl relative overflow-hidden"
+              className="bg-white rounded-xl shadow-2xl w-full h-full max-w-6xl relative isolate overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               <button
