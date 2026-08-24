@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import Link from "next/link";
-import { LOGO_SRC, LOGO_SRC_DARK } from "@/lib/branding";
+import { LOGO_SRC } from "@/lib/branding";
 import { PlataformaTour } from "./PlataformaTour";
+import { PortalTour } from "./PortalTour";
 import "./hub.css";
 
 type Route = "hub" | "plataforma" | "servico";
@@ -113,7 +113,7 @@ export function HubView() {
                 <span className="full">Entrar ↗</span>
               </button>
               <div className={entrarOpen ? "entrar-menu is-open" : "entrar-menu"}>
-                <Link href="/portal/login" onClick={() => setEntrarOpen(false)}>
+                <a href="/portal/login" onClick={() => setEntrarOpen(false)}>
                   <span className="entrar-ico">
                     <svg viewBox="0 0 24 24" fill="none">
                       <circle cx="12" cy="8.2" r="3.3" stroke="currentColor" strokeWidth="1.7" />
@@ -121,8 +121,8 @@ export function HubView() {
                     </svg>
                   </span>
                   <span><span className="entrar-t">Sou cliente</span><span className="entrar-d">Acompanhar a minha obra</span></span>
-                </Link>
-                <Link href="/login" onClick={() => setEntrarOpen(false)}>
+                </a>
+                <a href="/login" onClick={() => setEntrarOpen(false)}>
                   <span className="entrar-ico">
                     <svg viewBox="0 0 24 24" fill="none">
                       <rect x="4.5" y="4" width="9" height="16" rx="1" stroke="currentColor" strokeWidth="1.7" />
@@ -136,7 +136,7 @@ export function HubView() {
                     </svg>
                   </span>
                   <span><span className="entrar-t">Sou uma empresa</span><span className="entrar-d">Aceder à plataforma</span></span>
-                </Link>
+                </a>
               </div>
             </div>
           </div>
@@ -202,11 +202,11 @@ export function HubView() {
                 <h1>A obra não pára.<br />Os registos <em>também não podiam.</em></h1>
                 <p className="hero-sub">Fiscalis junta visitas, não conformidades, relatórios e o próprio cliente numa só plataforma — sem perder uma fotografia, um prazo ou uma assinatura pelo caminho.</p>
                 <div className="hero-ctas">
-                  <Link className="btn btn-primary" href="/pedido?tipo=demonstracao">Pedir uma demonstração <span className="btn-arrow">→</span></Link>
+                  <a className="btn btn-primary" href="/pedido?tipo=demonstracao">Pedir uma demonstração <span className="btn-arrow">→</span></a>
                   <a className="btn btn-ghost" href="#servico">Sou dono de obra, não empresa →</a>
                 </div>
                 <p className="hero-note">Sem instalação. Sem folhas soltas. Um separador por obra.</p>
-                <Link className="hero-portal" href="/login">Já usas a Fiscalis? Entrar na plataforma ↗</Link>
+                <a className="hero-portal" href="/login">Já usas a Fiscalis? Entrar na plataforma ↗</a>
               </div>
               <div className="doc-stack" aria-hidden="true">
                 <div className="doc-card mini back">
@@ -292,7 +292,7 @@ export function HubView() {
                   <p>Mostramos-te o dashboard do engenheiro fiscal e o portal do cliente com uma obra a sério — a tua, se quiseres — para veres exatamente o que muda no dia a dia.</p>
                 </div>
                 <div className="sign-box">
-                  <Link className="btn btn-primary" href="/pedido?tipo=demonstracao">Pedir uma demonstração <span className="btn-arrow">→</span></Link>
+                  <a className="btn btn-primary" href="/pedido?tipo=demonstracao">Pedir uma demonstração <span className="btn-arrow">→</span></a>
                   <div className="sign-line"><span>PDRMELRO@GMAIL.COM</span></div>
                 </div>
               </div>
@@ -309,11 +309,11 @@ export function HubView() {
                 <h1>Entre ti e o empreiteiro, <em>alguém tem de saber</em> o que está a ver.</h1>
                 <p className="hero-sub">Sou engenheiro civil, membro da Ordem dos Engenheiros. Acompanho a tua obra com visitas regulares, registo do que é visto e um portal próprio onde vês tudo — sem teres de perguntar nada a ninguém.</p>
                 <div className="hero-ctas">
-                  <Link className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></Link>
+                  <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>
                   <a className="btn btn-ghost" href="#plataforma">Tenho uma empresa de fiscalização →</a>
                 </div>
                 <p className="hero-note">Aveiro · Porto — engenheiro civil, membro da Ordem dos Engenheiros.</p>
-                <Link className="hero-portal" href="/portal/login">Já és cliente? Aceder ao portal ↗</Link>
+                <a className="hero-portal" href="/portal/login">Já és cliente? Aceder ao portal ↗</a>
               </div>
               <div className="field-stack" aria-hidden="true">
                 <div className="field-card back">
@@ -340,40 +340,7 @@ export function HubView() {
                 <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Isto é o que vais ver</p>
                 <h2>O teu portal, com a tua obra a sério.</h2>
               </div>
-              <div className="frame-wrap reveal">
-                <div className="frame">
-                  <div className="frame-bar">
-                    <span className="frame-dot r"></span><span className="frame-dot y"></span><span className="frame-dot g"></span>
-                    <span className="frame-url">fiscalis-pied.vercel.app/portal</span>
-                  </div>
-                  <div className="mock-portal">
-                    <div className="mock-portal-head">
-                      <div className="mock-portal-brand"><img src={LOGO_SRC_DARK} alt="" /><span>FISCALIS ENGENHARIA</span></div>
-                      <span className="mock-portal-user">👤 Família Ferreira</span>
-                    </div>
-                    <div className="mock-portal-body">
-                      <p className="mock-portal-welcome">Bem-vindo, Família Ferreira</p>
-                      <p className="mock-portal-obra">Moradia — Aveiro</p>
-                      <div className="mock-progress">
-                        <div className="mock-progress-bar"><span style={{ width: "68%" }}></span></div>
-                        <span className="mock-progress-n">68%</span>
-                      </div>
-                      <div className="mock-portal-grid">
-                        <div className="mock-portal-panel">
-                          <p className="t">Relatórios disponíveis</p>
-                          <div className="mock-portal-row"><span>18 Ago 2026</span><span>↗</span></div>
-                          <div className="mock-portal-row"><span>04 Ago 2026</span><span>↗</span></div>
-                        </div>
-                        <div className="mock-portal-panel">
-                          <p className="t">Não conformidades</p>
-                          <div className="mock-portal-row"><span className="mock-dot" style={{ background: "#C4791E" }}></span><span style={{ flex: 1, marginLeft: "0.4rem" }}>Impermeabilização da cobertura</span></div>
-                          <div className="mock-portal-row"><span className="mock-dot" style={{ background: "#2C6B45" }}></span><span style={{ flex: 1, marginLeft: "0.4rem" }}>Vãos exteriores — corrigido</span></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <PortalTour />
             </div>
           </section>
 
@@ -417,7 +384,7 @@ export function HubView() {
                   <p>Conta-me em que fase está, onde é (Aveiro, Porto ou perto), e o que precisas de acompanhar — respondo com uma proposta e os próximos passos.</p>
                 </div>
                 <div className="sign-box">
-                  <Link className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></Link>
+                  <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>
                   <div className="sign-line"><span>PDRMELRO@GMAIL.COM</span></div>
                 </div>
               </div>
