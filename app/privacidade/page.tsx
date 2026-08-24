@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LOGO_SRC } from "@/lib/branding";
+import { LOGO_SRC_DARK } from "@/lib/branding";
 
 export const metadata = { title: "Política de Proteção de Dados — Fiscalis" };
 
@@ -8,7 +8,7 @@ export default function PrivacidadePage() {
     <div className="min-h-screen w-full bg-[#F5F4EF] py-10 px-6" style={{ fontFamily: "Inter, system-ui, sans-serif" }}>
       <div className="max-w-2xl mx-auto bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
         <div className="bg-[#14283A] px-6 py-6 flex items-center gap-2">
-          <img src={LOGO_SRC} alt="Fiscalis" className="h-8 w-auto" />
+          <img src={LOGO_SRC_DARK} alt="Fiscalis" className="h-8 w-auto" />
           <span className="text-white text-[14px] font-medium">Política de Proteção de Dados</span>
         </div>
 

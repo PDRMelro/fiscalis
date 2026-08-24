@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { LOGO_SRC } from "@/lib/branding";
+import { LOGO_SRC_DARK } from "@/lib/branding";
 import { adminLogin, type ActionResult } from "@/lib/actions/auth";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 
@@ -17,7 +17,7 @@ export default function AdminLoginPage() {
     >
       <div className="w-full max-w-[380px]">
         <div className="flex flex-col items-center gap-2 mb-8">
-          <img src={LOGO_SRC} alt="Fiscalis" className="h-12 w-auto" />
+          <img src={LOGO_SRC_DARK} alt="Fiscalis" className="h-12 w-auto" />
           <p className="text-white text-[15px] font-semibold tracking-wide">FISCALIS</p>
           <p className="text-[#C9A050] text-[10px] tracking-[0.15em] font-medium">ENGENHARIA</p>
         </div>

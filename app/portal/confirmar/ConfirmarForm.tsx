@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { LOGO_SRC } from "@/lib/branding";
+import { LOGO_SRC_DARK } from "@/lib/branding";
 import { clientVerifyOtp, clientResendOtp, type ActionResult } from "@/lib/actions/auth";
 
 const initialState: ActionResult = { error: null };
@@ -14,7 +14,7 @@ export function ConfirmarForm({ email }: { email: string }) {
     <div className="w-full max-w-sm">
       <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
         <div className="bg-[#14283A] px-6 py-6 flex flex-col items-center">
-          <img src={LOGO_SRC} alt="Fiscalis" className="h-10 w-auto mb-2" />
+          <img src={LOGO_SRC_DARK} alt="Fiscalis" className="h-10 w-auto mb-2" />
           <p className="text-white text-[13px] font-medium">Confirmar email</p>
         </div>
         <div className="p-6">

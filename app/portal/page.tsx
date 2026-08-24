@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { MapPin, User, ExternalLink, ShieldCheck, Users, Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
-import { LOGO_SRC } from "@/lib/branding";
+import { LOGO_SRC_DARK } from "@/lib/branding";
 import { clientLogout } from "@/lib/actions/auth";
 import { DocumentosClienteSection } from "@/components/portal/DocumentosClienteSection";
 import { OrcamentoDocumentosClienteButton } from "@/components/portal/OrcamentoDocumentosClienteButton";
@@ -132,7 +132,7 @@ export default async function PortalHomePage() {
       <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden lg:flex-1 lg:flex lg:flex-col lg:min-h-0">
         <div className="bg-[#14283A] px-4 sm:px-6 py-4 sm:py-5 flex flex-wrap items-center justify-between gap-y-2 lg:shrink-0">
           <div className="flex items-center gap-2">
-            <img src={LOGO_SRC} alt="Fiscalis" className="h-7 w-auto" />
+            <img src={LOGO_SRC_DARK} alt="Fiscalis" className="h-7 w-auto" />
             <span className="hidden sm:inline text-white text-[13px] font-medium">Fiscalis Engenharia</span>
           </div>
           <div className="flex items-center gap-3">

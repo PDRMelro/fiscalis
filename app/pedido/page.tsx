@@ -1,4 +1,4 @@
-import { LOGO_SRC } from "@/lib/branding";
+import { LOGO_SRC_DARK } from "@/lib/branding";
 import { PedidoForm } from "@/components/pedido/PedidoForm";
 
 export const metadata = { title: "Pedir contacto — Fiscalis" };
@@ -27,7 +27,7 @@ export default async function PedidoPage({
     <div className="min-h-screen w-full bg-[#F5F4EF] py-10 px-6" style={{ fontFamily: "Inter, system-ui, sans-serif" }}>
       <div className="max-w-md mx-auto bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
         <div className="bg-[#14283A] px-6 py-6 flex items-center gap-2">
-          <img src={LOGO_SRC} alt="Fiscalis" className="h-8 w-auto" />
+          <img src={LOGO_SRC_DARK} alt="Fiscalis" className="h-8 w-auto" />
           <span className="text-white text-[14px] font-medium">Fiscalis Engenharia</span>
         </div>
         <div className="p-6">

@@ -14,7 +14,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { LOGO_SRC } from "@/lib/branding";
+import { LOGO_SRC_DARK } from "@/lib/branding";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -51,7 +51,7 @@ export function Sidebar({
       >
         <div className="flex items-center justify-between gap-2 px-5 py-6 border-b border-white/[0.06]">
           <div className="flex items-center gap-2">
-            <img src={LOGO_SRC} alt="Fiscalis" className="h-8 w-auto" />
+            <img src={LOGO_SRC_DARK} alt="Fiscalis" className="h-8 w-auto" />
             <div className="leading-tight">
               <p className="text-white text-[13px] font-semibold tracking-wide">FISCALIS</p>
               <p className="text-[#C9A050] text-[9px] tracking-[0.15em] font-medium">ENGENHARIA</p>

@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
-import { LOGO_SRC } from "@/lib/branding";
+import { LOGO_SRC_DARK } from "@/lib/branding";
 import { clientSignUp, type ActionResult } from "@/lib/actions/auth";
 import { PasswordInput } from "@/components/ui/PasswordInput";
 
@@ -15,7 +15,7 @@ export default function PortalSignupPage() {
     <div className="w-full max-w-sm">
       <div className="bg-white border border-[#E4E1D6] rounded-xl overflow-hidden">
         <div className="bg-[#14283A] px-6 py-6 flex flex-col items-center">
-          <img src={LOGO_SRC} alt="Fiscalis" className="h-10 w-auto mb-2" />
+          <img src={LOGO_SRC_DARK} alt="Fiscalis" className="h-10 w-auto mb-2" />
           <p className="text-white text-[13px] font-medium">Criar conta de cliente</p>
         </div>
         <div className="p-6">
