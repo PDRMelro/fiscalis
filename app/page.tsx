@@ -1,5 +1,13 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { HubView } from "@/components/hub/HubView";
+
+export const metadata: Metadata = {
+  title: "Fiscalis — Plataforma e Serviço de Fiscalização de Obra",
+  description:
+    "Duas formas de trabalhar com a Fiscalis: a plataforma de fiscalização de obra para empresas, ou o serviço de fiscalização independente em Aveiro e Porto.",
+};
 
 export default async function RootPage() {
   // redirect() lança internamente um erro especial do Next que tem de
@@ -23,6 +31,6 @@ export default async function RootPage() {
     hasUser = false;
   }
 
-  if (!hasUser) redirect("/login");
+  if (!hasUser) return <HubView />;
   redirect(role === "client" ? "/portal" : "/dashboard");
 }

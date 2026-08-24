@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 const PORTAL_PREFIX = "/portal";
 const ADMIN_LOGIN = "/login";
 const PORTAL_PUBLIC_PATHS = ["/portal/login", "/portal/signup", "/portal/confirmar"];
-const PUBLIC_PATHS = ["/", ADMIN_LOGIN, "/privacidade"];
+const PUBLIC_PATHS = ["/", ADMIN_LOGIN, "/privacidade", "/pedido", "/hub"];
 const COOKIE_LEMBRAR = "fiscalis-lembrar";
 
 // Só verifica "há sessão válida?" aqui — não faz nenhuma query extra à tabela
