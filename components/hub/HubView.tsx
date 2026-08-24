@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { LOGO_SRC, LOGO_SRC_DARK } from "@/lib/branding";
+import { PlataformaTour } from "./PlataformaTour";
 import "./hub.css";
 
 type Route = "hub" | "plataforma" | "servico";
@@ -231,43 +232,9 @@ export function HubView() {
             <div className="wrap">
               <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
                 <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Isto é o que vais ver</p>
-                <h2>O dashboard do engenheiro fiscal, com obras a sério.</h2>
+                <h2>A plataforma em ação, do dashboard ao portal do cliente.</h2>
               </div>
-              <div className="frame-wrap reveal">
-                <div className="frame">
-                  <div className="frame-bar">
-                    <span className="frame-dot r"></span><span className="frame-dot y"></span><span className="frame-dot g"></span>
-                    <span className="frame-url">fiscalis-pied.vercel.app/dashboard</span>
-                  </div>
-                  <div className="mock-admin">
-                    <div className="mock-sb">
-                      <div className="mock-sb-brand"><img src={LOGO_SRC_DARK} alt="" /><span>FISCALIS</span></div>
-                      <div className="mock-nav-item active">Dashboard</div>
-                      <div className="mock-nav-item">Obras</div>
-                      <div className="mock-nav-item">Visitas</div>
-                      <div className="mock-nav-item">Calendário</div>
-                      <div className="mock-nav-item">Não conformidades</div>
-                      <div className="mock-nav-item">Relatórios</div>
-                      <div className="mock-nav-item">Clientes</div>
-                    </div>
-                    <div className="mock-main">
-                      <div className="mock-topbar">
-                        <span className="mock-search">🔍 Pesquisar obras, NC...</span>
-                        <span className="mock-avatar"></span>
-                      </div>
-                      <div className="mock-stats">
-                        <div className="mock-stat" style={{ "--bar": "#14283A" } as CSSProperties}><div className="n">6</div><div className="l">Obras ativas</div></div>
-                        <div className="mock-stat" style={{ "--bar": "#14283A" } as CSSProperties}><div className="n">42</div><div className="l">Visitas realizadas</div></div>
-                        <div className="mock-stat" style={{ "--bar": "#C4791E" } as CSSProperties}><div className="n">3</div><div className="l">NC abertas</div></div>
-                        <div className="mock-stat" style={{ "--bar": "#2C6B45" } as CSSProperties}><div className="n">18</div><div className="l">NC encerradas</div></div>
-                      </div>
-                      <div className="mock-obra"><div><div className="name">OBRA-004 — Moradia, Aveiro</div><div className="sub">Cliente: Família Ferreira</div></div><span className="mock-pct">68%</span></div>
-                      <div className="mock-obra"><div><div className="name">OBRA-005 — Armazém industrial, Porto</div><div className="sub">Cliente: Construções Vale Lda.</div></div><span className="mock-pct">32%</span></div>
-                      <div className="mock-obra"><div><div className="name">OBRA-006 — Remodelação, Aveiro</div><div className="sub">Cliente: João Sequeira</div></div><span className="mock-pct">91%</span></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <PlataformaTour />
             </div>
           </section>
 

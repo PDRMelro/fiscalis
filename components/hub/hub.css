@@ -213,7 +213,7 @@ body.route-hub { background: var(--bg); color: var(--text); font-family: var(--f
 .hub-page .frame-url { margin-left: 0.4rem; font-family: var(--font-mono); font-size: 0.65rem; color: #8A8578; background: #fff; border: 1px solid #E4E1D6; border-radius: 4px; padding: 0.15rem 0.6rem; }
 
 /* Admin dashboard mock */
-.hub-page .mock-admin { display: flex; min-height: 300px; font-family: var(--font-body); }
+.hub-page .mock-admin { position: relative; display: flex; min-height: 300px; font-family: var(--font-body); }
 .hub-page .mock-sb { width: 128px; background: #14283A; padding: 0.9rem 0.6rem; flex-shrink: 0; }
 .hub-page .mock-sb-brand { display: flex; align-items: center; gap: 0.35rem; color: #fff; font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em; margin-bottom: 1rem; padding-left: 0.2rem; }
 .hub-page .mock-sb-brand img { height: 16px; width: auto; }
@@ -234,7 +234,7 @@ body.route-hub { background: var(--bg); color: var(--text); font-family: var(--f
 .hub-page .mock-pct { font-family: var(--font-mono); font-size: 0.6rem; font-weight: 700; color: #14283A; background: #FBF0DC; border: 1px solid #E8C98F; border-radius: 4px; padding: 0.1rem 0.4rem; flex-shrink: 0; }
 
 /* Client portal mock */
-.hub-page .mock-portal { font-family: var(--font-body); }
+.hub-page .mock-portal { position: relative; font-family: var(--font-body); }
 .hub-page .mock-portal-head { background: #14283A; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; }
 .hub-page .mock-portal-brand { display: flex; align-items: center; gap: 0.4rem; }
 .hub-page .mock-portal-brand img { height: 16px; width: auto; }
@@ -253,6 +253,64 @@ body.route-hub { background: var(--bg); color: var(--text); font-family: var(--f
 .hub-page .mock-portal-row { display: flex; align-items: center; justify-content: space-between; background: #F5F4EF; border-radius: 6px; padding: 0.35rem 0.55rem; margin-bottom: 0.3rem; font-size: 0.6rem; color: #1F1D19; }
 .hub-page .mock-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 
+/* Visita / NC mocks (Plataforma tour) */
+.hub-page .mock-visita-title { font-size: 0.66rem; color: #14283A; font-weight: 600; }
+.hub-page .mock-visita-label { font-size: 0.58rem; color: #8A8578; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin: 0.75rem 0 0.4rem; }
+.hub-page .mock-photo-grid { display: flex; gap: 0.4rem; }
+.hub-page .mock-photo { width: 44px; height: 44px; border-radius: 6px; flex-shrink: 0; }
+.hub-page .mock-photo.p1 { background: linear-gradient(135deg, #DCE3E8, #B9C4CC); }
+.hub-page .mock-photo.p2 { background: linear-gradient(135deg, #E8DCC8, #CBB98C); }
+.hub-page .mock-photo.p3 { background: linear-gradient(135deg, #D8E0D6, #A9BCA4); }
+.hub-page .mock-photo-add { display: flex; align-items: center; justify-content: center; background: #fff; border: 1.5px dashed #C9A050; color: #C9A050; font-size: 1rem; font-weight: 700; }
+.hub-page .mock-visita-notes { font-size: 0.64rem; color: #4A4740; background: #fff; border: 1px solid #E4E1D6; border-radius: 7px; padding: 0.55rem 0.7rem; line-height: 1.5; }
+.hub-page .mock-nc-card { background: #fff; border: 1px solid #E4E1D6; border-radius: 8px; padding: 0.9rem 1rem; margin-top: 0.3rem; }
+
+/* ---------- Plataforma tour (animated screen carousel) ---------- */
+.hub-page .tour-stage { position: relative; min-height: 300px; overflow: hidden; }
+.hub-page .tour-screen { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease; pointer-events: none; }
+.hub-page .tour-screen.is-active { opacity: 1; pointer-events: auto; }
+.hub-page .tour-screen > div { height: 100%; }
+.hub-page .tour-dots { display: flex; justify-content: center; gap: 0.5rem; margin-top: 1.1rem; }
+.hub-page .tour-dot { width: 8px; height: 8px; border-radius: 50%; border: none; padding: 0; background: var(--border); cursor: pointer; transition: background 0.2s ease, transform 0.2s ease; }
+.hub-page .tour-dot.is-active { background: var(--accent-deep); transform: scale(1.35); }
+.hub-page .tour-dot:hover { background: var(--accent); }
+
+.hub-page .tour-cursor { position: absolute; width: 20px; height: 20px; transform: translate(-50%, -50%); pointer-events: none; z-index: 5; filter: drop-shadow(0 2px 4px rgba(20, 40, 58, 0.35)); animation: hubCursor 4.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.hub-page .tour-cursor svg { width: 100%; height: 100%; }
+@keyframes hubCursor {
+  0% { opacity: 0; transform: translate(calc(-50% + var(--dx0)), calc(-50% + var(--dy0))); }
+  12% { opacity: 1; }
+  46% { opacity: 1; transform: translate(-50%, -50%); }
+  54% { transform: translate(-50%, -50%) scale(0.8); }
+  62% { transform: translate(-50%, -50%) scale(1.3); }
+  70% { transform: translate(-50%, -50%) scale(1); }
+  92% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+}
+.hub-page .tour-target { animation: hubTargetPulse 4.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes hubTargetPulse {
+  0%, 50% { box-shadow: 0 0 0 0 rgba(201, 160, 80, 0); }
+  58% { box-shadow: 0 0 0 4px rgba(201, 160, 80, 0.45); }
+  70%, 100% { box-shadow: 0 0 0 0 rgba(201, 160, 80, 0); }
+}
+.hub-page .tour-fill { animation: hubCheckFill 4.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes hubCheckFill {
+  0%, 50% { background: transparent; box-shadow: 0 0 0 0 rgba(201, 160, 80, 0); }
+  58% { box-shadow: 0 0 0 4px rgba(201, 160, 80, 0.45); }
+  64%, 100% { background: var(--heading); box-shadow: 0 0 0 0 rgba(201, 160, 80, 0); }
+}
+.hub-page .tour-fill-bar { animation: hubBarFill 4.2s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes hubBarFill {
+  0%, 45% { width: 0%; }
+  100% { width: 68%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub-page .tour-cursor { display: none; }
+  .hub-page .tour-target, .hub-page .tour-fill, .hub-page .tour-fill-bar { animation: none; }
+  .hub-page .tour-fill { background: var(--heading); }
+  .hub-page .tour-fill-bar { width: 68%; }
+}
+
 @media (max-width: 640px) {
   .hub-page .mock-admin { flex-direction: column; }
   .hub-page .mock-sb { width: 100%; display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.75rem; }
@@ -261,6 +319,7 @@ body.route-hub { background: var(--bg); color: var(--text); font-family: var(--f
   .hub-page .mock-nav-item.active { display: block; }
   .hub-page .mock-stats { grid-template-columns: repeat(2, 1fr); }
   .hub-page .mock-portal-grid { grid-template-columns: 1fr; }
+  .hub-page .tour-stage { min-height: 430px; }
 }
 
 /* ---------- Footer ---------- */
