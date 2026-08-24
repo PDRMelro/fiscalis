@@ -85,13 +85,20 @@ export function HubView() {
           </a>
           <div className="switcher">
             <a href="#" data-route="hub" className={route === "hub" ? "is-active" : undefined}>
-              <span className="full">Início</span><span className="short">🏠</span>
-            </a>
-            <a href="#plataforma" data-route="plataforma" className={route === "plataforma" ? "is-active" : undefined}>
-              <span className="full">Plataforma</span>
+              <span className="full">Início</span>
+              <span className="short" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4 11.5 12 4l8 7.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M6 10v8.5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V10" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M10 19.5v-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
             </a>
             <a href="#servico" data-route="servico" className={route === "servico" ? "is-active" : undefined}>
               <span className="full">Serviço</span>
+            </a>
+            <a href="#plataforma" data-route="plataforma" className={route === "plataforma" ? "is-active" : undefined}>
+              <span className="full">Plataforma</span>
             </a>
             <div className="entrar-wrap">
               <button
@@ -145,6 +152,23 @@ export function HubView() {
             <p className="hero-sub">Sou engenheiro civil e construí uma plataforma própria para fiscalizar obras. Podes querer usar essa plataforma na tua empresa, ou querer que eu fiscalize a tua obra.</p>
           </div>
           <div className="wrap split">
+            <a className="split-card" href="#servico">
+              <div className="split-art tint-b">
+                <span className="split-badges"><span>SERVIÇO</span><span>AVEIRO · PORTO</span></span>
+                <div className="split-icon" aria-hidden="true">
+                  <svg viewBox="0 0 48 48" fill="none">
+                    <path d="M24 6 L40 12 V22 C40 32 33 39 24 42 C15 39 8 32 8 22 V12 Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                    <path d="M16.5 22.5 L21.5 27.5 L31.5 16.5" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </div>
+              </div>
+              <div className="split-body">
+                <span className="eyebrow">Para quem está a construir ou remodelar</span>
+                <h2>Contrata o serviço</h2>
+                <p>Fiscalização de obra independente, em Aveiro e Porto. Visitas regulares, registo do que é visto, e um portal onde acompanhas tudo sem teres de perguntar.</p>
+                <span className="go">Ver o serviço <span className="btn-arrow">→</span></span>
+              </div>
+            </a>
             <a className="split-card" href="#plataforma">
               <div className="split-art tint-a">
                 <span className="split-badges"><span>APP</span><span>PLATAFORMA</span></span>
@@ -163,23 +187,6 @@ export function HubView() {
                 <h2>Conhece a plataforma</h2>
                 <p>Uma ferramenta para quem fiscaliza obras — visitas, não conformidades, relatórios e um portal para o cliente, tudo num só lugar. Vê como funciona e pede uma demonstração.</p>
                 <span className="go">Ver a plataforma <span className="btn-arrow">→</span></span>
-              </div>
-            </a>
-            <a className="split-card" href="#servico">
-              <div className="split-art tint-b">
-                <span className="split-badges"><span>SERVIÇO</span><span>AVEIRO · PORTO</span></span>
-                <div className="split-icon" aria-hidden="true">
-                  <svg viewBox="0 0 48 48" fill="none">
-                    <path d="M24 6 L40 12 V22 C40 32 33 39 24 42 C15 39 8 32 8 22 V12 Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
-                    <path d="M16.5 22.5 L21.5 27.5 L31.5 16.5" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-              </div>
-              <div className="split-body">
-                <span className="eyebrow">Para quem está a construir ou remodelar</span>
-                <h2>Contrata o serviço</h2>
-                <p>Fiscalização de obra independente, em Aveiro e Porto. Visitas regulares, registo do que é visto, e um portal onde acompanhas tudo sem teres de perguntar.</p>
-                <span className="go">Ver o serviço <span className="btn-arrow">→</span></span>
               </div>
             </a>
           </div>
@@ -273,56 +280,12 @@ export function HubView() {
               </div>
               <div className="exhibit">
                 <div className="exhibit-row reveal">
-                  <div className="exhibit-cell before"><p>Fotos da visita perdidas numa conversa de WhatsApp qualquer, sem ligação à obra.</p></div>
-                  <div className="exhibit-cell after"><p>Cada visita fica com as suas fotos, notas e não conformidades ligadas para sempre.</p></div>
-                </div>
-                <div className="exhibit-row reveal">
                   <div className="exhibit-cell before"><p>Não conformidade escrita num Word qualquer, sem numeração nem controlo de prazo.</p></div>
                   <div className="exhibit-cell after"><p>Auto de não conformidade automático, no modelo oficial, com código sequencial e alerta de prazo.</p></div>
                 </div>
                 <div className="exhibit-row reveal">
                   <div className="exhibit-cell before"><p>O cliente a perguntar &ldquo;como vai a obra?&rdquo; por telefone, sem nada concreto para mostrar.</p></div>
                   <div className="exhibit-cell after"><p>Portal do cliente com progresso, relatórios e visitas sempre atualizados — sem teres de responder.</p></div>
-                </div>
-                <div className="exhibit-row reveal">
-                  <div className="exhibit-cell before"><p>Relatório escrito de véspera, copiado da última obra e corrigido à pressa.</p></div>
-                  <div className="exhibit-cell after"><p>PDF gerado num clique, com o teu logótipo, os dados certos e a tua assinatura.</p></div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="block">
-            <div className="wrap">
-              <div className="section-head reveal">
-                <p className="eyebrow">Para quem</p>
-                <h2>Duas entradas. Uma só verdade sobre a obra.</h2>
-                <p>O engenheiro fiscal regista. O cliente consulta. Nenhum dos dois precisa de perguntar ao outro onde ficou o quê.</p>
-              </div>
-              <div className="dossies">
-                <div className="dossie reveal">
-                  <p className="dossie-tag">DOSSIÊ 01</p>
-                  <h3>Para o engenheiro fiscal</h3>
-                  <ul className="feature-list">
-                    <li><span className="tag">VISITAS</span><span className="desc">Regista a visita, tira fotos direto do telemóvel e liga tudo à obra certa.</span></li>
-                    <li><span className="tag">NC</span><span className="desc">Autos de não conformidade no <b>modelo oficial</b> — classificação, verificação e assinaturas.</span></li>
-                    <li><span className="tag">RELATÓRIOS</span><span className="desc">Relatório de visita gerado automaticamente, com as fotos em anexo.</span></li>
-                    <li><span className="tag">CALENDÁRIO</span><span className="desc">Visitas agendadas e realizadas, por obra, sem folha solta nenhuma.</span></li>
-                    <li><span className="tag">FINANCEIRO</span><span className="desc">Orçamentos, autos de medição e faturação, obra a obra.</span></li>
-                    <li><span className="tag">MAPA</span><span className="desc">Todas as obras num mapa, com localização exata de cada uma.</span></li>
-                  </ul>
-                </div>
-                <div className="dossie reveal">
-                  <p className="dossie-tag">DOSSIÊ 02</p>
-                  <h3>Para o cliente</h3>
-                  <ul className="feature-list">
-                    <li><span className="tag">ACESSO</span><span className="desc">Conta própria, com código de acesso único à obra dele — <b>nada mais</b>.</span></li>
-                    <li><span className="tag">PROGRESSO</span><span className="desc">Percentagem de execução da obra, atualizada em tempo real.</span></li>
-                    <li><span className="tag">RELATÓRIOS</span><span className="desc">Todos os relatórios de visita, prontos a pré-visualizar e descarregar em PDF.</span></li>
-                    <li><span className="tag">NC</span><span className="desc">Não conformidades identificadas, com estado e fotos, sem perguntar a ninguém.</span></li>
-                    <li><span className="tag">CALENDÁRIO</span><span className="desc">Visitas agendadas e já feitas, com notas e fotos de cada uma.</span></li>
-                    <li><span className="tag">DOCUMENTOS</span><span className="desc">Ficheiros trocados num só sítio — sem corrente de email a crescer.</span></li>
-                  </ul>
                 </div>
               </div>
             </div>
@@ -344,19 +307,12 @@ export function HubView() {
 
           <section className="block">
             <div className="wrap">
-              <div className="trust-grid">
-                <div className="reveal">
-                  <p className="eyebrow">Segurança</p>
-                  <h2>Cada cliente só vê a obra dele. A sério.</h2>
-                  <p style={{ color: "var(--text-muted)", marginTop: "0.9rem", fontSize: "1.02rem" }}>Não é uma opção escondida num menu — é uma regra aplicada na própria base de dados, obra a obra, cliente a cliente.</p>
-                  <div className="trust-note">&ldquo;Só vês os dados da tua obra. O acesso é validado do lado do servidor — e não apenas escondido na interface.&rdquo;</div>
-                </div>
-                <div className="trust-facts">
-                  <div className="trust-fact reveal"><p className="label">AUTENTICAÇÃO</p><p className="value">Conta própria por pessoa, com sessão real — não uma password partilhada em PDF.</p></div>
-                  <div className="trust-fact reveal"><p className="label">ISOLAMENTO DE DADOS</p><p className="value">Cada consulta é filtrada ao nível da base de dados, não apenas escondida na interface.</p></div>
-                  <div className="trust-fact reveal"><p className="label">ACESSO POR OBRA</p><p className="value">Código de acesso único por obra — só entra quem o engenheiro fiscal decidir.</p></div>
-                </div>
+              <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
+                <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Segurança</p>
+                <h2>Cada cliente só vê a obra dele. A sério.</h2>
+                <p>Não é uma opção escondida num menu — é uma regra aplicada na própria base de dados, obra a obra, cliente a cliente.</p>
               </div>
+              <div className="trust-note reveal" style={{ maxWidth: "42rem", marginInline: "auto" }}>&ldquo;Só vês os dados da tua obra. O acesso é validado do lado do servidor — e não apenas escondido na interface.&rdquo;</div>
             </div>
           </section>
 
@@ -463,10 +419,6 @@ export function HubView() {
               </div>
               <div className="exhibit">
                 <div className="exhibit-row reveal">
-                  <div className="exhibit-cell before"><p>Não sabes se os materiais aplicados são mesmo os acordados no orçamento.</p></div>
-                  <div className="exhibit-cell after"><p>Verifico em obra, com registo fotográfico de cada visita.</p></div>
-                </div>
-                <div className="exhibit-row reveal">
                   <div className="exhibit-cell before"><p>Só percebes que há um problema estrutural quando já está tapado — e caro de corrigir.</p></div>
                   <div className="exhibit-cell after"><p>Não conformidades identificadas e registadas formalmente, com prazo de correção.</p></div>
                 </div>
@@ -474,60 +426,18 @@ export function HubView() {
                   <div className="exhibit-cell before"><p>Ligas ao empreiteiro a perguntar como vai, e ficas com a palavra dele, sem mais nada.</p></div>
                   <div className="exhibit-cell after"><p>Tens um portal próprio — progresso, relatórios e visitas, sempre atualizado.</p></div>
                 </div>
-                <div className="exhibit-row reveal">
-                  <div className="exhibit-cell before"><p>Se houver um desentendimento mais à frente, não tens nada por escrito de quem viu o quê e quando.</p></div>
-                  <div className="exhibit-cell after"><p>Cada visita gera um relatório assinado — um histórico real da tua obra.</p></div>
-                </div>
               </div>
             </div>
           </section>
 
           <section className="block">
             <div className="wrap">
-              <div className="section-head reveal">
-                <p className="eyebrow">O que inclui</p>
-                <h2>Fiscalização a sério, não uma visita de vez em quando.</h2>
+              <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
+                <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Quem sou</p>
+                <h2>Engenheiro civil, não um intermediário.</h2>
+                <p>Sou eu que visito a obra, sou eu que assino o relatório. Sem equipas rotativas, sem &ldquo;quem calhar esta semana&rdquo;. Engenheiro Civil, membro da Ordem dos Engenheiros — Aveiro e Porto.</p>
               </div>
-              <div className="dossies">
-                <div className="dossie reveal">
-                  <p className="dossie-tag">EM OBRA</p>
-                  <h3>O que faço no local</h3>
-                  <ul className="feature-list">
-                    <li><span className="tag">VISITAS</span><span className="desc">Visitas regulares à obra, com a frequência certa para a fase em que está.</span></li>
-                    <li><span className="tag">REGISTO</span><span className="desc">Fotografias e notas de cada visita, ligadas à obra para sempre.</span></li>
-                    <li><span className="tag">NC</span><span className="desc">Identificação formal de não conformidades, com prazo de correção acordado com o empreiteiro.</span></li>
-                    <li><span className="tag">VERIFICAÇÃO</span><span className="desc">Confirmo se o que foi corrigido ficou mesmo corrigido — não fico pela primeira visita.</span></li>
-                  </ul>
-                </div>
-                <div className="dossie reveal">
-                  <p className="dossie-tag">PARA TI</p>
-                  <h3>O que tens do teu lado</h3>
-                  <ul className="feature-list">
-                    <li><span className="tag">PORTAL</span><span className="desc">Acesso próprio e seguro à tua obra — progresso, relatórios e visitas, sempre disponíveis.</span></li>
-                    <li><span className="tag">RELATÓRIOS</span><span className="desc">Relatório em PDF depois de cada visita, com o meu nome e assinatura.</span></li>
-                    <li><span className="tag">CALENDÁRIO</span><span className="desc">Vês quando foram e quando serão as próximas visitas — sem teres de perguntar.</span></li>
-                    <li><span className="tag">DOCUMENTOS</span><span className="desc">Um sítio só para trocarmos ficheiros, sem se perderem em emails.</span></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="block">
-            <div className="wrap">
-              <div className="trust-grid">
-                <div className="reveal">
-                  <p className="eyebrow">Quem sou</p>
-                  <h2>Engenheiro civil, não um intermediário.</h2>
-                  <p style={{ color: "var(--text-muted)", marginTop: "0.9rem", fontSize: "1.02rem" }}>Sou eu que visito a obra, sou eu que assino o relatório. Sem equipas rotativas, sem &ldquo;quem calhar esta semana&rdquo;.</p>
-                  <div className="trust-note">&ldquo;O meu trabalho é olhar pela tua obra como se fosse a minha — e mostrar-te exatamente o que vi, sempre.&rdquo;</div>
-                </div>
-                <div className="trust-facts">
-                  <div className="trust-fact reveal"><p className="label">FORMAÇÃO</p><p className="value">Engenheiro Civil, membro da Ordem dos Engenheiros.</p></div>
-                  <div className="trust-fact reveal"><p className="label">ZONA DE ATUAÇÃO</p><p className="value">Aveiro e Porto.</p></div>
-                  <div className="trust-fact reveal"><p className="label">FERRAMENTA PRÓPRIA</p><p className="value">A única fiscalização que te dá um portal atualizado a cada visita — construí-o eu mesmo.</p></div>
-                </div>
-              </div>
+              <div className="trust-note reveal" style={{ maxWidth: "42rem", marginInline: "auto" }}>&ldquo;O meu trabalho é olhar pela tua obra como se fosse a minha — e mostrar-te exatamente o que vi, sempre.&rdquo;</div>
             </div>
           </section>
 

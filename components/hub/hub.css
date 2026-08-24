@@ -73,7 +73,15 @@ body.route-hub { background: var(--bg); color: var(--text); font-family: var(--f
 .hub-page .entrar-ico svg { width: 18px; height: 18px; }
 .hub-page .entrar-t { display: block; font-size: 0.85rem; font-weight: 700; color: var(--heading); }
 .hub-page .entrar-d { display: block; font-size: 0.72rem; color: var(--text-muted); margin-top: 0.1rem; }
-@media (max-width: 560px) { .hub-page .switcher { gap: 0.15rem; } .hub-page .switcher a, .hub-page .switcher-entrar { padding: 0.4rem 0.5rem; font-size: 0.72rem; } .hub-page .switcher a[data-route="hub"] span.full { display: none; } .hub-page .entrar-menu { right: -0.5rem; width: 14rem; } }
+.hub-page .switcher a .short { display: none; align-items: center; }
+.hub-page .switcher a .short svg { width: 17px; height: 17px; }
+@media (max-width: 560px) {
+  .hub-page .switcher { gap: 0.15rem; }
+  .hub-page .switcher a, .hub-page .switcher-entrar { padding: 0.4rem 0.5rem; font-size: 0.72rem; }
+  .hub-page .switcher a[data-route="hub"] span.full { display: none; }
+  .hub-page .switcher a[data-route="hub"] span.short { display: inline-flex; }
+  .hub-page .entrar-menu { right: -0.5rem; width: 14rem; }
+}
 
 /* ---------- View visibility ---------- */
 .hub-page .view { display: none; }
@@ -96,14 +104,9 @@ body.route-hub { background: var(--bg); color: var(--text); font-family: var(--f
 .hub-page .exhibit-row.reveal:nth-of-type(2) { transition-delay: 0.09s; }
 .hub-page .exhibit-row.reveal:nth-of-type(3) { transition-delay: 0.18s; }
 .hub-page .exhibit-row.reveal:nth-of-type(4) { transition-delay: 0.27s; }
-.hub-page .dossies .dossie.reveal:nth-of-type(1) { transition-delay: 0s; }
-.hub-page .dossies .dossie.reveal:nth-of-type(2) { transition-delay: 0.14s; }
 .hub-page .steps .step.reveal:nth-of-type(1) { transition-delay: 0s; }
 .hub-page .steps .step.reveal:nth-of-type(2) { transition-delay: 0.12s; }
 .hub-page .steps .step.reveal:nth-of-type(3) { transition-delay: 0.24s; }
-.hub-page .trust-facts .trust-fact.reveal:nth-of-type(1) { transition-delay: 0s; }
-.hub-page .trust-facts .trust-fact.reveal:nth-of-type(2) { transition-delay: 0.1s; }
-.hub-page .trust-facts .trust-fact.reveal:nth-of-type(3) { transition-delay: 0.2s; }
 
 /* ---------- Hero (shared shape, both product views) ---------- */
 .hub-page .hero { position: relative; overflow: hidden; padding-block: clamp(3rem, 8vw, 6rem) clamp(3.5rem, 8vw, 6.5rem); }
@@ -174,19 +177,6 @@ body.route-hub { background: var(--bg); color: var(--text); font-family: var(--f
 .hub-page .exhibit-cell::before { display: block; font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.12em; margin-bottom: 0.5rem; font-weight: 700; }
 @media (max-width: 720px) { .hub-page .exhibit-row { grid-template-columns: 1fr; } .hub-page .exhibit-cell.before { border-bottom: 1px solid var(--border-soft); } }
 
-/* ---------- Dossiês / cards grid ---------- */
-.hub-page .dossies { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.25rem, 3vw, 2rem); }
-@media (max-width: 820px) { .hub-page .dossies { grid-template-columns: 1fr; } }
-.hub-page .dossie { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: clamp(1.5rem, 3vw, 2.25rem); }
-.hub-page .dossie-tag { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; color: var(--text-muted); }
-.hub-page .dossie h3 { font-size: 1.35rem; margin-top: 0.5rem; margin-bottom: 1.5rem; }
-.hub-page .feature-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1.1rem; }
-.hub-page .feature-list li { display: grid; grid-template-columns: 6.5rem 1fr; gap: 1rem; align-items: baseline; }
-.hub-page .feature-list .tag { font-family: var(--font-mono); font-size: 0.66rem; color: var(--accent-deep); background: var(--surface-2); border: 1px solid var(--border-soft); padding: 0.2rem 0.4rem; border-radius: 2px; text-align: center; white-space: nowrap; justify-self: start; }
-.hub-page .feature-list .desc { font-size: 0.95rem; color: var(--text); line-height: 1.55; }
-.hub-page .feature-list .desc b { color: var(--heading); font-weight: 600; }
-@media (max-width: 480px) { .hub-page .feature-list li { grid-template-columns: 1fr; gap: 0.35rem; } }
-
 /* ---------- Steps ---------- */
 .hub-page .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
 .hub-page .step { padding: 2rem clamp(1rem, 3vw, 1.75rem); }
@@ -196,15 +186,8 @@ body.route-hub { background: var(--bg); color: var(--text); font-family: var(--f
 .hub-page .step p { color: var(--text-muted); font-size: 0.92rem; line-height: 1.55; }
 @media (max-width: 720px) { .hub-page .steps { grid-template-columns: 1fr; } .hub-page .step + .step { border-left: none; border-top: 1px solid var(--border-soft); } }
 
-/* ---------- Trust grid ---------- */
-.hub-page .trust-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: clamp(2rem, 4vw, 3.5rem); align-items: start; }
-@media (max-width: 860px) { .hub-page .trust-grid { grid-template-columns: 1fr; } }
+/* ---------- Trust note ---------- */
 .hub-page .trust-note { background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 2px; padding: 1.1rem 1.35rem; font-size: 0.95rem; color: var(--text); margin-top: 1.5rem; }
-.hub-page .trust-facts { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: var(--surface); }
-.hub-page .trust-fact { padding: 1.1rem 1.35rem; }
-.hub-page .trust-fact + .trust-fact { border-top: 1px solid var(--border-soft); }
-.hub-page .trust-fact .label { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em; color: var(--text-muted); }
-.hub-page .trust-fact .value { font-size: 1rem; margin-top: 0.35rem; color: var(--heading); }
 
 /* ---------- CTA cover sheet ---------- */
 .hub-page .cover { position: relative; overflow: hidden; background: var(--heading); color: var(--bg); border-radius: 6px; padding: clamp(2.25rem, 5vw, 3.75rem); display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 2.5rem; align-items: center; }
@@ -295,12 +278,16 @@ body.route-hub { background: var(--bg); color: var(--text); font-family: var(--f
 .hub-page .hub-hero h1 { font-size: clamp(1.6rem, 2.4vw + 1.2vh, 2.6rem); max-width: 40rem; margin-inline: auto; }
 .hub-page .hub-hero .hero-sub { max-width: 32rem; margin-inline: auto; margin-top: 0.85rem; font-size: 1rem; }
 
-/* No-scroll hub route: shell becomes a fixed-height flex column that fits in one viewport. */
-body.route-hub { height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-body.route-hub header.site { flex-shrink: 0; position: static; }
-body.route-hub main { flex: 1; min-height: 0; display: flex; }
-body.route-hub .view.is-active { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
-body.route-hub footer { display: none; }
+/* No-scroll hub route: shell becomes a fixed-height flex column that fits in one viewport.
+   Desktop only — on mobile the hub content doesn't reliably fit one screen, so it scrolls
+   like every other view instead of clipping. */
+@media (min-width: 781px) {
+  body.route-hub { height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+  body.route-hub header.site { flex-shrink: 0; position: static; }
+  body.route-hub main { flex: 1; min-height: 0; display: flex; }
+  body.route-hub .view.is-active { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+  body.route-hub footer { display: none; }
+}
 .hub-page .split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1rem, 2.5vw, 1.75rem); padding-block: clamp(0.5rem, 1.5vh, 1rem) clamp(0.75rem, 2vh, 1.5rem); max-width: 62rem; margin-inline: auto; }
 @media (max-width: 780px) { .hub-page .split { grid-template-columns: 1fr; } }
 @media (max-height: 720px) { .hub-page .split-art { display: none; } }
