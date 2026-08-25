@@ -3,12 +3,17 @@
 import { useState, useTransition } from "react";
 import { atualizarProposta } from "@/lib/actions/propostas";
 import { GerarPdfPropostaButton } from "@/components/propostas/GerarPdfPropostaButton";
-import type { FrequenciaVisitas, PropostaRow } from "@/lib/supabase/types";
+import type { FrequenciaVisitas, PropostaRow, TipoServicoProposta } from "@/lib/supabase/types";
 
 const FREQUENCIAS: { valor: FrequenciaVisitas; label: string }[] = [
   { valor: "semanal", label: "Semanal — 1 visita por semana" },
   { valor: "quinzenal", label: "Quinzenal — 1 visita a cada 15 dias" },
   { valor: "mensal", label: "Mensal — 1 visita por mês" },
+];
+
+const TIPOS_SERVICO: { valor: TipoServicoProposta; label: string }[] = [
+  { valor: "fiscalizacao", label: "Fiscalização de obra" },
+  { valor: "consultoria", label: "Consultoria de construção civil" },
 ];
 
 export function EditarPropostaForm({
@@ -21,6 +26,7 @@ export function EditarPropostaForm({
   const [pending, startTransition] = useTransition();
   const [erro, setErro] = useState<string | null>(null);
   const [guardado, setGuardado] = useState(false);
+  const [tipoServico, setTipoServico] = useState<TipoServicoProposta>(proposta.tipo_servico);
 
   function guardar(formData: FormData) {
     setErro(null);
@@ -128,47 +134,94 @@ export function EditarPropostaForm({
         </div>
 
         <div className="border-t border-[#F2F0E8] pt-4">
-          <label className="text-[12px] font-medium text-[#4A4740] block mb-2">Periodicidade das visitas</label>
-          <div className="space-y-2">
-            {FREQUENCIAS.map((f) => (
-              <label key={f.valor} className="flex items-center gap-2 text-[13px] text-[#1F1D19]">
+          <label className="text-[12px] font-medium text-[#4A4740] block mb-2">Tipo de proposta</label>
+          <div className="flex gap-4">
+            {TIPOS_SERVICO.map((t) => (
+              <label key={t.valor} className="flex items-center gap-2 text-[13px] text-[#1F1D19]">
                 <input
                   type="radio"
-                  name="frequencia_visitas"
-                  value={f.valor}
-                  defaultChecked={proposta.frequencia_visitas === f.valor}
+                  name="tipo_servico"
+                  value={t.valor}
+                  checked={tipoServico === t.valor}
+                  onChange={() => setTipoServico(t.valor)}
                   className="accent-[#14283A]"
                 />
-                {f.label}
+                {t.label}
               </label>
             ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Valor fixo anual (€)</label>
-            <input
-              name="valor_anual"
-              type="number"
-              step="0.01"
-              min="0"
-              defaultValue={proposta.valor_anual ?? ""}
-              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
-            />
+        {tipoServico === "fiscalizacao" ? (
+          <>
+            <div>
+              <label className="text-[12px] font-medium text-[#4A4740] block mb-2">Periodicidade das visitas</label>
+              <div className="space-y-2">
+                {FREQUENCIAS.map((f) => (
+                  <label key={f.valor} className="flex items-center gap-2 text-[13px] text-[#1F1D19]">
+                    <input
+                      type="radio"
+                      name="frequencia_visitas"
+                      value={f.valor}
+                      defaultChecked={proposta.frequencia_visitas === f.valor}
+                      className="accent-[#14283A]"
+                    />
+                    {f.label}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Valor fixo anual (€)</label>
+                <input
+                  name="valor_anual"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  defaultValue={proposta.valor_anual ?? ""}
+                  className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
+                />
+              </div>
+              <div>
+                <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Valor por visita extra (€)</label>
+                <input
+                  name="valor_visita_extra"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  defaultValue={proposta.valor_visita_extra ?? ""}
+                  className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="space-y-3">
+            <div>
+              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Descrição do serviço de consultoria</label>
+              <textarea
+                name="descricao_servico"
+                rows={3}
+                defaultValue={proposta.descricao_servico ?? ""}
+                placeholder="Ex: Análise e parecer técnico ao projeto de estabilidade, acompanhamento do processo de licenciamento..."
+                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
+              />
+            </div>
+            <div className="w-1/2 pr-1.5">
+              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Valor fixo do serviço (€)</label>
+              <input
+                name="valor_servico"
+                type="number"
+                step="0.01"
+                min="0"
+                defaultValue={proposta.valor_servico ?? ""}
+                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
+              />
+            </div>
           </div>
-          <div>
-            <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Valor por visita extra (€)</label>
-            <input
-              name="valor_visita_extra"
-              type="number"
-              step="0.01"
-              min="0"
-              defaultValue={proposta.valor_visita_extra ?? ""}
-              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
-            />
-          </div>
-        </div>
+        )}
 
         {erro && <p className="text-[12px] text-[#B0402F]">{erro}</p>}
         {guardado && !erro && <p className="text-[12px] text-[#2C6B45]">Alterações guardadas.</p>}

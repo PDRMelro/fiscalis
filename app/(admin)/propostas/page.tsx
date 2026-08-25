@@ -32,7 +32,12 @@ export default async function PropostasPage() {
             <div key={p.id} className="bg-white border border-[#E4E1D6] rounded-xl p-4 space-y-2">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <p className="font-mono text-[13px] text-[#14283A]">{p.codigo}</p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="font-mono text-[13px] text-[#14283A]">{p.codigo}</p>
+                    <span className="text-[10px] font-medium text-[#8A6A2E] bg-[#FBF0DC] border border-[#E8C98F] rounded px-1.5 py-0.5">
+                      {p.tipo_servico === "consultoria" ? "Consultoria" : "Fiscalização"}
+                    </span>
+                  </div>
                   <p className="text-[13px] text-[#1F1D19]">{p.cliente_nome}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">

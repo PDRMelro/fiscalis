@@ -13,6 +13,7 @@ export type EstadoNC = "Aberta" | "Em correção" | "Corrigida" | "Encerrada";
 export type ResultadoVerificacao = "Conforme" | "Não conforme";
 export type EstadoProposta = "aguarda adjudicação" | "adjudicada" | "recusada";
 export type FrequenciaVisitas = "semanal" | "quinzenal" | "mensal";
+export type TipoServicoProposta = "fiscalizacao" | "consultoria";
 export type DirecaoDocumento = "recebido" | "enviado";
 export type EstadoAuto = "Pago" | "Pendente";
 
@@ -141,9 +142,12 @@ export type PropostaRow = {
   estado: EstadoProposta;
   enviada_em: string;
   obra_id: string | null;
+  tipo_servico: TipoServicoProposta;
   frequencia_visitas: FrequenciaVisitas | null;
   valor_anual: number | null;
   valor_visita_extra: number | null;
+  valor_servico: number | null;
+  descricao_servico: string | null;
   pdf_path: string | null;
   created_at: string;
   updated_at: string;

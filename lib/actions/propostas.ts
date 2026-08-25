@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { gerarPdfPropostaServico } from "@/lib/pdf/propostaServico";
 import { copiarParaDocumentosEnviados } from "@/lib/actions/documentos";
-import type { EstadoProposta, FrequenciaVisitas } from "@/lib/supabase/types";
+import type { EstadoProposta, FrequenciaVisitas, TipoServicoProposta } from "@/lib/supabase/types";
 
 export type ResultadoAcao = { error: string | null };
 
@@ -17,9 +17,12 @@ export async function criarProposta(formData: FormData) {
   if (!cliente_nome || !local || !tipo_obra) throw new Error("Preenche todos os campos.");
 
   const obraIdRaw = String(formData.get("obra_id") ?? "");
+  const tipoServicoRaw = String(formData.get("tipo_servico") ?? "fiscalizacao") as TipoServicoProposta;
   const frequenciaRaw = String(formData.get("frequencia_visitas") ?? "");
   const valorAnualRaw = String(formData.get("valor_anual") ?? "");
   const valorExtraRaw = String(formData.get("valor_visita_extra") ?? "");
+  const valorServicoRaw = String(formData.get("valor_servico") ?? "");
+  const descricao_servico = String(formData.get("descricao_servico") ?? "").trim();
   const cliente_nif = String(formData.get("cliente_nif") ?? "").trim();
   const cliente_morada_fiscal = String(formData.get("cliente_morada_fiscal") ?? "").trim();
 
@@ -31,9 +34,12 @@ export async function criarProposta(formData: FormData) {
     tipo_obra,
     enviada_em: String(formData.get("enviada_em") ?? "") || undefined,
     obra_id: obraIdRaw || null,
+    tipo_servico: tipoServicoRaw,
     frequencia_visitas: (frequenciaRaw || null) as FrequenciaVisitas | null,
     valor_anual: valorAnualRaw ? Number(valorAnualRaw) : null,
     valor_visita_extra: valorExtraRaw ? Number(valorExtraRaw) : null,
+    valor_servico: valorServicoRaw ? Number(valorServicoRaw) : null,
+    descricao_servico: descricao_servico || null,
   });
   if (error) throw new Error(error.message);
   revalidatePath("/propostas");
@@ -63,9 +69,12 @@ export async function atualizarProposta(id: string, formData: FormData): Promise
     if (!cliente_nome || !local || !tipo_obra) return { error: "Preenche cliente, local e tipo de obra." };
 
     const obraIdRaw = String(formData.get("obra_id") ?? "");
+    const tipoServicoRaw = String(formData.get("tipo_servico") ?? "fiscalizacao") as TipoServicoProposta;
     const frequenciaRaw = String(formData.get("frequencia_visitas") ?? "");
     const valorAnualRaw = String(formData.get("valor_anual") ?? "");
     const valorExtraRaw = String(formData.get("valor_visita_extra") ?? "");
+    const valorServicoRaw = String(formData.get("valor_servico") ?? "");
+    const descricao_servico = String(formData.get("descricao_servico") ?? "").trim();
     const cliente_nif = String(formData.get("cliente_nif") ?? "").trim();
     const cliente_morada_fiscal = String(formData.get("cliente_morada_fiscal") ?? "").trim();
 
@@ -79,9 +88,12 @@ export async function atualizarProposta(id: string, formData: FormData): Promise
         tipo_obra,
         enviada_em: String(formData.get("enviada_em") ?? "") || undefined,
         obra_id: obraIdRaw || null,
+        tipo_servico: tipoServicoRaw,
         frequencia_visitas: (frequenciaRaw || null) as FrequenciaVisitas | null,
         valor_anual: valorAnualRaw ? Number(valorAnualRaw) : null,
         valor_visita_extra: valorExtraRaw ? Number(valorExtraRaw) : null,
+        valor_servico: valorServicoRaw ? Number(valorServicoRaw) : null,
+        descricao_servico: descricao_servico || null,
       })
       .eq("id", id);
     if (error) return { error: error.message };
@@ -106,8 +118,17 @@ export async function gerarPdfProposta(propostaId: string, enviarCliente: boolea
       .single();
     if (propostaError || !proposta) return { error: "Proposta não encontrada." };
 
-    if (!proposta.frequencia_visitas || proposta.valor_anual === null || proposta.valor_visita_extra === null) {
-      return { error: "Preenche a frequência de visitas e os valores antes de gerar o PDF." };
+    if (
+      proposta.tipo_servico === "consultoria"
+        ? proposta.valor_servico === null
+        : !proposta.frequencia_visitas || proposta.valor_anual === null || proposta.valor_visita_extra === null
+    ) {
+      return {
+        error:
+          proposta.tipo_servico === "consultoria"
+            ? "Preenche o valor do serviço antes de gerar o PDF."
+            : "Preenche a frequência de visitas e os valores antes de gerar o PDF.",
+      };
     }
     if (enviarCliente && !proposta.obra_id) {
       return { error: "Associa esta proposta a uma obra para a poderes enviar ao cliente." };

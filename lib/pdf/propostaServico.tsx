@@ -82,6 +82,17 @@ const FREQUENCIA_LABEL: Record<string, string> = {
   mensal: "Mensal — 1 visita por mês",
 };
 
+const SUBTITULO_TIPO: Record<string, string> = {
+  fiscalizacao: "FISCALIZAÇÃO DE OBRA",
+  consultoria: "CONSULTORIA DE CONSTRUÇÃO CIVIL",
+};
+
+const OBJETO_FISCALIZACAO =
+  "Prestação de serviços de fiscalização de obra, incluindo visitas periódicas ao local, registo fotográfico " +
+  "e escrito de cada visita, identificação e acompanhamento de não conformidades até à sua correção, emissão " +
+  "de relatório de visita, e acesso a um portal próprio onde o cliente acompanha em permanência o progresso, " +
+  "os relatórios e as não conformidades da sua obra.";
+
 function formatarEuro(valor: number | null) {
   if (valor === null) return "—";
   return valor.toLocaleString("pt-PT", { style: "currency", currency: "EUR" });
@@ -101,7 +112,7 @@ export function PropostaServicoDoc({ proposta, perfil }: { proposta: PropostaRow
           <Image src={LOGO_SRC} style={styles.logo} />
           <View style={styles.tituloBox}>
             <Text style={styles.titulo}>PROPOSTA DE SERVIÇO</Text>
-            <Text style={styles.subtitulo}>FISCALIZAÇÃO DE OBRA</Text>
+            <Text style={styles.subtitulo}>{SUBTITULO_TIPO[proposta.tipo_servico]}</Text>
             {proposta.codigo && <Text style={styles.codigo}>{proposta.codigo}</Text>}
           </View>
         </View>
@@ -146,35 +157,50 @@ export function PropostaServicoDoc({ proposta, perfil }: { proposta: PropostaRow
 
         <Text style={styles.seccao}>3. Objeto da proposta</Text>
         <Text style={styles.texto}>
-          Prestação de serviços de fiscalização de obra, incluindo visitas periódicas ao local, registo fotográfico
-          e escrito de cada visita, identificação e acompanhamento de não conformidades até à sua correção, emissão
-          de relatório de visita, e acesso a um portal próprio onde o cliente acompanha em permanência o progresso,
-          os relatórios e as não conformidades da sua obra.
+          {proposta.tipo_servico === "consultoria"
+            ? proposta.descricao_servico || "Prestação de serviços de consultoria de construção civil."
+            : OBJETO_FISCALIZACAO}
         </Text>
 
         <Text style={styles.seccao}>4. Condições comerciais</Text>
-        <View style={styles.precoBox}>
-          <View style={styles.precoLinha}>
-            <View>
-              <Text style={styles.precoLabel}>Periodicidade das visitas</Text>
-              <Text style={styles.precoFrequencia}>
-                {proposta.frequencia_visitas ? FREQUENCIA_LABEL[proposta.frequencia_visitas] : "—"}
-              </Text>
-            </View>
-            <View style={{ alignItems: "flex-end" }}>
-              <Text style={styles.precoLabel}>Valor fixo anual</Text>
-              <Text style={styles.precoValor}>{formatarEuro(proposta.valor_anual)}</Text>
-              <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
-            </View>
-          </View>
-          <View style={styles.precoExtra}>
-            <Text style={styles.precoExtraTexto}>Valor por cada visita adicional, fora da periodicidade acima</Text>
-            <View style={{ alignItems: "flex-end" }}>
-              <Text style={styles.precoExtraValor}>{formatarEuro(proposta.valor_visita_extra)}</Text>
-              <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
+        {proposta.tipo_servico === "consultoria" ? (
+          <View style={styles.precoBox}>
+            <View style={styles.precoLinha}>
+              <View>
+                <Text style={styles.precoLabel}>Serviço</Text>
+                <Text style={styles.precoFrequencia}>Consultoria de construção civil</Text>
+              </View>
+              <View style={{ alignItems: "flex-end" }}>
+                <Text style={styles.precoLabel}>Valor do serviço</Text>
+                <Text style={styles.precoValor}>{formatarEuro(proposta.valor_servico)}</Text>
+                <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
+              </View>
             </View>
           </View>
-        </View>
+        ) : (
+          <View style={styles.precoBox}>
+            <View style={styles.precoLinha}>
+              <View>
+                <Text style={styles.precoLabel}>Periodicidade das visitas</Text>
+                <Text style={styles.precoFrequencia}>
+                  {proposta.frequencia_visitas ? FREQUENCIA_LABEL[proposta.frequencia_visitas] : "—"}
+                </Text>
+              </View>
+              <View style={{ alignItems: "flex-end" }}>
+                <Text style={styles.precoLabel}>Valor fixo anual</Text>
+                <Text style={styles.precoValor}>{formatarEuro(proposta.valor_anual)}</Text>
+                <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
+              </View>
+            </View>
+            <View style={styles.precoExtra}>
+              <Text style={styles.precoExtraTexto}>Valor por cada visita adicional, fora da periodicidade acima</Text>
+              <View style={{ alignItems: "flex-end" }}>
+                <Text style={styles.precoExtraValor}>{formatarEuro(proposta.valor_visita_extra)}</Text>
+                <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
+              </View>
+            </View>
+          </View>
+        )}
 
         <Text style={styles.seccao}>5. Validade</Text>
         <Text style={styles.texto}>
