@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { LOGO_SRC } from "@/lib/branding";
+import { WHATSAPP_NUMBER } from "@/lib/contact";
 import { PlataformaTour } from "./PlataformaTour";
 import { PortalTour } from "./PortalTour";
 import "./hub.css";
@@ -385,6 +386,21 @@ export function HubView() {
                 </div>
                 <div className="sign-box">
                   <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>
+                  {WHATSAPP_NUMBER && (
+                    <a
+                      className="btn btn-whatsapp"
+                      href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+                        "Olá! Vim do site da Fiscalis e gostava de falar sobre a fiscalização da minha obra."
+                      )}`}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true">
+                        <path d="M12.04 2.1C6.58 2.1 2.15 6.53 2.15 11.99c0 1.83.48 3.55 1.4 5.06L2 22l5.1-1.5a9.86 9.86 0 0 0 4.94 1.32h.01c5.46 0 9.9-4.43 9.9-9.9 0-2.64-1.03-5.13-2.9-6.99a9.83 9.83 0 0 0-6.99-2.9Zm5.8 14.16c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.12.12-1.8-.11-.42-.14-.95-.31-1.63-.6-2.88-1.24-4.76-4.13-4.9-4.32-.14-.2-1.17-1.56-1.17-2.97s.74-2.11 1-2.4c.27-.28.58-.35.77-.35.19 0 .38 0 .55.01.18.01.41-.07.64.49.24.58.81 2 .88 2.15.07.15.12.32.02.52-.09.2-.14.32-.28.49-.15.18-.3.39-.43.52-.14.14-.29.29-.13.57.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.44.29.15.46.13.63-.07.17-.2.71-.83.9-1.12.19-.28.38-.23.63-.13.26.1 1.63.77 1.91.9.29.15.48.22.55.34.07.12.07.68-.17 1.36Z" />
+                      </svg>
+                      Falar no WhatsApp
+                    </a>
+                  )}
                   <div className="sign-line"><span>PDRMELRO@GMAIL.COM</span></div>
                 </div>
               </div>

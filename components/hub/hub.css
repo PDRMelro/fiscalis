@@ -201,6 +201,8 @@ body.route-hub { background: var(--bg); color: var(--text); font-family: var(--f
 .hub-page .sign-box { border: 1px solid color-mix(in srgb, var(--bg) 28%, transparent); border-radius: 4px; padding: 1.5rem; }
 .hub-page .sign-box .btn-primary { background: var(--accent); color: var(--accent-contrast); width: 100%; justify-content: center; }
 .hub-page .sign-box .btn-primary:hover { box-shadow: 0 10px 24px rgba(0,0,0,0.35); }
+.hub-page .btn-whatsapp { background: #25D366; color: #0B3D22; width: 100%; justify-content: center; margin-top: 0.6rem; }
+.hub-page .btn-whatsapp:hover { box-shadow: 0 10px 24px rgba(0,0,0,0.35); }
 .hub-page .sign-line { border-top: 1px solid color-mix(in srgb, var(--bg) 30%, transparent); margin-top: 1.4rem; padding-top: 0.7rem; }
 .hub-page .sign-line span { font-family: var(--font-mono); font-size: 0.7rem; color: color-mix(in srgb, var(--bg) 60%, transparent); }
 
