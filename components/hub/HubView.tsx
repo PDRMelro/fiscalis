@@ -167,7 +167,7 @@ export function HubView() {
               <div className="split-body">
                 <span className="eyebrow">Para quem está a construir ou remodelar</span>
                 <h2>Contrata o serviço</h2>
-                <p>Fiscalização de obra independente, em Aveiro e Porto. Visitas regulares, registo do que é visto, e um portal onde acompanhas tudo sem teres de perguntar.</p>
+                <p>Fiscalização de obra independente, em Aveiro e Porto — ou uma consultoria pontual, se só precisares de um parecer técnico. Visitas regulares, registo do que é visto, e um portal onde acompanhas tudo sem teres de perguntar.</p>
                 <span className="go">Ver o serviço <span className="btn-arrow">→</span></span>
               </div>
             </a>
