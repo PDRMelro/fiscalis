@@ -10,11 +10,18 @@ import { formatarData } from "@/lib/format";
 
 export default async function PropostasPage() {
   const supabase = await createClient();
-  const { data: propostas } = await supabase.from("propostas").select("*").order("created_at", { ascending: false });
+  const [{ data: propostas }, { data: obras }] = await Promise.all([
+    supabase.from("propostas").select("*").order("created_at", { ascending: false }),
+    supabase.from("obras").select("id, nome").order("nome"),
+  ]);
 
   return (
     <>
-      <PageHeader title="Propostas" subtitle="Pedidos de cliente e propostas enviadas" action={<NovaPropostaModal />} />
+      <PageHeader
+        title="Propostas"
+        subtitle="Pedidos de cliente e propostas enviadas"
+        action={<NovaPropostaModal obras={obras ?? []} />}
+      />
       {(!propostas || propostas.length === 0) ? (
         <div className="bg-white border border-[#E4E1D6] rounded-xl p-8 text-center text-[13px] text-[#8A8578]">
           Ainda sem propostas registadas.

@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   },
   precoExtraTexto: { fontSize: 9, color: "#1F1D19" },
   precoExtraValor: { fontSize: 11, fontFamily: "Helvetica-Bold", color: NAVY },
-  precoNota: { fontSize: 7, color: GRAY, marginTop: 8 },
+  precoIva: { fontSize: 7, color: GRAY, marginTop: 2 },
 
   assinaturas: { flexDirection: "row", gap: 12, marginTop: 22 },
   assinatura: {
@@ -150,13 +150,16 @@ export function PropostaServicoDoc({ proposta, perfil }: { proposta: PropostaRow
             <View style={{ alignItems: "flex-end" }}>
               <Text style={styles.precoLabel}>Valor fixo anual</Text>
               <Text style={styles.precoValor}>{formatarEuro(proposta.valor_anual)}</Text>
+              <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
             </View>
           </View>
           <View style={styles.precoExtra}>
             <Text style={styles.precoExtraTexto}>Valor por cada visita adicional, fora da periodicidade acima</Text>
-            <Text style={styles.precoExtraValor}>{formatarEuro(proposta.valor_visita_extra)}</Text>
+            <View style={{ alignItems: "flex-end" }}>
+              <Text style={styles.precoExtraValor}>{formatarEuro(proposta.valor_visita_extra)}</Text>
+              <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
+            </View>
           </View>
-          <Text style={styles.precoNota}>Valores acrescem de IVA à taxa legal em vigor.</Text>
         </View>
 
         <Text style={styles.seccao}>4. Validade</Text>

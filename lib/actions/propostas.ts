@@ -16,11 +16,20 @@ export async function criarProposta(formData: FormData) {
   const tipo_obra = String(formData.get("tipo_obra") ?? "").trim();
   if (!cliente_nome || !local || !tipo_obra) throw new Error("Preenche todos os campos.");
 
+  const obraIdRaw = String(formData.get("obra_id") ?? "");
+  const frequenciaRaw = String(formData.get("frequencia_visitas") ?? "");
+  const valorAnualRaw = String(formData.get("valor_anual") ?? "");
+  const valorExtraRaw = String(formData.get("valor_visita_extra") ?? "");
+
   const { error } = await supabase.from("propostas").insert({
     cliente_nome,
     local,
     tipo_obra,
     enviada_em: String(formData.get("enviada_em") ?? "") || undefined,
+    obra_id: obraIdRaw || null,
+    frequencia_visitas: (frequenciaRaw || null) as FrequenciaVisitas | null,
+    valor_anual: valorAnualRaw ? Number(valorAnualRaw) : null,
+    valor_visita_extra: valorExtraRaw ? Number(valorExtraRaw) : null,
   });
   if (error) throw new Error(error.message);
   revalidatePath("/propostas");
