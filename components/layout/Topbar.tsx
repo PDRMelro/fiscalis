@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bell, ChevronDown, LogOut, Menu } from "lucide-react";
 import { adminLogout } from "@/lib/actions/auth";
 import { PesquisaGlobal } from "@/components/layout/PesquisaGlobal";
@@ -23,6 +23,31 @@ export function Topbar({
   const [alertasAbertos, setAlertasAbertos] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
   const temAtrasadas = alertas.some((a) => a.atrasada);
+  const alertasRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!alertasAbertos && !menuAberto) return;
+
+    function aoClicarFora(e: MouseEvent) {
+      const alvo = e.target as Node;
+      if (alertasAbertos && !alertasRef.current?.contains(alvo)) setAlertasAbertos(false);
+      if (menuAberto && !menuRef.current?.contains(alvo)) setMenuAberto(false);
+    }
+    function aoPremirEscape(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setAlertasAbertos(false);
+        setMenuAberto(false);
+      }
+    }
+
+    document.addEventListener("mousedown", aoClicarFora);
+    document.addEventListener("keydown", aoPremirEscape);
+    return () => {
+      document.removeEventListener("mousedown", aoClicarFora);
+      document.removeEventListener("keydown", aoPremirEscape);
+    };
+  }, [alertasAbertos, menuAberto]);
 
   return (
     <div className="h-16 bg-white border-b border-[#E4E1D6] flex items-center justify-between gap-3 px-4 md:px-6 shrink-0 shadow-[0_1px_3px_rgba(20,40,58,0.04)] relative z-10">
@@ -33,7 +58,7 @@ export function Topbar({
         <PesquisaGlobal />
       </div>
       <div className="flex items-center gap-4">
-        <div className="relative">
+        <div className="relative" ref={alertasRef}>
           <button
             onClick={() => {
               setAlertasAbertos((v) => !v);
@@ -78,7 +103,7 @@ export function Topbar({
             </div>
           )}
         </div>
-        <div className="relative">
+        <div className="relative" ref={menuRef}>
           <button
             className="flex items-center gap-2"
             onClick={() => {
