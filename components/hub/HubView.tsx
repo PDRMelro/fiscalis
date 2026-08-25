@@ -313,7 +313,7 @@ export function HubView() {
                   <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>
                   <a className="btn btn-ghost" href="#plataforma">Tenho uma empresa de fiscalização →</a>
                 </div>
-                <p className="hero-note">Aveiro · Porto — engenheiro civil, membro da Ordem dos Engenheiros.</p>
+                <p className="hero-note">Aveiro · Porto — engenheiro civil, membro da Ordem dos Engenheiros. Faço também consultoria de construção civil, para quem só precisa de um parecer técnico pontual.</p>
                 <a className="hero-portal" href="/portal/login">Já és cliente? Aceder ao portal ↗</a>
               </div>
               <div className="field-stack" aria-hidden="true">
