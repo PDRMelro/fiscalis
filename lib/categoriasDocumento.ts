@@ -8,6 +8,7 @@ export const CATEGORIAS_ENVIADO_DOC = [
   "Não conformidades",
   "Relatórios",
   "Faturas",
+  "Outros documentos",
 ] as const;
 
 export type CategoriaEnviadoDoc = (typeof CATEGORIAS_ENVIADO_DOC)[number];

@@ -1,8 +1,10 @@
-import { Trash2 } from "lucide-react";
+import Link from "next/link";
+import { Pencil, Trash2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { NovaPropostaModal } from "@/components/propostas/NovaPropostaModal";
 import { EstadoPropostaSelect } from "@/components/propostas/EstadoPropostaSelect";
+import { GerarPdfPropostaButton } from "@/components/propostas/GerarPdfPropostaButton";
 import { eliminarProposta } from "@/lib/actions/propostas";
 import { formatarData } from "@/lib/format";
 
@@ -26,18 +28,26 @@ export default async function PropostasPage() {
                   <p className="font-mono text-[13px] text-[#14283A]">{p.codigo}</p>
                   <p className="text-[13px] text-[#1F1D19]">{p.cliente_nome}</p>
                 </div>
-                <form action={eliminarProposta.bind(null, p.id)}>
-                  <button type="submit" className="text-[#B0402F]">
-                    <Trash2 size={13} />
-                  </button>
-                </form>
+                <div className="flex items-center gap-2 shrink-0">
+                  <Link href={`/propostas/${p.id}/editar`} className="text-[#8A8578] hover:text-[#14283A]">
+                    <Pencil size={13} />
+                  </Link>
+                  <form action={eliminarProposta.bind(null, p.id)}>
+                    <button type="submit" className="text-[#B0402F]">
+                      <Trash2 size={13} />
+                    </button>
+                  </form>
+                </div>
               </div>
               <p className="text-[13px] text-[#4A4740]">
                 {p.tipo_obra} · {p.local}
               </p>
               <div className="flex items-center justify-between pt-2 border-t border-[#F2F0E8]">
                 <span className="text-[12px] text-[#8A8578] font-mono">{formatarData(p.enviada_em)}</span>
-                <EstadoPropostaSelect id={p.id} estado={p.estado} />
+                <div className="flex items-center gap-2">
+                  <EstadoPropostaSelect id={p.id} estado={p.estado} />
+                  <GerarPdfPropostaButton propostaId={p.id} pdfPath={p.pdf_path} temObra={!!p.obra_id} />
+                </div>
               </div>
             </div>
           ))}

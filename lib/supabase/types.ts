@@ -12,6 +12,7 @@ export type Severidade = "Crítica" | "Maior" | "Menor";
 export type EstadoNC = "Aberta" | "Em correção" | "Corrigida" | "Encerrada";
 export type ResultadoVerificacao = "Conforme" | "Não conforme";
 export type EstadoProposta = "aguarda adjudicação" | "adjudicada" | "recusada";
+export type FrequenciaVisitas = "semanal" | "quinzenal" | "mensal";
 export type DirecaoDocumento = "recebido" | "enviado";
 export type EstadoAuto = "Pago" | "Pendente";
 
@@ -137,6 +138,11 @@ export type PropostaRow = {
   tipo_obra: string;
   estado: EstadoProposta;
   enviada_em: string;
+  obra_id: string | null;
+  frequencia_visitas: FrequenciaVisitas | null;
+  valor_anual: number | null;
+  valor_visita_extra: number | null;
+  pdf_path: string | null;
   created_at: string;
   updated_at: string;
 };

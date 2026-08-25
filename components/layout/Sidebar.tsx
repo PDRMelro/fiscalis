@@ -21,9 +21,9 @@ const NAV = [
   { href: "/obras", label: "Obras", icon: Building2 },
   { href: "/visitas", label: "Visitas", icon: ClipboardList },
   { href: "/calendario", label: "Calendário", icon: CalendarDays },
-  { href: "/propostas", label: "Propostas", icon: Send },
   { href: "/nc", label: "Não conformidades", icon: AlertTriangle },
   { href: "/relatorios", label: "Relatórios", icon: FileText },
+  { href: "/propostas", label: "Propostas", icon: Send },
   { href: "/clientes", label: "Clientes", icon: Users },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
