@@ -35,7 +35,7 @@ export async function enviarPedido(_prev: ResultadoPedido, formData: FormData): 
 
     await transporter.sendMail({
       from: `"Fiscalis — Site" <${gmailUser}>`,
-      to: gmailUser,
+      to: "geral@fiscalis-engenharia.pt",
       replyTo: email,
       subject: `${assunto} — ${nome}`,
       text: [
@@ -52,6 +52,6 @@ export async function enviarPedido(_prev: ResultadoPedido, formData: FormData): 
     return { error: null };
   } catch (err) {
     console.error("enviarPedido falhou", err);
-    return { error: "Não foi possível enviar o pedido agora. Tenta outra vez ou escreve diretamente para pdrmelro@gmail.com." };
+    return { error: "Não foi possível enviar o pedido agora. Tenta outra vez ou escreve diretamente para geral@fiscalis-engenharia.pt." };
   }
 }
