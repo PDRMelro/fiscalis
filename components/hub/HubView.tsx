@@ -294,7 +294,7 @@ export function HubView() {
                 </div>
                 <div className="sign-box">
                   <a className="btn btn-primary" href="/pedido?tipo=demonstracao">Pedir uma demonstração <span className="btn-arrow">→</span></a>
-                  <div className="sign-line"><span>PDRMELRO@GMAIL.COM</span></div>
+                  <div className="sign-line"><span>GERAL@FISCALIS-ENGENHARIA.PT</span></div>
                 </div>
               </div>
             </div>
@@ -401,7 +401,7 @@ export function HubView() {
                       Falar no WhatsApp
                     </a>
                   )}
-                  <div className="sign-line"><span>PDRMELRO@GMAIL.COM</span></div>
+                  <div className="sign-line"><span>GERAL@FISCALIS-ENGENHARIA.PT</span></div>
                 </div>
               </div>
             </div>
