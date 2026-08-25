@@ -38,48 +38,73 @@ export function EditarPropostaForm({
   return (
     <div className="max-w-2xl space-y-4">
       <form action={guardar} className="bg-white border border-[#E4E1D6] rounded-xl p-5 space-y-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-[12px] font-medium text-[#4A4740] block mb-1">
-              Cliente<span className="text-[#B0402F]"> *</span>
-            </label>
-            <input
-              name="cliente_nome"
-              defaultValue={proposta.cliente_nome}
-              required
-              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
-            />
+        <div>
+          <p className="text-[12px] font-semibold text-[#14283A] mb-2">Dados do cliente</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">
+                Cliente<span className="text-[#B0402F]"> *</span>
+              </label>
+              <input
+                name="cliente_nome"
+                defaultValue={proposta.cliente_nome}
+                required
+                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
+              />
+            </div>
+            <div>
+              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">NIF / Contribuinte</label>
+              <input
+                name="cliente_nif"
+                defaultValue={proposta.cliente_nif ?? ""}
+                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
+              />
+            </div>
+            <div className="col-span-2">
+              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Morada fiscal do cliente</label>
+              <input
+                name="cliente_morada_fiscal"
+                defaultValue={proposta.cliente_morada_fiscal ?? ""}
+                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
+              />
+            </div>
           </div>
-          <div>
-            <label className="text-[12px] font-medium text-[#4A4740] block mb-1">
-              Tipo de obra<span className="text-[#B0402F]"> *</span>
-            </label>
-            <input
-              name="tipo_obra"
-              defaultValue={proposta.tipo_obra}
-              required
-              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
-            />
-          </div>
-          <div>
-            <label className="text-[12px] font-medium text-[#4A4740] block mb-1">
-              Local<span className="text-[#B0402F]"> *</span>
-            </label>
-            <input
-              name="local"
-              defaultValue={proposta.local}
-              required
-              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
-            />
-          </div>
-          <div>
-            <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Data de envio</label>
-            <input
-              name="enviada_em"
-              type="date"
-              defaultValue={proposta.enviada_em}
-              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
-            />
+        </div>
+
+        <div className="border-t border-[#F2F0E8] pt-4">
+          <p className="text-[12px] font-semibold text-[#14283A] mb-2">Dados da obra</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">
+                Tipo de obra<span className="text-[#B0402F]"> *</span>
+              </label>
+              <input
+                name="tipo_obra"
+                defaultValue={proposta.tipo_obra}
+                required
+                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
+              />
+            </div>
+            <div>
+              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">
+                Morada da obra<span className="text-[#B0402F]"> *</span>
+              </label>
+              <input
+                name="local"
+                defaultValue={proposta.local}
+                required
+                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
+              />
+            </div>
+            <div>
+              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Data de envio</label>
+              <input
+                name="enviada_em"
+                type="date"
+                defaultValue={proposta.enviada_em}
+                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
+              />
+            </div>
           </div>
         </div>
 

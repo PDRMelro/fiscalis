@@ -24,22 +24,39 @@ export function NovaPropostaModal({ obras }: { obras: { id: string; nome: string
         >
           <h2 className="text-[15px] font-semibold text-[#14283A] mb-1">Novo pedido de cliente</h2>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Cliente</label>
-              <input name="cliente_nome" required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+          <div>
+            <p className="text-[12px] font-semibold text-[#14283A] mb-2">Dados do cliente</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Cliente</label>
+                <input name="cliente_nome" required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+              </div>
+              <div>
+                <label className="text-[12px] font-medium text-[#4A4740] block mb-1">NIF / Contribuinte</label>
+                <input name="cliente_nif" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+              </div>
+              <div className="col-span-2">
+                <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Morada fiscal do cliente</label>
+                <input name="cliente_morada_fiscal" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+              </div>
             </div>
-            <div>
-              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Tipo de obra</label>
-              <input name="tipo_obra" required placeholder="Ex: Remodelação de moradia" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
-            </div>
-            <div>
-              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Local</label>
-              <input name="local" required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
-            </div>
-            <div>
-              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Data de envio</label>
-              <input name="enviada_em" type="date" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+          </div>
+
+          <div className="border-t border-[#F2F0E8] pt-3">
+            <p className="text-[12px] font-semibold text-[#14283A] mb-2">Dados da obra</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Tipo de obra</label>
+                <input name="tipo_obra" required placeholder="Ex: Remodelação de moradia" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+              </div>
+              <div>
+                <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Morada da obra</label>
+                <input name="local" required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+              </div>
+              <div>
+                <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Data de envio</label>
+                <input name="enviada_em" type="date" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+              </div>
             </div>
           </div>
 

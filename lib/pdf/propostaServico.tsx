@@ -106,21 +106,35 @@ export function PropostaServicoDoc({ proposta, perfil }: { proposta: PropostaRow
           </View>
         </View>
 
-        <Text style={styles.seccao}>1. Identificação</Text>
+        <Text style={styles.seccao}>1. Cliente</Text>
         <View style={styles.tabela}>
           <View style={styles.linha}>
             <View style={styles.celula}>
-              <Text style={styles.celulaRotulo}>Cliente</Text>
+              <Text style={styles.celulaRotulo}>Nome</Text>
               <Text style={styles.celulaValor}>{proposta.cliente_nome}</Text>
+            </View>
+            <View style={styles.celulaUltima}>
+              <Text style={styles.celulaRotulo}>NIF / Contribuinte</Text>
+              <Text style={styles.celulaValor}>{proposta.cliente_nif || "—"}</Text>
+            </View>
+          </View>
+          <View style={styles.linhaUltima}>
+            <View style={styles.celula}>
+              <Text style={styles.celulaRotulo}>Morada fiscal</Text>
+              <Text style={styles.celulaValor}>{proposta.cliente_morada_fiscal || "—"}</Text>
             </View>
             <View style={styles.celulaUltima}>
               <Text style={styles.celulaRotulo}>Data da proposta</Text>
               <Text style={styles.celulaValor}>{formatarDataPdf(proposta.enviada_em)}</Text>
             </View>
           </View>
+        </View>
+
+        <Text style={styles.seccao}>2. Obra</Text>
+        <View style={styles.tabela}>
           <View style={styles.linhaUltima}>
             <View style={styles.celula}>
-              <Text style={styles.celulaRotulo}>Local da obra</Text>
+              <Text style={styles.celulaRotulo}>Morada da obra</Text>
               <Text style={styles.celulaValor}>{proposta.local}</Text>
             </View>
             <View style={styles.celulaUltima}>
@@ -130,7 +144,7 @@ export function PropostaServicoDoc({ proposta, perfil }: { proposta: PropostaRow
           </View>
         </View>
 
-        <Text style={styles.seccao}>2. Objeto da proposta</Text>
+        <Text style={styles.seccao}>3. Objeto da proposta</Text>
         <Text style={styles.texto}>
           Prestação de serviços de fiscalização de obra, incluindo visitas periódicas ao local, registo fotográfico
           e escrito de cada visita, identificação e acompanhamento de não conformidades até à sua correção, emissão
@@ -138,7 +152,7 @@ export function PropostaServicoDoc({ proposta, perfil }: { proposta: PropostaRow
           os relatórios e as não conformidades da sua obra.
         </Text>
 
-        <Text style={styles.seccao}>3. Condições comerciais</Text>
+        <Text style={styles.seccao}>4. Condições comerciais</Text>
         <View style={styles.precoBox}>
           <View style={styles.precoLinha}>
             <View>
@@ -162,12 +176,12 @@ export function PropostaServicoDoc({ proposta, perfil }: { proposta: PropostaRow
           </View>
         </View>
 
-        <Text style={styles.seccao}>4. Validade</Text>
+        <Text style={styles.seccao}>5. Validade</Text>
         <Text style={styles.texto}>
           Salvo indicação em contrário, esta proposta é válida por 30 dias a contar da data indicada acima.
         </Text>
 
-        <Text style={styles.seccao}>5. Aceitação</Text>
+        <Text style={styles.seccao}>6. Aceitação</Text>
         <View style={styles.assinaturas}>
           <View style={styles.assinatura}>
             <Text style={styles.assinaturaTitulo}>Fiscalização</Text>

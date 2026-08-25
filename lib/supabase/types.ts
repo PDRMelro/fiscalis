@@ -134,6 +134,8 @@ export type PropostaRow = {
   id: string;
   codigo: string | null;
   cliente_nome: string;
+  cliente_nif: string | null;
+  cliente_morada_fiscal: string | null;
   local: string;
   tipo_obra: string;
   estado: EstadoProposta;

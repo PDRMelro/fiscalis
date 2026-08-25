@@ -20,9 +20,13 @@ export async function criarProposta(formData: FormData) {
   const frequenciaRaw = String(formData.get("frequencia_visitas") ?? "");
   const valorAnualRaw = String(formData.get("valor_anual") ?? "");
   const valorExtraRaw = String(formData.get("valor_visita_extra") ?? "");
+  const cliente_nif = String(formData.get("cliente_nif") ?? "").trim();
+  const cliente_morada_fiscal = String(formData.get("cliente_morada_fiscal") ?? "").trim();
 
   const { error } = await supabase.from("propostas").insert({
     cliente_nome,
+    cliente_nif: cliente_nif || null,
+    cliente_morada_fiscal: cliente_morada_fiscal || null,
     local,
     tipo_obra,
     enviada_em: String(formData.get("enviada_em") ?? "") || undefined,
@@ -62,11 +66,15 @@ export async function atualizarProposta(id: string, formData: FormData): Promise
     const frequenciaRaw = String(formData.get("frequencia_visitas") ?? "");
     const valorAnualRaw = String(formData.get("valor_anual") ?? "");
     const valorExtraRaw = String(formData.get("valor_visita_extra") ?? "");
+    const cliente_nif = String(formData.get("cliente_nif") ?? "").trim();
+    const cliente_morada_fiscal = String(formData.get("cliente_morada_fiscal") ?? "").trim();
 
     const { error } = await supabase
       .from("propostas")
       .update({
         cliente_nome,
+        cliente_nif: cliente_nif || null,
+        cliente_morada_fiscal: cliente_morada_fiscal || null,
         local,
         tipo_obra,
         enviada_em: String(formData.get("enviada_em") ?? "") || undefined,
