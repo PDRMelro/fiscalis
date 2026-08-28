@@ -35,7 +35,7 @@ export async function enviarPedido(_prev: ResultadoPedido, formData: FormData): 
 
     await transporter.sendMail({
       from: `"Fiscalis — Site" <${gmailUser}>`,
-      to: "geral@fiscalis-engenharia.pt",
+      to: gmailUser,
       replyTo: email,
       subject: `${assunto} — ${nome}`,
       text: [
