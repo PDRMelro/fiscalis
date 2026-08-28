@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://fiscalis-pied.vercel.app"),
+  metadataBase: new URL("https://www.fiscalis-engenharia.pt"),
   title: "Fiscalis Engenharia",
   description: "Plataforma de fiscalização de obras",
 };
