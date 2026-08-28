@@ -5,6 +5,7 @@ import { LOGO_SRC } from "@/lib/branding";
 import { WHATSAPP_NUMBER } from "@/lib/contact";
 import { PlataformaTour } from "./PlataformaTour";
 import { PortalTour } from "./PortalTour";
+import { ObraAnimada } from "./ObraAnimada";
 import "./hub.css";
 
 type Route = "hub" | "plataforma" | "servico";
@@ -210,6 +211,7 @@ export function HubView() {
                 <a className="hero-portal" href="/login">Já usas a Fiscalis? Entrar na plataforma ↗</a>
               </div>
               <div className="doc-stack" aria-hidden="true">
+                <ObraAnimada />
                 <div className="doc-card mini back">
                   <div className="doc-mini-date">18 Ago 2026</div>
                   <div className="doc-mini-obra">Obra Teste Cliente</div>
@@ -317,6 +319,7 @@ export function HubView() {
                 <a className="hero-portal" href="/portal/login">Já és cliente? Aceder ao portal ↗</a>
               </div>
               <div className="field-stack" aria-hidden="true">
+                <ObraAnimada />
                 <div className="field-card back">
                   <div className="field-row"><span className="field-label">Obra</span><span className="field-value">Moradia — Aveiro</span></div>
                   <div className="field-row"><span className="field-label">Progresso</span><span className="field-value">62%</span></div>

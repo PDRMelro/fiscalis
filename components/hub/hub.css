@@ -165,6 +165,37 @@ body.route-hub { background: var(--bg); color: var(--text); font-family: var(--f
 .hub-page .field-bar { height: 6px; border-radius: 3px; background: var(--border-soft); overflow: hidden; margin-top: 0.5rem; }
 .hub-page .field-bar > span { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
 
+/* ---------- Obra a evoluir (fundo animado dos cartões flutuantes) ---------- */
+.hub-page .obra-anim { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.hub-page .obra-chao { stroke: var(--heading); stroke-width: 1.2; opacity: 0.16; }
+.hub-page .obra-grua line, .hub-page .obra-grua rect { fill: none; stroke: var(--accent-deep); stroke-width: 1.4; stroke-linecap: round; opacity: 0.3; }
+.hub-page .obra-lanca { transform-origin: 195px 50px; animation: hub-obraSway 6s ease-in-out infinite; }
+.hub-page .obra-parte { fill: none; stroke: var(--heading); stroke-width: 1.5; stroke-linejoin: round; opacity: 0; animation-duration: 14s; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
+
+@keyframes hub-obraSway { 0%, 100% { transform: rotate(-1.5deg); } 50% { transform: rotate(1.5deg); } }
+
+@keyframes hub-obraFundacao { 0%, 3% { opacity: 0; transform: translateY(6px); } 8%, 88% { opacity: 1; transform: translateY(0); } 92%, 100% { opacity: 0; transform: translateY(6px); } }
+@keyframes hub-obraPiso1 { 0%, 10% { opacity: 0; transform: translateY(6px); } 15%, 88% { opacity: 1; transform: translateY(0); } 92%, 100% { opacity: 0; transform: translateY(6px); } }
+@keyframes hub-obraPiso2 { 0%, 17% { opacity: 0; transform: translateY(6px); } 22%, 88% { opacity: 1; transform: translateY(0); } 92%, 100% { opacity: 0; transform: translateY(6px); } }
+@keyframes hub-obraPiso3 { 0%, 24% { opacity: 0; transform: translateY(6px); } 29%, 88% { opacity: 1; transform: translateY(0); } 92%, 100% { opacity: 0; transform: translateY(6px); } }
+@keyframes hub-obraPiso4 { 0%, 31% { opacity: 0; transform: translateY(6px); } 36%, 88% { opacity: 1; transform: translateY(0); } 92%, 100% { opacity: 0; transform: translateY(6px); } }
+@keyframes hub-obraTelhado { 0%, 38% { opacity: 0; transform: translateY(6px); } 43%, 88% { opacity: 1; transform: translateY(0); } 92%, 100% { opacity: 0; transform: translateY(6px); } }
+
+.hub-page .obra-fundacao { animation-name: hub-obraFundacao; }
+.hub-page .obra-piso1 { animation-name: hub-obraPiso1; }
+.hub-page .obra-piso2 { animation-name: hub-obraPiso2; }
+.hub-page .obra-piso3 { animation-name: hub-obraPiso3; }
+.hub-page .obra-piso4 { animation-name: hub-obraPiso4; }
+.hub-page .obra-telhado { animation-name: hub-obraTelhado; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hub-page .obra-lanca { animation: none; }
+  .hub-page .obra-parte { animation: none; opacity: 1; }
+}
+@media (max-width: 640px) {
+  .hub-page .obra-anim { display: none; }
+}
+
 /* ---------- Antes/depois exhibit ---------- */
 .hub-page .exhibit { border: 1px solid var(--border); border-radius: 4px; overflow: hidden; background: var(--surface); }
 .hub-page .exhibit-row { display: grid; grid-template-columns: 1fr 1fr; }
