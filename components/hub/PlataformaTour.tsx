@@ -8,10 +8,10 @@ type ScreenId = "dashboard" | "visita" | "nc" | "portal";
 const SCREENS: ScreenId[] = ["dashboard", "visita", "nc", "portal"];
 
 const URLS: Record<ScreenId, string> = {
-  dashboard: "fiscalis-pied.vercel.app/dashboard",
-  visita: "fiscalis-pied.vercel.app/visitas/nova",
-  nc: "fiscalis-pied.vercel.app/obras/nc-014",
-  portal: "fiscalis-pied.vercel.app/portal",
+  dashboard: "fiscalis-engenharia.pt/dashboard",
+  visita: "fiscalis-engenharia.pt/visitas/nova",
+  nc: "fiscalis-engenharia.pt/obras/nc-014",
+  portal: "fiscalis-engenharia.pt/portal",
 };
 
 const LABELS: Record<ScreenId, string> = {

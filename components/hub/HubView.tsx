@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { LOGO_SRC } from "@/lib/branding";
+import { LOGO_SRC_DARK } from "@/lib/branding";
 import { WHATSAPP_NUMBER } from "@/lib/contact";
 import { PlataformaTour } from "./PlataformaTour";
 import { PortalTour } from "./PortalTour";
@@ -90,7 +90,7 @@ export function HubView() {
       <header className="site">
         <div className="wrap nav">
           <a className="brand" href="#">
-            <img className="brand-mark" src={LOGO_SRC} alt="Fiscalis" />
+            <img className="brand-mark" src={LOGO_SRC_DARK} alt="Fiscalis" />
             <span className="brand-word">FISCALIS</span>
           </a>
           <div className="switcher">
@@ -156,7 +156,7 @@ export function HubView() {
         {/* ============ HUB ============ */}
         <section className={route === "hub" ? "view is-active" : "view"} data-view="hub">
           <div className="wrap hub-hero">
-            <div className="hub-mark"><img src={LOGO_SRC} alt="Fiscalis" /><span>FISCALIS</span></div>
+            <div className="hub-mark"><img src={LOGO_SRC_DARK} alt="Fiscalis" /><span>FISCALIS</span></div>
             <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Engenharia · Fiscalização de obra</p>
             <h1>Fiscalização de obra, <em>à tua maneira.</em></h1>
             <p className="hero-sub">Uma plataforma para quem fiscaliza obras. Um serviço completo para quem só quer alguém de confiança do lado da obra.</p>
@@ -421,7 +421,7 @@ export function HubView() {
 
       <footer>
         <div className="wrap foot-row">
-          <div className="foot-brand"><img className="brand-mark" style={{ height: 22 }} src={LOGO_SRC} alt="Fiscalis" /><span className="brand-word">FISCALIS</span></div>
+          <div className="foot-brand"><img className="brand-mark" style={{ height: 22 }} src={LOGO_SRC_DARK} alt="Fiscalis" /><span className="brand-word">FISCALIS</span></div>
           <p className="foot-note">Plataforma de fiscalização de obra e serviço de fiscalização independente. © 2026 Fiscalis Engenharia.</p>
         </div>
       </footer>
