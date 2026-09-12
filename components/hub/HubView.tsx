@@ -30,6 +30,13 @@ export function HubView() {
   const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    document.body.classList.add("hub-body");
+    return () => {
+      document.body.classList.remove("hub-body");
+    };
+  }, []);
+
+  useEffect(() => {
     document.body.classList.toggle("route-hub", route === "hub");
     window.scrollTo({ top: 0, behavior: "auto" });
     return () => {
@@ -151,8 +158,8 @@ export function HubView() {
           <div className="wrap hub-hero">
             <div className="hub-mark"><img src={LOGO_SRC} alt="Fiscalis" /><span>FISCALIS</span></div>
             <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Engenharia · Fiscalização de obra</p>
-            <h1>Duas formas de trabalhar comigo — escolhe a tua.</h1>
-            <p className="hero-sub">Sou engenheiro civil e construí uma plataforma própria para fiscalizar obras. Podes querer usar essa plataforma na tua empresa, ou querer que eu fiscalize a tua obra.</p>
+            <h1>Fiscalização de obra, <em>à tua maneira.</em></h1>
+            <p className="hero-sub">Uma plataforma para quem fiscaliza obras. Um serviço completo para quem só quer alguém de confiança do lado da obra.</p>
           </div>
           <div className="wrap split">
             <a className="split-card" href="#servico">
@@ -310,12 +317,12 @@ export function HubView() {
               <div>
                 <p className="eyebrow">Fiscalização de obra independente · Aveiro e Porto</p>
                 <h1>Entre ti e o empreiteiro, <em>alguém tem de saber</em> o que está a ver.</h1>
-                <p className="hero-sub">Sou engenheiro civil, membro da Ordem dos Engenheiros. Acompanho a tua obra com visitas regulares, registo do que é visto e um portal próprio onde vês tudo — sem teres de perguntar nada a ninguém.</p>
+                <p className="hero-sub">Visitas regulares, registo do que é visto, e um portal próprio onde vês tudo — sem teres de perguntar nada a ninguém.</p>
                 <div className="hero-ctas">
                   <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>
                   <a className="btn btn-ghost" href="#plataforma">Tenho uma empresa de fiscalização →</a>
                 </div>
-                <p className="hero-note">Aveiro · Porto — engenheiro civil, membro da Ordem dos Engenheiros. Faço também consultoria de construção civil, para quem só precisa de um parecer técnico pontual.</p>
+                <p className="hero-note">Aveiro · Porto — engenharia civil, membro da Ordem dos Engenheiros. Consultoria também disponível, para pareceres técnicos pontuais.</p>
                 <a className="hero-portal" href="/portal/login">Já és cliente? Aceder ao portal ↗</a>
               </div>
               <div className="field-stack" aria-hidden="true">
@@ -371,11 +378,11 @@ export function HubView() {
           <section className="block">
             <div className="wrap">
               <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
-                <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Quem sou</p>
-                <h2>Engenheiro civil, não um intermediário.</h2>
-                <p>Sou eu que visito a obra, sou eu que assino o relatório. Sem equipas rotativas, sem &ldquo;quem calhar esta semana&rdquo;. Engenheiro Civil, membro da Ordem dos Engenheiros — Aveiro e Porto.</p>
+                <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Compromisso</p>
+                <h2>Um responsável. <em>Do início ao fim.</em></h2>
+                <p>A mesma pessoa visita a obra e assina o relatório, sempre — sem equipas rotativas, sem &ldquo;quem calhar esta semana&rdquo;. Engenharia civil a sério, membro da Ordem dos Engenheiros.</p>
               </div>
-              <div className="trust-note reveal" style={{ maxWidth: "42rem", marginInline: "auto" }}>&ldquo;O meu trabalho é olhar pela tua obra como se fosse a minha — e mostrar-te exatamente o que vi, sempre.&rdquo;</div>
+              <div className="trust-note reveal" style={{ maxWidth: "42rem", marginInline: "auto" }}>Um único ponto de contacto, do primeiro dia ao último — sem perderes o fio à história da tua obra.</div>
             </div>
           </section>
 
@@ -384,8 +391,8 @@ export function HubView() {
               <div className="cover reveal">
                 <div>
                   <p className="eyebrow">Próximo passo</p>
-                  <h2>Fala-me da tua obra.</h2>
-                  <p>Conta-me em que fase está, onde é (Aveiro, Porto ou perto), e o que precisas de acompanhar — respondo com uma proposta e os próximos passos.</p>
+                  <h2>Vamos falar da tua obra.</h2>
+                  <p>Em que fase está, onde é (Aveiro, Porto ou perto), e o que precisas de acompanhar — recebes uma proposta e os próximos passos.</p>
                 </div>
                 <div className="sign-box">
                   <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>
