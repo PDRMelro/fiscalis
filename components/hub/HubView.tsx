@@ -368,7 +368,7 @@ export function HubView() {
             <section className="block">
               <div className="wrap">
                 <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
-                  <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Segurança</p>
+                  <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Segurança · Para empresas</p>
                   <h2>Dás acesso a todos os teus clientes, <em>sem nenhum ver a obra dos outros.</em></h2>
                   <p>Isolamento aplicado na própria base de dados, obra a obra, cliente a cliente — não é uma opção escondida num menu que se possa esquecer de ativar.</p>
                 </div>
