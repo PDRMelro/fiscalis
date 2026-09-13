@@ -426,12 +426,62 @@ export function HubView() {
                   <h2>Tudo o que a tua equipa precisa, num só lugar.</h2>
                 </div>
                 <div className="features">
-                  <div className="feature reveal"><h3>Obras e clientes</h3><p>Cada obra com o seu separador — cliente, visitas, documentos e progresso, tudo junto.</p></div>
-                  <div className="feature reveal"><h3>Visitas e fotos</h3><p>Regista o que vês no local, com fotos, sem passar por papel nem por outro telemóvel.</p></div>
-                  <div className="feature reveal"><h3>Não conformidades</h3><p>Auto gerado automaticamente, com código sequencial e alerta de prazo.</p></div>
-                  <div className="feature reveal"><h3>Relatórios</h3><p>Prontos a enviar com um clique, sempre no mesmo modelo profissional.</p></div>
-                  <div className="feature reveal"><h3>Calendário</h3><p>Todas as visitas agendadas, de todas as obras, numa só vista.</p></div>
-                  <div className="feature reveal"><h3>Propostas</h3><p>Gera propostas de serviço profissionais para novos clientes, direto da plataforma.</p></div>
+                  <div className="feature reveal">
+                    <div className="feature-preview">
+                      <div className="mock-obra" style={{ marginBottom: 0 }}><div><div className="name">OBRA-004 — Moradia, Aveiro</div><div className="sub">Cliente: Família Ferreira</div></div><span className="mock-pct">68%</span></div>
+                    </div>
+                    <h3>Obras e clientes</h3>
+                    <p>Cada obra com o seu separador — cliente, visitas, documentos e progresso, tudo junto.</p>
+                  </div>
+                  <div className="feature reveal">
+                    <div className="feature-preview">
+                      <div className="mock-photo-grid">
+                        <span className="mock-photo p1"></span>
+                        <span className="mock-photo p2"></span>
+                        <span className="mock-photo p3"></span>
+                        <span className="mock-photo-add">+</span>
+                      </div>
+                    </div>
+                    <h3>Visitas e fotos</h3>
+                    <p>Regista o que vês no local, com fotos, sem passar por papel nem por outro telemóvel.</p>
+                  </div>
+                  <div className="feature reveal">
+                    <div className="feature-preview">
+                      <div className="mock-nc-card" style={{ marginTop: 0 }}>
+                        <div className="doc-row" style={{ marginBottom: 0 }}><span className="doc-code">NC-014</span><span className="chip chip-warn">MAIOR</span></div>
+                      </div>
+                    </div>
+                    <h3>Não conformidades</h3>
+                    <p>Auto gerado automaticamente, com código sequencial e alerta de prazo.</p>
+                  </div>
+                  <div className="feature reveal">
+                    <div className="feature-preview">
+                      <div className="mock-portal-row" style={{ marginBottom: 0 }}><span>Relatório · 18 Ago 2026</span><span>↗</span></div>
+                    </div>
+                    <h3>Relatórios</h3>
+                    <p>Prontos a enviar com um clique, sempre no mesmo modelo profissional.</p>
+                  </div>
+                  <div className="feature reveal">
+                    <div className="feature-preview">
+                      <div className="mock-cal">
+                        <span className="mock-cal-day">12</span>
+                        <span className="mock-cal-day is-active">18</span>
+                        <span className="mock-cal-day">22</span>
+                        <span className="mock-cal-day">29</span>
+                      </div>
+                    </div>
+                    <h3>Calendário</h3>
+                    <p>Todas as visitas agendadas, de todas as obras, numa só vista.</p>
+                  </div>
+                  <div className="feature reveal">
+                    <div className="feature-preview">
+                      <div className="mock-nc-card" style={{ marginTop: 0 }}>
+                        <div className="mock-proposta"><span className="mock-proposta-label">PROPOSTA · FISCALIZAÇÃO</span><span className="mock-proposta-val">690 €/ano</span></div>
+                      </div>
+                    </div>
+                    <h3>Propostas</h3>
+                    <p>Gera propostas de serviço profissionais para novos clientes, direto da plataforma.</p>
+                  </div>
                 </div>
               </div>
             </section>

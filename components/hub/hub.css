@@ -273,6 +273,19 @@ body.hub-body { background: var(--bg); color: var(--text); font-family: var(--fo
 @media (max-width: 900px) { .hub-page .features { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 560px) { .hub-page .features { grid-template-columns: 1fr; } }
 
+.hub-page .feature-preview {
+  --surface: var(--paper-surface); --heading: var(--paper-heading); --text: var(--paper-text);
+  --text-muted: var(--paper-text-muted); --border: var(--paper-border); --border-soft: var(--paper-border-soft);
+  --warn: var(--paper-warn); --warn-soft: var(--paper-warn-soft); --ok: var(--paper-ok); --ok-soft: var(--paper-ok-soft);
+  margin-bottom: 1rem;
+}
+.hub-page .mock-cal { display: flex; gap: 0.4rem; }
+.hub-page .mock-cal-day { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 6px; background: #F5F4EF; border: 1px solid #E4E1D6; font-family: var(--font-mono); font-size: 0.72rem; color: #4A4740; font-weight: 600; }
+.hub-page .mock-cal-day.is-active { background: #14283A; border-color: #14283A; color: #F6EDD8; }
+.hub-page .mock-proposta { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.hub-page .mock-proposta-label { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.06em; color: #8A8578; }
+.hub-page .mock-proposta-val { font-family: var(--font-mono); font-size: 0.9rem; font-weight: 700; color: #14283A; background: #FBF0DC; border: 1px solid #E8C98F; border-radius: 4px; padding: 0.2rem 0.55rem; white-space: nowrap; }
+
 /* ---------- Trust note ---------- */
 .hub-page .trust-note { background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 2px; padding: 1.1rem 1.35rem; font-size: 0.95rem; color: var(--text); margin-top: 1.5rem; }
 
