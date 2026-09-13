@@ -171,7 +171,7 @@ export function HubView() {
             <div className="hub-mark"><img src={LOGO_SRC_DARK} alt="Fiscalis" /><span>FISCALIS</span></div>
             <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Engenharia · Fiscalização de obra</p>
             <h1>Fiscalização de obra, <em>à tua maneira.</em></h1>
-            <p className="hero-sub">Fiscalização de obra independente, consultoria técnica pontual, ou uma plataforma completa para empresas de fiscalização — escolhe o que precisas.</p>
+            <p className="hero-sub">Fiscalização de obra, consultoria técnica, ou uma plataforma completa para empresas de fiscalização — escolhe o que precisas.</p>
           </div>
           <div className="wrap split">
             <a className="split-card" href="#fiscalizacao">
@@ -237,16 +237,9 @@ export function HubView() {
 
         {/* ============ SERVIÇOS (separado por separadores, não scroll contínuo) ============ */}
         <section className={route === "servicos" ? "view is-active" : "view"} data-view="servicos" id="servicos">
-          {/* ---- Compromisso (comum aos 3) ---- */}
+          {/* ---- Separador de serviços (sempre visível) ---- */}
           <section className="block">
             <div className="wrap">
-              <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
-                <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Compromisso</p>
-                <h2>Um responsável. <em>Do início ao fim.</em></h2>
-                <p>A mesma pessoa visita a obra e assina o relatório, sempre — sem equipas rotativas, sem &ldquo;quem calhar esta semana&rdquo;. Engenharia civil a sério, membro da Ordem dos Engenheiros.</p>
-              </div>
-              <div className="trust-note reveal" style={{ maxWidth: "42rem", marginInline: "auto" }}>Um único ponto de contacto, do primeiro dia ao último — sem perderes o fio à história da tua obra.</div>
-
               <div className="tab-bar reveal">
                 <a href="#fiscalizacao" className={activeTab === "fiscalizacao" ? "is-active" : undefined}>Fiscalização de obra</a>
                 <a href="#consultoria" className={activeTab === "consultoria" ? "is-active" : undefined}>Consultoria técnica</a>
@@ -257,6 +250,17 @@ export function HubView() {
 
           {/* ---- Fiscalização de obra ---- */}
           <section className={activeTab === "fiscalizacao" ? "tab-panel is-active" : "tab-panel"}>
+            <section className="block">
+              <div className="wrap">
+                <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
+                  <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Compromisso</p>
+                  <h2>Um responsável. <em>Do início ao fim.</em></h2>
+                  <p>A mesma pessoa visita a obra e assina o relatório, sempre — sem equipas rotativas, sem &ldquo;quem calhar esta semana&rdquo;. Engenharia civil a sério, membro da Ordem dos Engenheiros.</p>
+                </div>
+                <div className="trust-note reveal" style={{ maxWidth: "42rem", marginInline: "auto" }}>Um único ponto de contacto, do primeiro dia ao último — sem perderes o fio à história da tua obra.</div>
+              </div>
+            </section>
+
             <div className="wrap hero">
               <div className="hero-grid">
                 <div>
@@ -265,7 +269,6 @@ export function HubView() {
                   <p className="hero-sub">Visitas regulares, registo do que é visto, e um portal próprio onde vês tudo — sem teres de perguntar nada a ninguém.</p>
                   <div className="hero-ctas">
                     <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>
-                    <a className="btn btn-ghost" href="#plataforma">Tenho uma empresa de fiscalização →</a>
                   </div>
                   <a className="hero-portal" href="/portal/login">Já és cliente? Aceder ao portal ↗</a>
                 </div>
@@ -335,15 +338,22 @@ export function HubView() {
           <section className={activeTab === "consultoria" ? "tab-panel is-active" : "tab-panel"}>
             <section className="block">
               <div className="wrap">
-                <div className="section-head reveal">
-                  <p className="eyebrow">Consultoria técnica</p>
-                  <h2>Uma opinião técnica, sem compromisso de obra contínua.</h2>
+                <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
+                  <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Segunda opinião</p>
+                  <h2>Uma opinião técnica, <em>sem compromisso de obra contínua.</em></h2>
                   <p>Nem sempre precisas de fiscalização regular — às vezes só de alguém que perceba do assunto, uma vez.</p>
                 </div>
-                <div className="steps">
+                <div className="trust-note reveal" style={{ maxWidth: "42rem", marginInline: "auto" }}>Uma visita, um parecer claro — sem reuniões a mais nem relatórios extensos.</div>
+              </div>
+            </section>
+
+            <section className="block">
+              <div className="wrap">
+                <div className="steps steps-4">
                   <div className="step reveal"><p className="step-num">01</p><h3>Antes de comprar</h3><p>Uma vistoria técnica ao imóvel antes de avançares — para saberes exatamente o que estás a comprar.</p></div>
                   <div className="step reveal"><p className="step-num">02</p><h3>Validar um orçamento</h3><p>Uma segunda opinião sobre a proposta do empreiteiro, antes de assinares.</p></div>
-                  <div className="step reveal"><p className="step-num">03</p><h3>Resolver uma dúvida</h3><p>Um parecer técnico pontual sobre um problema concreto, sem contrato de fiscalização.</p></div>
+                  <div className="step reveal"><p className="step-num">03</p><h3>Um problema numa casa já construída</h3><p>Notas uma fissura, humidade ou outro sinal de problema, e queres que alguém vá lá ver o que é.</p></div>
+                  <div className="step reveal"><p className="step-num">04</p><h3>Resolver uma dúvida</h3><p>Um parecer técnico sobre um problema concreto, sem contrato de fiscalização.</p></div>
                 </div>
                 <div className="reveal" style={{ marginTop: "2.5rem", textAlign: "center" }}>
                   <a className="btn btn-primary" href="/pedido?tipo=consultoria">Pedir uma consulta <span className="btn-arrow">→</span></a>
@@ -354,6 +364,17 @@ export function HubView() {
 
           {/* ---- Plataforma digital ---- */}
           <section className={activeTab === "plataforma" ? "tab-panel is-active" : "tab-panel"}>
+            <section className="block">
+              <div className="wrap">
+                <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
+                  <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Segurança</p>
+                  <h2>Cada cliente só vê a obra dele. <em>A sério.</em></h2>
+                  <p>Não é uma opção escondida num menu — é uma regra aplicada na própria base de dados, obra a obra, cliente a cliente.</p>
+                </div>
+                <div className="trust-note reveal" style={{ maxWidth: "42rem", marginInline: "auto" }}>&ldquo;Só vês os dados da tua obra. O acesso é validado do lado do servidor — e não apenas escondido na interface.&rdquo;</div>
+              </div>
+            </section>
+
             <div className="wrap hero">
               <div className="hero-grid">
                 <div>
@@ -362,7 +383,6 @@ export function HubView() {
                   <p className="hero-sub">Fiscalis junta visitas, não conformidades, relatórios e o próprio cliente numa só plataforma — sem perder uma fotografia, um prazo ou uma assinatura pelo caminho.</p>
                   <div className="hero-ctas">
                     <a className="btn btn-primary" href="/pedido?tipo=demonstracao">Pedir uma demonstração <span className="btn-arrow">→</span></a>
-                    <a className="btn btn-ghost" href="#fiscalizacao">Sou dono de obra, não empresa →</a>
                   </div>
                   <p className="hero-note">Sem instalação. Um separador por obra. Cada cliente só vê a obra dele.</p>
                   <a className="hero-portal" href="/login">Já usas a Fiscalis? Entrar na plataforma ↗</a>
