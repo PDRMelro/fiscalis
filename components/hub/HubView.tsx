@@ -238,7 +238,7 @@ export function HubView() {
         {/* ============ SERVIÇOS (separado por separadores, não scroll contínuo) ============ */}
         <section className={route === "servicos" ? "view is-active" : "view"} data-view="servicos" id="servicos">
           {/* ---- Separador de serviços (sempre visível) ---- */}
-          <section className="block">
+          <section className="block tab-bar-block">
             <div className="wrap">
               <div className="tab-bar reveal">
                 <a href="#fiscalizacao" className={activeTab === "fiscalizacao" ? "is-active" : undefined}>Fiscalização de obra</a>
@@ -368,10 +368,10 @@ export function HubView() {
               <div className="wrap">
                 <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
                   <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Segurança</p>
-                  <h2>Cada cliente só vê a obra dele. <em>A sério.</em></h2>
-                  <p>Não é uma opção escondida num menu — é uma regra aplicada na própria base de dados, obra a obra, cliente a cliente.</p>
+                  <h2>Dás acesso a todos os teus clientes, <em>sem nenhum ver a obra dos outros.</em></h2>
+                  <p>Isolamento aplicado na própria base de dados, obra a obra, cliente a cliente — não é uma opção escondida num menu que se possa esquecer de ativar.</p>
                 </div>
-                <div className="trust-note reveal" style={{ maxWidth: "42rem", marginInline: "auto" }}>&ldquo;Só vês os dados da tua obra. O acesso é validado do lado do servidor — e não apenas escondido na interface.&rdquo;</div>
+                <div className="trust-note reveal" style={{ maxWidth: "42rem", marginInline: "auto" }}>O acesso de cada cliente é validado do lado do servidor, não só escondido na interface. A tua equipa configura uma vez — fica garantido para sempre.</div>
               </div>
             </section>
 
