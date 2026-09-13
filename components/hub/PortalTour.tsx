@@ -124,6 +124,7 @@ export function PortalTour() {
   const [index, setIndex] = useState(0);
   const [cycle, setCycle] = useState(0);
   const pausedRef = useRef(false);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -141,6 +142,27 @@ export function PortalTour() {
     setCycle((c) => c + 1);
   };
 
+  const step = (delta: number) => {
+    setIndex((i) => (i + delta + SCREENS.length) % SCREENS.length);
+    setCycle((c) => c + 1);
+  };
+
+  function onTouchStart(e: React.TouchEvent) {
+    const t = e.touches[0];
+    touchStartRef.current = { x: t.clientX, y: t.clientY };
+  }
+
+  function onTouchEnd(e: React.TouchEvent) {
+    const start = touchStartRef.current;
+    touchStartRef.current = null;
+    if (!start) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+    step(dx < 0 ? 1 : -1);
+  }
+
   const active = SCREENS[index];
 
   return (
@@ -154,7 +176,7 @@ export function PortalTour() {
           <span className="frame-dot r"></span><span className="frame-dot y"></span><span className="frame-dot g"></span>
           <span className="frame-url">{URLS[active]}</span>
         </div>
-        <div className="tour-stage">
+        <div className="tour-stage" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
           {SCREENS.map((s) => {
             const Screen = SCREEN_COMPONENTS[s];
             const isActive = s === active;
@@ -169,6 +191,12 @@ export function PortalTour() {
             );
           })}
         </div>
+        <button type="button" className="tour-arrow prev" aria-label="Ecrã anterior" onClick={() => step(-1)}>
+          <svg viewBox="0 0 24 24" fill="none"><path d="M15 5 8 12l7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
+        <button type="button" className="tour-arrow next" aria-label="Ecrã seguinte" onClick={() => step(1)}>
+          <svg viewBox="0 0 24 24" fill="none"><path d="m9 5 7 7-7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </button>
       </div>
       <div className="tour-dots" role="tablist" aria-label="Ecrãs do portal do cliente">
         {SCREENS.map((s, i) => (
