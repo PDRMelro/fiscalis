@@ -522,7 +522,7 @@ export function HubView() {
       <footer>
         <div className="wrap foot-row">
           <div className="foot-brand"><img className="brand-mark" style={{ height: 22 }} src={LOGO_SRC_DARK} alt="Fiscalis" /><span className="brand-word">FISCALIS</span></div>
-          <p className="foot-note">Plataforma de fiscalização de obra e serviço de fiscalização independente. © 2026 Fiscalis Engenharia.</p>
+          <p className="foot-note">Plataforma de fiscalização de obra e serviço de fiscalização independente, em Aveiro, Porto e toda a Região Centro e Norte. © 2026 Fiscalis Engenharia.</p>
         </div>
       </footer>
     </div>

@@ -3,10 +3,17 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { HubView } from "@/components/hub/HubView";
 
+const TITLE = "Plataforma e Serviço de Fiscalização de Obra";
+const FULL_TITLE = `${TITLE} — Fiscalis Engenharia`;
+const DESCRIPTION =
+  "Duas formas de trabalhar com a Fiscalis: a plataforma de fiscalização de obra para empresas, ou o serviço de fiscalização independente em Aveiro, Porto e na Região Centro e Norte.";
+
 export const metadata: Metadata = {
-  title: "Fiscalis — Plataforma e Serviço de Fiscalização de Obra",
-  description:
-    "Duas formas de trabalhar com a Fiscalis: a plataforma de fiscalização de obra para empresas, ou o serviço de fiscalização independente na Região Centro e Norte.",
+  title: FULL_TITLE,
+  description: DESCRIPTION,
+  alternates: { canonical: "/" },
+  openGraph: { title: FULL_TITLE, description: DESCRIPTION, url: "/" },
+  twitter: { card: "summary_large_image", title: FULL_TITLE, description: DESCRIPTION },
 };
 
 export default async function RootPage() {
