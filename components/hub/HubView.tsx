@@ -164,7 +164,7 @@ export function HubView() {
           <div className="wrap split">
             <a className="split-card" href="#servico">
               <div className="split-art tint-b">
-                <span className="split-badges"><span>SERVIÇO</span><span>AVEIRO · PORTO</span></span>
+                <span className="split-badges"><span>SERVIÇO</span><span>REGIÃO CENTRO E NORTE</span></span>
                 <div className="split-icon" aria-hidden="true">
                   <svg viewBox="0 0 48 48" fill="none">
                     <path d="M24 6 L40 12 V22 C40 32 33 39 24 42 C15 39 8 32 8 22 V12 Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
@@ -175,7 +175,7 @@ export function HubView() {
               <div className="split-body">
                 <span className="eyebrow">Para quem está a construir ou remodelar</span>
                 <h2>Contrata o serviço</h2>
-                <p>Fiscalização de obra independente, em Aveiro e Porto — ou uma consultoria pontual, se só precisares de um parecer técnico. Visitas regulares, registo do que é visto, e um portal onde acompanhas tudo sem teres de perguntar.</p>
+                <p>Fiscalização de obra independente, na região Centro e Norte — ou uma consultoria pontual, se só precisares de um parecer técnico. Visitas regulares, registo do que é visto, e um portal onde acompanhas tudo sem teres de perguntar.</p>
                 <span className="go">Ver o serviço <span className="btn-arrow">→</span></span>
               </div>
             </a>
@@ -315,14 +315,14 @@ export function HubView() {
           <div className="wrap hero" style={{ paddingTop: "clamp(2.5rem, 6vw, 4rem)" }}>
             <div className="hero-grid">
               <div>
-                <p className="eyebrow">Fiscalização de obra independente · Aveiro e Porto</p>
+                <p className="eyebrow">Fiscalização de obra independente · Região Centro e Norte</p>
                 <h1>Entre ti e o empreiteiro, <em>alguém tem de saber</em> o que está a ver.</h1>
                 <p className="hero-sub">Visitas regulares, registo do que é visto, e um portal próprio onde vês tudo — sem teres de perguntar nada a ninguém.</p>
                 <div className="hero-ctas">
                   <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>
                   <a className="btn btn-ghost" href="#plataforma">Tenho uma empresa de fiscalização →</a>
                 </div>
-                <p className="hero-note">Aveiro · Porto — engenharia civil, membro da Ordem dos Engenheiros. Consultoria também disponível, para pareceres técnicos pontuais.</p>
+                <p className="hero-note">Região Centro e Norte — engenharia civil, membro da Ordem dos Engenheiros. Consultoria também disponível, para pareceres técnicos pontuais.</p>
                 <a className="hero-portal" href="/portal/login">Já és cliente? Aceder ao portal ↗</a>
               </div>
               <div className="field-stack" aria-hidden="true">
@@ -339,7 +339,7 @@ export function HubView() {
                     <span className="doc-check"><span className="doc-box filled"></span>Conforme</span>
                     <span className="doc-check"><span className="doc-box"></span>Não conforme</span>
                   </div>
-                  <div className="doc-sig">Eng.º Pedro Melro · Fiscalização</div>
+                  <div className="doc-sig">Eng.º Responsável · Fiscalização</div>
                 </div>
               </div>
             </div>
@@ -392,7 +392,7 @@ export function HubView() {
                 <div>
                   <p className="eyebrow">Próximo passo</p>
                   <h2>Vamos falar da tua obra.</h2>
-                  <p>Em que fase está, onde é (Aveiro, Porto ou perto), e o que precisas de acompanhar — recebes uma proposta e os próximos passos.</p>
+                  <p>Em que fase está, onde é (região Centro ou Norte), e o que precisas de acompanhar — recebes uma proposta e os próximos passos.</p>
                 </div>
                 <div className="sign-box">
                   <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>

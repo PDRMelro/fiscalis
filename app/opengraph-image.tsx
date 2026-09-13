@@ -61,7 +61,7 @@ export default function Image() {
             Fiscalização de obra, a sério.
           </div>
           <div style={{ display: "flex", fontSize: 26, color: "#C9A050", marginTop: 18, letterSpacing: 1 }}>
-            Plataforma para empresas · Serviço independente em Aveiro e Porto
+            Plataforma para empresas · Serviço independente na Região Centro e Norte
           </div>
         </div>
       </div>

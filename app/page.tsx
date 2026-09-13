@@ -6,7 +6,7 @@ import { HubView } from "@/components/hub/HubView";
 export const metadata: Metadata = {
   title: "Fiscalis — Plataforma e Serviço de Fiscalização de Obra",
   description:
-    "Duas formas de trabalhar com a Fiscalis: a plataforma de fiscalização de obra para empresas, ou o serviço de fiscalização independente em Aveiro e Porto.",
+    "Duas formas de trabalhar com a Fiscalis: a plataforma de fiscalização de obra para empresas, ou o serviço de fiscalização independente na Região Centro e Norte.",
 };
 
 export default async function RootPage() {

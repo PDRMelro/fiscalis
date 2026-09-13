@@ -10,7 +10,7 @@ const TITULOS: Record<string, { titulo: string; texto: string }> = {
   },
   orcamento: {
     titulo: "Pedir um orçamento",
-    texto: "Conta-me em que fase está a tua obra, onde é (Aveiro, Porto ou perto), e o que precisas de acompanhar.",
+    texto: "Conta-me em que fase está a tua obra, onde é (região Centro ou Norte), e o que precisas de acompanhar.",
   },
 };
 
