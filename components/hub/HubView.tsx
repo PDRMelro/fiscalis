@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { LOGO_SRC_DARK } from "@/lib/branding";
 import { WHATSAPP_NUMBER } from "@/lib/contact";
 import { PlataformaTour } from "./PlataformaTour";
@@ -8,7 +8,25 @@ import { PortalTour } from "./PortalTour";
 import { ObraAnimada } from "./ObraAnimada";
 import "./hub.css";
 
+type Route = "hub" | "servicos";
+const SUB_IDS = ["fiscalizacao", "consultoria", "plataforma"];
+
+function subscribeToHash(callback: () => void) {
+  window.addEventListener("hashchange", callback);
+  return () => window.removeEventListener("hashchange", callback);
+}
+
+function getHashSnapshot(): Route {
+  const h = (window.location.hash || "").replace("#", "");
+  return h === "servicos" || SUB_IDS.includes(h) ? "servicos" : "hub";
+}
+
+function getHashServerSnapshot(): Route {
+  return "hub";
+}
+
 export function HubView() {
+  const route = useSyncExternalStore(subscribeToHash, getHashSnapshot, getHashServerSnapshot);
   const [entrarOpen, setEntrarOpen] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
 
@@ -20,9 +38,34 @@ export function HubView() {
   }, []);
 
   useEffect(() => {
-    const container = mainRef.current;
-    if (!container) return;
-    const els = container.querySelectorAll<HTMLElement>(".reveal:not(.in)");
+    document.body.classList.toggle("route-hub", route === "hub");
+    return () => {
+      document.body.classList.remove("route-hub");
+    };
+  }, [route]);
+
+  useEffect(() => {
+    function handleHash() {
+      const hash = window.location.hash.replace("#", "");
+      if (SUB_IDS.includes(hash)) {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            document.getElementById(hash)?.scrollIntoView({ behavior: "auto" });
+          });
+        });
+      } else {
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }
+    }
+    window.addEventListener("hashchange", handleHash);
+    handleHash();
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
+  useEffect(() => {
+    const active = mainRef.current?.querySelector(".view.is-active");
+    if (!active) return;
+    const els = active.querySelectorAll<HTMLElement>(".reveal:not(.in)");
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced || !("IntersectionObserver" in window)) {
       els.forEach((el) => el.classList.add("in"));
@@ -41,7 +84,7 @@ export function HubView() {
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
-  }, []);
+  }, [route]);
 
   useEffect(() => {
     if (!entrarOpen) return;
@@ -69,7 +112,7 @@ export function HubView() {
             <span className="brand-word">FISCALIS</span>
           </a>
           <div className="switcher">
-            <a href="#" className="nav-home">
+            <a href="#" className={route === "hub" ? "nav-home is-active" : "nav-home"}>
               <span className="full">Início</span>
               <span className="short" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none">
@@ -79,7 +122,7 @@ export function HubView() {
                 </svg>
               </span>
             </a>
-            <a href="#servicos">
+            <a href="#servicos" className={route === "servicos" ? "is-active" : undefined}>
               <span className="full">Serviços</span>
             </a>
             <div className="entrar-wrap">
@@ -125,17 +168,15 @@ export function HubView() {
       </header>
 
       <main ref={mainRef}>
-        <div className="landing">
-          {/* ============ HERO ============ */}
+        {/* ============ HUB (landing, sem scroll no pc) ============ */}
+        <section className={route === "hub" ? "view is-active" : "view"} data-view="hub">
           <div className="wrap hub-hero">
             <div className="hub-mark"><img src={LOGO_SRC_DARK} alt="Fiscalis" /><span>FISCALIS</span></div>
             <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Engenharia · Fiscalização de obra</p>
             <h1>Fiscalização de obra, <em>à tua maneira.</em></h1>
-            <p className="hero-sub">Um serviço de fiscalização de obra independente, para quem constrói ou remodela. A mesma plataforma está também disponível para empresas de fiscalização.</p>
+            <p className="hero-sub">Fiscalização de obra independente, consultoria técnica pontual, ou uma plataforma completa para empresas de fiscalização — escolhe o que precisas.</p>
           </div>
-
-          {/* ============ SERVIÇOS ============ */}
-          <div className="wrap split" id="servicos">
+          <div className="wrap split">
             <a className="split-card" href="#fiscalizacao">
               <div className="split-art tint-b">
                 <span className="split-badges"><span>SERVIÇO</span><span>CENTRO · NORTE</span></span>
@@ -195,190 +236,193 @@ export function HubView() {
               </div>
             </a>
           </div>
-        </div>
-
-        {/* ============ COMPROMISSO ============ */}
-        <section className="block">
-          <div className="wrap">
-            <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
-              <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Compromisso</p>
-              <h2>Um responsável. <em>Do início ao fim.</em></h2>
-              <p>A mesma pessoa visita a obra e assina o relatório, sempre — sem equipas rotativas, sem &ldquo;quem calhar esta semana&rdquo;. Engenharia civil a sério, membro da Ordem dos Engenheiros.</p>
-            </div>
-            <div className="trust-note reveal" style={{ maxWidth: "42rem", marginInline: "auto" }}>Um único ponto de contacto, do primeiro dia ao último — sem perderes o fio à história da tua obra.</div>
-          </div>
         </section>
 
-        {/* ============ FISCALIZAÇÃO DE OBRA ============ */}
-        <section id="fiscalizacao">
-          <div className="wrap hero">
-            <div className="hero-grid">
-              <div>
-                <p className="eyebrow">Fiscalização de obra · Região Centro e Norte</p>
-                <h2 className="hero-title">Entre ti e o empreiteiro, <em>alguém tem de saber</em> o que está a ver.</h2>
-                <p className="hero-sub">Visitas regulares, registo do que é visto, e um portal próprio onde vês tudo — sem teres de perguntar nada a ninguém.</p>
-                <div className="hero-ctas">
-                  <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>
-                  <a className="btn btn-ghost" href="#plataforma">Tenho uma empresa de fiscalização →</a>
-                </div>
-                <a className="hero-portal" href="/portal/login">Já és cliente? Aceder ao portal ↗</a>
-              </div>
-              <div className="field-stack" aria-hidden="true">
-                <ObraAnimada />
-                <div className="field-card back">
-                  <div className="field-row"><span className="field-label">Obra</span><span className="field-value">Moradia — Aveiro</span></div>
-                  <div className="field-row"><span className="field-label">Progresso</span><span className="field-value">62%</span></div>
-                  <div className="field-bar"><span style={{ width: "62%" }}></span></div>
-                </div>
-                <div className="field-card front">
-                  <div className="field-row"><span className="field-label">Visita</span><span className="field-value" style={{ fontFamily: "var(--font-mono)" }}>18 Ago 2026</span></div>
-                  <p className="doc-title" style={{ marginTop: "0.6rem" }}>Estrutura de cobertura verificada — conforme projeto.</p>
-                  <div className="doc-checks">
-                    <span className="doc-check"><span className="doc-box filled"></span>Conforme</span>
-                    <span className="doc-check"><span className="doc-box"></span>Não conforme</span>
-                  </div>
-                  <div className="doc-sig">Eng.º Responsável · Fiscalização</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
+        {/* ============ SERVIÇOS (tudo o resto) ============ */}
+        <section className={route === "servicos" ? "view is-active" : "view"} data-view="servicos" id="servicos">
+          {/* ---- Compromisso ---- */}
           <section className="block">
             <div className="wrap">
               <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
-                <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Isto é o que vais ver</p>
-                <h2>O teu portal, com a tua obra a sério.</h2>
+                <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Compromisso</p>
+                <h2>Um responsável. <em>Do início ao fim.</em></h2>
+                <p>A mesma pessoa visita a obra e assina o relatório, sempre — sem equipas rotativas, sem &ldquo;quem calhar esta semana&rdquo;. Engenharia civil a sério, membro da Ordem dos Engenheiros.</p>
               </div>
-              <PortalTour />
+              <div className="trust-note reveal" style={{ maxWidth: "42rem", marginInline: "auto" }}>Um único ponto de contacto, do primeiro dia ao último — sem perderes o fio à história da tua obra.</div>
             </div>
           </section>
-        </section>
 
-        {/* ============ CONSULTORIA TÉCNICA ============ */}
-        <section className="block" id="consultoria">
-          <div className="wrap">
-            <div className="section-head reveal">
-              <p className="eyebrow">Consultoria técnica</p>
-              <h2>Uma opinião técnica, sem compromisso de obra contínua.</h2>
-              <p>Nem sempre precisas de fiscalização regular — às vezes só de alguém que perceba do assunto, uma vez.</p>
-            </div>
-            <div className="steps">
-              <div className="step reveal"><p className="step-num">01</p><h3>Antes de comprar</h3><p>Uma vistoria técnica ao imóvel antes de avançares — para saberes exatamente o que estás a comprar.</p></div>
-              <div className="step reveal"><p className="step-num">02</p><h3>Validar um orçamento</h3><p>Uma segunda opinião sobre a proposta do empreiteiro, antes de assinares.</p></div>
-              <div className="step reveal"><p className="step-num">03</p><h3>Resolver uma dúvida</h3><p>Um parecer técnico pontual sobre um problema concreto, sem contrato de fiscalização.</p></div>
-            </div>
-            <div className="reveal" style={{ marginTop: "2.5rem", textAlign: "center" }}>
-              <a className="btn btn-primary" href="/pedido?tipo=consultoria">Pedir uma consulta <span className="btn-arrow">→</span></a>
-            </div>
-          </div>
-        </section>
-
-        {/* ============ CTA: fiscalização / consultoria ============ */}
-        <section className="block">
-          <div className="wrap">
-            <div className="cover reveal">
-              <div>
-                <p className="eyebrow">Próximo passo</p>
-                <h2>Vamos falar da tua obra.</h2>
-                <p>Em que fase está, onde é (região Centro ou Norte), e o que precisas de acompanhar — recebes uma proposta e os próximos passos.</p>
-              </div>
-              <div className="sign-box">
-                <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>
-                {WHATSAPP_NUMBER && (
-                  <a
-                    className="btn btn-whatsapp"
-                    href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-                      "Olá! Vim do site da Fiscalis e gostava de falar sobre a fiscalização da minha obra."
-                    )}`}
-                    target="_blank"
-                    rel="noopener"
-                  >
-                    <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true">
-                      <path d="M12.04 2.1C6.58 2.1 2.15 6.53 2.15 11.99c0 1.83.48 3.55 1.4 5.06L2 22l5.1-1.5a9.86 9.86 0 0 0 4.94 1.32h.01c5.46 0 9.9-4.43 9.9-9.9 0-2.64-1.03-5.13-2.9-6.99a9.83 9.83 0 0 0-6.99-2.9Zm5.8 14.16c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.12.12-1.8-.11-.42-.14-.95-.31-1.63-.6-2.88-1.24-4.76-4.13-4.9-4.32-.14-.2-1.17-1.56-1.17-2.97s.74-2.11 1-2.4c.27-.28.58-.35.77-.35.19 0 .38 0 .55.01.18.01.41-.07.64.49.24.58.81 2 .88 2.15.07.15.12.32.02.52-.09.2-.14.32-.28.49-.15.18-.3.39-.43.52-.14.14-.29.29-.13.57.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.44.29.15.46.13.63-.07.17-.2.71-.83.9-1.12.19-.28.38-.23.63-.13.26.1 1.63.77 1.91.9.29.15.48.22.55.34.07.12.07.68-.17 1.36Z" />
-                    </svg>
-                    Falar no WhatsApp
-                  </a>
-                )}
-                <div className="sign-line"><span>GERAL@FISCALIS-ENGENHARIA.PT</span></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ============ PLATAFORMA DIGITAL ============ */}
-        <section id="plataforma">
-          <div className="wrap hero">
-            <div className="hero-grid">
-              <div>
-                <p className="eyebrow">Plataforma digital · Para empresas</p>
-                <h2 className="hero-title">A obra não pára.<br />Os registos <em>também não podiam.</em></h2>
-                <p className="hero-sub">Fiscalis junta visitas, não conformidades, relatórios e o próprio cliente numa só plataforma — sem perder uma fotografia, um prazo ou uma assinatura pelo caminho.</p>
-                <div className="hero-ctas">
-                  <a className="btn btn-primary" href="/pedido?tipo=demonstracao">Pedir uma demonstração <span className="btn-arrow">→</span></a>
-                  <a className="btn btn-ghost" href="#fiscalizacao">Sou dono de obra, não empresa →</a>
-                </div>
-                <p className="hero-note">Sem instalação. Um separador por obra. Cada cliente só vê a obra dele.</p>
-                <a className="hero-portal" href="/login">Já usas a Fiscalis? Entrar na plataforma ↗</a>
-              </div>
-              <div className="doc-stack" aria-hidden="true">
-                <ObraAnimada />
-                <div className="doc-card mini back">
-                  <div className="doc-mini-date">18 Ago 2026</div>
-                  <div className="doc-mini-obra">Obra Teste Cliente</div>
-                  <div className="doc-mini-meta"><span className="chip chip-ok">Realizada</span><span>6 fotos</span></div>
-                </div>
-                <div className="doc-card front">
-                  <div className="doc-row"><span className="doc-code">NC-014</span><span className="chip chip-warn">MAIOR</span></div>
-                  <p className="doc-title">Impermeabilização incompleta na cobertura norte</p>
-                  <div className="doc-checks">
-                    <span className="doc-check"><span className="doc-box"></span>Crítica</span>
-                    <span className="doc-check"><span className="doc-box filled"></span>Maior</span>
-                    <span className="doc-check"><span className="doc-box"></span>Menor</span>
+          {/* ---- Fiscalização de obra ---- */}
+          <section id="fiscalizacao">
+            <div className="wrap hero">
+              <div className="hero-grid">
+                <div>
+                  <p className="eyebrow">Fiscalização de obra · Região Centro e Norte</p>
+                  <h2 className="hero-title">Entre ti e o empreiteiro, <em>alguém tem de saber</em> o que está a ver.</h2>
+                  <p className="hero-sub">Visitas regulares, registo do que é visto, e um portal próprio onde vês tudo — sem teres de perguntar nada a ninguém.</p>
+                  <div className="hero-ctas">
+                    <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>
+                    <a className="btn btn-ghost" href="#plataforma">Tenho uma empresa de fiscalização →</a>
                   </div>
-                  <div className="doc-sig">Fiscalização · Data: ___/___/______</div>
+                  <a className="hero-portal" href="/portal/login">Já és cliente? Aceder ao portal ↗</a>
+                </div>
+                <div className="field-stack" aria-hidden="true">
+                  <ObraAnimada />
+                  <div className="field-card back">
+                    <div className="field-row"><span className="field-label">Obra</span><span className="field-value">Moradia — Aveiro</span></div>
+                    <div className="field-row"><span className="field-label">Progresso</span><span className="field-value">62%</span></div>
+                    <div className="field-bar"><span style={{ width: "62%" }}></span></div>
+                  </div>
+                  <div className="field-card front">
+                    <div className="field-row"><span className="field-label">Visita</span><span className="field-value" style={{ fontFamily: "var(--font-mono)" }}>18 Ago 2026</span></div>
+                    <p className="doc-title" style={{ marginTop: "0.6rem" }}>Estrutura de cobertura verificada — conforme projeto.</p>
+                    <div className="doc-checks">
+                      <span className="doc-check"><span className="doc-box filled"></span>Conforme</span>
+                      <span className="doc-check"><span className="doc-box"></span>Não conforme</span>
+                    </div>
+                    <div className="doc-sig">Eng.º Responsável · Fiscalização</div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <section className="block">
-            <div className="wrap">
-              <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
-                <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Isto é o que vais ver</p>
-                <h2>A plataforma em ação, do dashboard ao portal do cliente.</h2>
+            <section className="block">
+              <div className="wrap">
+                <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
+                  <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Isto é o que vais ver</p>
+                  <h2>O teu portal, com a tua obra a sério.</h2>
+                </div>
+                <PortalTour />
               </div>
-              <PlataformaTour />
-            </div>
+            </section>
           </section>
 
-          <section className="block" id="funciona">
+          {/* ---- Consultoria técnica ---- */}
+          <section className="block" id="consultoria">
             <div className="wrap">
               <div className="section-head reveal">
-                <p className="eyebrow">Como funciona</p>
-                <h2>Da obra ao portal, sem passos a mais.</h2>
+                <p className="eyebrow">Consultoria técnica</p>
+                <h2>Uma opinião técnica, sem compromisso de obra contínua.</h2>
+                <p>Nem sempre precisas de fiscalização regular — às vezes só de alguém que perceba do assunto, uma vez.</p>
               </div>
               <div className="steps">
-                <div className="step reveal"><p className="step-num">01</p><h3>Visita</h3><p>O fiscal vai à obra, tira fotos e regista notas — no telemóvel, no local, sem passar por papel.</p></div>
-                <div className="step reveal"><p className="step-num">02</p><h3>Registo</h3><p>Se houver algo a corrigir, gera-se logo o auto de não conformidade. O relatório sai a seguir, com um clique.</p></div>
-                <div className="step reveal"><p className="step-num">03</p><h3>Portal</h3><p>Tudo aparece automaticamente no portal do cliente — sem reenviar, sem copiar, sem esperar.</p></div>
+                <div className="step reveal"><p className="step-num">01</p><h3>Antes de comprar</h3><p>Uma vistoria técnica ao imóvel antes de avançares — para saberes exatamente o que estás a comprar.</p></div>
+                <div className="step reveal"><p className="step-num">02</p><h3>Validar um orçamento</h3><p>Uma segunda opinião sobre a proposta do empreiteiro, antes de assinares.</p></div>
+                <div className="step reveal"><p className="step-num">03</p><h3>Resolver uma dúvida</h3><p>Um parecer técnico pontual sobre um problema concreto, sem contrato de fiscalização.</p></div>
+              </div>
+              <div className="reveal" style={{ marginTop: "2.5rem", textAlign: "center" }}>
+                <a className="btn btn-primary" href="/pedido?tipo=consultoria">Pedir uma consulta <span className="btn-arrow">→</span></a>
               </div>
             </div>
           </section>
 
+          {/* ---- CTA: fiscalização / consultoria ---- */}
           <section className="block">
             <div className="wrap">
               <div className="cover reveal">
                 <div>
                   <p className="eyebrow">Próximo passo</p>
-                  <h2>Vamos pôr a tua primeira obra na plataforma.</h2>
-                  <p>Mostramos-te o dashboard do engenheiro fiscal e o portal do cliente com uma obra a sério — a tua, se quiseres — para veres exatamente o que muda no dia a dia.</p>
+                  <h2>Vamos falar da tua obra.</h2>
+                  <p>Em que fase está, onde é (região Centro ou Norte), e o que precisas de acompanhar — recebes uma proposta e os próximos passos.</p>
                 </div>
                 <div className="sign-box">
-                  <a className="btn btn-primary" href="/pedido?tipo=demonstracao">Pedir uma demonstração <span className="btn-arrow">→</span></a>
+                  <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>
+                  {WHATSAPP_NUMBER && (
+                    <a
+                      className="btn btn-whatsapp"
+                      href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+                        "Olá! Vim do site da Fiscalis e gostava de falar sobre a fiscalização da minha obra."
+                      )}`}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true">
+                        <path d="M12.04 2.1C6.58 2.1 2.15 6.53 2.15 11.99c0 1.83.48 3.55 1.4 5.06L2 22l5.1-1.5a9.86 9.86 0 0 0 4.94 1.32h.01c5.46 0 9.9-4.43 9.9-9.9 0-2.64-1.03-5.13-2.9-6.99a9.83 9.83 0 0 0-6.99-2.9Zm5.8 14.16c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.12.12-1.8-.11-.42-.14-.95-.31-1.63-.6-2.88-1.24-4.76-4.13-4.9-4.32-.14-.2-1.17-1.56-1.17-2.97s.74-2.11 1-2.4c.27-.28.58-.35.77-.35.19 0 .38 0 .55.01.18.01.41-.07.64.49.24.58.81 2 .88 2.15.07.15.12.32.02.52-.09.2-.14.32-.28.49-.15.18-.3.39-.43.52-.14.14-.29.29-.13.57.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.44.29.15.46.13.63-.07.17-.2.71-.83.9-1.12.19-.28.38-.23.63-.13.26.1 1.63.77 1.91.9.29.15.48.22.55.34.07.12.07.68-.17 1.36Z" />
+                      </svg>
+                      Falar no WhatsApp
+                    </a>
+                  )}
                   <div className="sign-line"><span>GERAL@FISCALIS-ENGENHARIA.PT</span></div>
                 </div>
               </div>
             </div>
+          </section>
+
+          {/* ---- Plataforma digital ---- */}
+          <section id="plataforma">
+            <div className="wrap hero">
+              <div className="hero-grid">
+                <div>
+                  <p className="eyebrow">Plataforma digital · Para empresas</p>
+                  <h2 className="hero-title">A obra não pára.<br />Os registos <em>também não podiam.</em></h2>
+                  <p className="hero-sub">Fiscalis junta visitas, não conformidades, relatórios e o próprio cliente numa só plataforma — sem perder uma fotografia, um prazo ou uma assinatura pelo caminho.</p>
+                  <div className="hero-ctas">
+                    <a className="btn btn-primary" href="/pedido?tipo=demonstracao">Pedir uma demonstração <span className="btn-arrow">→</span></a>
+                    <a className="btn btn-ghost" href="#fiscalizacao">Sou dono de obra, não empresa →</a>
+                  </div>
+                  <p className="hero-note">Sem instalação. Um separador por obra. Cada cliente só vê a obra dele.</p>
+                  <a className="hero-portal" href="/login">Já usas a Fiscalis? Entrar na plataforma ↗</a>
+                </div>
+                <div className="doc-stack" aria-hidden="true">
+                  <ObraAnimada />
+                  <div className="doc-card mini back">
+                    <div className="doc-mini-date">18 Ago 2026</div>
+                    <div className="doc-mini-obra">Obra Teste Cliente</div>
+                    <div className="doc-mini-meta"><span className="chip chip-ok">Realizada</span><span>6 fotos</span></div>
+                  </div>
+                  <div className="doc-card front">
+                    <div className="doc-row"><span className="doc-code">NC-014</span><span className="chip chip-warn">MAIOR</span></div>
+                    <p className="doc-title">Impermeabilização incompleta na cobertura norte</p>
+                    <div className="doc-checks">
+                      <span className="doc-check"><span className="doc-box"></span>Crítica</span>
+                      <span className="doc-check"><span className="doc-box filled"></span>Maior</span>
+                      <span className="doc-check"><span className="doc-box"></span>Menor</span>
+                    </div>
+                    <div className="doc-sig">Fiscalização · Data: ___/___/______</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <section className="block">
+              <div className="wrap">
+                <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
+                  <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Isto é o que vais ver</p>
+                  <h2>A plataforma em ação, do dashboard ao portal do cliente.</h2>
+                </div>
+                <PlataformaTour />
+              </div>
+            </section>
+
+            <section className="block" id="funciona">
+              <div className="wrap">
+                <div className="section-head reveal">
+                  <p className="eyebrow">Como funciona</p>
+                  <h2>Da obra ao portal, sem passos a mais.</h2>
+                </div>
+                <div className="steps">
+                  <div className="step reveal"><p className="step-num">01</p><h3>Visita</h3><p>O fiscal vai à obra, tira fotos e regista notas — no telemóvel, no local, sem passar por papel.</p></div>
+                  <div className="step reveal"><p className="step-num">02</p><h3>Registo</h3><p>Se houver algo a corrigir, gera-se logo o auto de não conformidade. O relatório sai a seguir, com um clique.</p></div>
+                  <div className="step reveal"><p className="step-num">03</p><h3>Portal</h3><p>Tudo aparece automaticamente no portal do cliente — sem reenviar, sem copiar, sem esperar.</p></div>
+                </div>
+              </div>
+            </section>
+
+            <section className="block">
+              <div className="wrap">
+                <div className="cover reveal">
+                  <div>
+                    <p className="eyebrow">Próximo passo</p>
+                    <h2>Vamos pôr a tua primeira obra na plataforma.</h2>
+                    <p>Mostramos-te o dashboard do engenheiro fiscal e o portal do cliente com uma obra a sério — a tua, se quiseres — para veres exatamente o que muda no dia a dia.</p>
+                  </div>
+                  <div className="sign-box">
+                    <a className="btn btn-primary" href="/pedido?tipo=demonstracao">Pedir uma demonstração <span className="btn-arrow">→</span></a>
+                    <div className="sign-line"><span>GERAL@FISCALIS-ENGENHARIA.PT</span></div>
+                  </div>
+                </div>
+              </div>
+            </section>
           </section>
         </section>
       </main>

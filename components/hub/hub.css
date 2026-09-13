@@ -72,7 +72,8 @@ body.hub-body { background: var(--bg); color: var(--text); font-family: var(--fo
 .hub-page .brand-word { font-family: var(--font-mono); font-size: 0.82rem; letter-spacing: 0.16em; color: var(--heading); font-weight: 600; }
 .hub-page .switcher { display: flex; align-items: center; gap: 0.25rem; background: var(--surface-2); border: 1px solid var(--border-soft); border-radius: 8px; padding: 0.25rem; }
 .hub-page .switcher a { font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.7rem; border-radius: 6px; text-decoration: none; color: var(--text-muted); transition: background 0.15s ease, color 0.15s ease; white-space: nowrap; }
-.hub-page .switcher a:hover { color: var(--heading); }
+.hub-page .switcher a.is-active { background: var(--accent); color: var(--accent-contrast); }
+.hub-page .switcher a:hover:not(.is-active) { color: var(--heading); }
 .hub-page .entrar-wrap { position: relative; }
 .hub-page .switcher-entrar { font-family: var(--font-body); font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.7rem; border-radius: 6px; border: none; background: transparent; cursor: pointer; color: var(--accent-deep); transition: background 0.15s ease, color 0.15s ease; white-space: nowrap; }
 .hub-page .switcher-entrar:hover, .hub-page .switcher-entrar.is-open { color: var(--heading); background: var(--surface); }
@@ -98,9 +99,13 @@ body.hub-body { background: var(--bg); color: var(--text); font-family: var(--fo
   .hub-page .entrar-menu { right: -0.5rem; width: 14rem; }
 }
 
+/* ---------- View visibility ---------- */
+.hub-page .view { display: none; }
+.hub-page .view.is-active { display: block; }
+
 .hub-page section[id] { scroll-margin-top: 76px; }
 .hub-page section.block { padding-block: clamp(3rem, 7vw, 5.5rem); border-top: 1px solid var(--border-soft); }
-.hub-page main > section.block:first-of-type { border-top: none; }
+.hub-page .view > section.block:first-of-type { border-top: none; }
 .hub-page section#fiscalizacao, .hub-page section#plataforma { border-top: 1px solid var(--border-soft); }
 .hub-page #muda, .hub-page #funciona, .hub-page #porque { background: var(--surface); }
 .hub-page .section-head { max-width: 42rem; margin-bottom: clamp(2rem, 4vw, 3rem); }
@@ -408,10 +413,15 @@ body.hub-body { background: var(--bg); color: var(--text); font-family: var(--fo
 @media (max-width: 980px) { .hub-page .split { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 640px) { .hub-page .split { grid-template-columns: 1fr; } }
 
-/* Landing (hero + serviços): fills the viewport on desktop so the 3 cards
-   are visible without scrolling; mobile scrolls normally. */
+/* No-scroll hub route: shell becomes a fixed-height flex column that fits in one viewport,
+   so the hero + 3 cards are visible without scrolling. Desktop only — on mobile the hub
+   content doesn't reliably fit one screen, so it scrolls like every other view instead. */
 @media (min-width: 781px) {
-  .hub-page .landing { min-height: calc(100vh - 76px); display: flex; flex-direction: column; justify-content: center; padding-block: 1rem; }
+  body.route-hub { height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+  body.route-hub header.site { flex-shrink: 0; position: static; }
+  body.route-hub main { flex: 1; min-height: 0; display: flex; }
+  body.route-hub .view.is-active { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+  body.route-hub footer { display: none; }
 }
 
 .hub-page .split-card {
