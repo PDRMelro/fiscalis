@@ -295,8 +295,9 @@ export function HubView() {
             <section className="block">
               <div className="wrap">
                 <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
-                  <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Isto é o que vais ver</p>
-                  <h2>O teu portal, com a tua obra a sério.</h2>
+                  <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Ao contratares o serviço</p>
+                  <h2>Ganhas acesso ao portal da tua obra.</h2>
+                  <p>É aqui que vês tudo o que o fiscal regista — visitas, relatórios e não conformidades, sempre atualizados. Isto é o que vais ver:</p>
                 </div>
                 <PortalTour />
               </div>
@@ -415,6 +416,23 @@ export function HubView() {
                   <h2>A plataforma em ação, do dashboard ao portal do cliente.</h2>
                 </div>
                 <PlataformaTour />
+              </div>
+            </section>
+
+            <section className="block">
+              <div className="wrap">
+                <div className="section-head reveal">
+                  <p className="eyebrow">Funcionalidades</p>
+                  <h2>Tudo o que a tua equipa precisa, num só lugar.</h2>
+                </div>
+                <div className="features">
+                  <div className="feature reveal"><h3>Obras e clientes</h3><p>Cada obra com o seu separador — cliente, visitas, documentos e progresso, tudo junto.</p></div>
+                  <div className="feature reveal"><h3>Visitas e fotos</h3><p>Regista o que vês no local, com fotos, sem passar por papel nem por outro telemóvel.</p></div>
+                  <div className="feature reveal"><h3>Não conformidades</h3><p>Auto gerado automaticamente, com código sequencial e alerta de prazo.</p></div>
+                  <div className="feature reveal"><h3>Relatórios</h3><p>Prontos a enviar com um clique, sempre no mesmo modelo profissional.</p></div>
+                  <div className="feature reveal"><h3>Calendário</h3><p>Todas as visitas agendadas, de todas as obras, numa só vista.</p></div>
+                  <div className="feature reveal"><h3>Propostas</h3><p>Gera propostas de serviço profissionais para novos clientes, direto da plataforma.</p></div>
+                </div>
               </div>
             </section>
 

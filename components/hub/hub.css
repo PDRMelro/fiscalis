@@ -253,8 +253,25 @@ body.hub-body { background: var(--bg); color: var(--text); font-family: var(--fo
 @media (max-width: 720px) { .hub-page .steps { grid-template-columns: 1fr; } .hub-page .step + .step { border-left: none; border-top: 1px solid var(--border-soft); } }
 
 .hub-page .steps.steps-4 { grid-template-columns: repeat(4, 1fr); }
-@media (max-width: 900px) { .hub-page .steps.steps-4 { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 480px) { .hub-page .steps.steps-4 { grid-template-columns: 1fr; } }
+@media (max-width: 900px) {
+  .hub-page .steps.steps-4 { grid-template-columns: repeat(2, 1fr); }
+  .hub-page .steps.steps-4 .step { border-left: none; }
+  .hub-page .steps.steps-4 .step:nth-child(even) { border-left: 1px solid var(--border-soft); }
+  .hub-page .steps.steps-4 .step:nth-child(n+3) { border-top: 1px solid var(--border-soft); }
+}
+@media (max-width: 480px) {
+  .hub-page .steps.steps-4 { grid-template-columns: 1fr; }
+  .hub-page .steps.steps-4 .step:nth-child(even) { border-left: none; }
+  .hub-page .steps.steps-4 .step:nth-child(n+2) { border-top: 1px solid var(--border-soft); }
+}
+
+/* ---------- Funcionalidades (grelha de features) ---------- */
+.hub-page .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border-soft); border: 1px solid var(--border-soft); }
+.hub-page .feature { background: var(--bg); padding: 1.5rem clamp(1rem, 3vw, 1.5rem); }
+.hub-page .feature h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--heading); }
+.hub-page .feature p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.55; }
+@media (max-width: 900px) { .hub-page .features { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .hub-page .features { grid-template-columns: 1fr; } }
 
 /* ---------- Trust note ---------- */
 .hub-page .trust-note { background: var(--surface-2); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 2px; padding: 1.1rem 1.35rem; font-size: 0.95rem; color: var(--text); margin-top: 1.5rem; }
