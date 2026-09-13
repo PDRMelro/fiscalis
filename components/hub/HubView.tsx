@@ -379,7 +379,7 @@ export function HubView() {
               <div className="hero-grid">
                 <div>
                   <p className="eyebrow">Plataforma digital · Para empresas</p>
-                  <h2 className="hero-title">A obra não pára.<br />Os registos <em>também não podiam.</em></h2>
+                  <h2 className="hero-title">A obra não pára.<br />Os registos <em>também não.</em></h2>
                   <p className="hero-sub">Fiscalis junta visitas, não conformidades, relatórios e o próprio cliente numa só plataforma — sem perder uma fotografia, um prazo ou uma assinatura pelo caminho.</p>
                   <div className="hero-ctas">
                     <a className="btn btn-primary" href="/pedido?tipo=demonstracao">Pedir uma demonstração <span className="btn-arrow">→</span></a>
