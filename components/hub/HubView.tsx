@@ -125,24 +125,17 @@ export function HubView() {
       </header>
 
       <main ref={mainRef}>
-        {/* ============ HERO ============ */}
-        <div className="wrap hub-hero">
-          <div className="hub-mark"><img src={LOGO_SRC_DARK} alt="Fiscalis" /><span>FISCALIS</span></div>
-          <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Engenharia · Fiscalização de obra</p>
-          <h1>Fiscalização de obra, <em>à tua maneira.</em></h1>
-          <p className="hero-sub">Uma plataforma para quem fiscaliza obras. Um serviço completo para quem só quer alguém de confiança do lado da obra.</p>
-          <a className="hero-portal" href="#servicos">Ver os serviços ↓</a>
-        </div>
-
-        {/* ============ SERVIÇOS ============ */}
-        <section className="block" id="servicos">
-          <div className="wrap">
-            <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
-              <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Serviços</p>
-              <h2>Três formas de nunca perderes o controlo da obra.</h2>
-            </div>
+        <div className="landing">
+          {/* ============ HERO ============ */}
+          <div className="wrap hub-hero">
+            <div className="hub-mark"><img src={LOGO_SRC_DARK} alt="Fiscalis" /><span>FISCALIS</span></div>
+            <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Engenharia · Fiscalização de obra</p>
+            <h1>Fiscalização de obra, <em>à tua maneira.</em></h1>
+            <p className="hero-sub">Um serviço de fiscalização de obra independente, para quem constrói ou remodela. A mesma plataforma está também disponível para empresas de fiscalização.</p>
           </div>
-          <div className="wrap split">
+
+          {/* ============ SERVIÇOS ============ */}
+          <div className="wrap split" id="servicos">
             <a className="split-card" href="#fiscalizacao">
               <div className="split-art tint-b">
                 <span className="split-badges"><span>SERVIÇO</span><span>CENTRO · NORTE</span></span>
@@ -202,7 +195,7 @@ export function HubView() {
               </div>
             </a>
           </div>
-        </section>
+        </div>
 
         {/* ============ COMPROMISSO ============ */}
         <section className="block">
@@ -257,26 +250,6 @@ export function HubView() {
                 <h2>O teu portal, com a tua obra a sério.</h2>
               </div>
               <PortalTour />
-            </div>
-          </section>
-
-          <section className="block" id="porque">
-            <div className="wrap">
-              <div className="section-head reveal">
-                <p className="eyebrow">Porquê fiscalização</p>
-                <h2>Sem alguém do teu lado, estás a confiar às cegas.</h2>
-                <p>Não é desconfiança do empreiteiro — é que ninguém devia ter de ser, ao mesmo tempo, cliente e especialista técnico.</p>
-              </div>
-              <div className="exhibit">
-                <div className="exhibit-row reveal">
-                  <div className="exhibit-cell before"><p>Só percebes que há um problema estrutural quando já está tapado — e caro de corrigir.</p></div>
-                  <div className="exhibit-cell after"><p>Não conformidades identificadas e registadas formalmente, com prazo de correção.</p></div>
-                </div>
-                <div className="exhibit-row reveal">
-                  <div className="exhibit-cell before"><p>Ligas ao empreiteiro a perguntar como vai, e ficas com a palavra dele, sem mais nada.</p></div>
-                  <div className="exhibit-cell after"><p>Tens um portal próprio — progresso, relatórios e visitas, sempre atualizado.</p></div>
-                </div>
-              </div>
             </div>
           </section>
         </section>
@@ -344,7 +317,7 @@ export function HubView() {
                   <a className="btn btn-primary" href="/pedido?tipo=demonstracao">Pedir uma demonstração <span className="btn-arrow">→</span></a>
                   <a className="btn btn-ghost" href="#fiscalizacao">Sou dono de obra, não empresa →</a>
                 </div>
-                <p className="hero-note">Sem instalação. Sem folhas soltas. Um separador por obra.</p>
+                <p className="hero-note">Sem instalação. Um separador por obra. Cada cliente só vê a obra dele.</p>
                 <a className="hero-portal" href="/login">Já usas a Fiscalis? Entrar na plataforma ↗</a>
               </div>
               <div className="doc-stack" aria-hidden="true">
@@ -378,26 +351,6 @@ export function HubView() {
             </div>
           </section>
 
-          <section className="block" id="muda">
-            <div className="wrap">
-              <div className="section-head reveal">
-                <p className="eyebrow">O que muda</p>
-                <h2>Isto já aconteceu na tua última obra.</h2>
-                <p>Nenhum destes problemas é sobre falta de cuidado — é sobre o registo viver em quatro sítios diferentes ao mesmo tempo.</p>
-              </div>
-              <div className="exhibit">
-                <div className="exhibit-row reveal">
-                  <div className="exhibit-cell before"><p>Não conformidade escrita num Word qualquer, sem numeração nem controlo de prazo.</p></div>
-                  <div className="exhibit-cell after"><p>Auto de não conformidade automático, no modelo oficial, com código sequencial e alerta de prazo.</p></div>
-                </div>
-                <div className="exhibit-row reveal">
-                  <div className="exhibit-cell before"><p>O cliente a perguntar &ldquo;como vai a obra?&rdquo; por telefone, sem nada concreto para mostrar.</p></div>
-                  <div className="exhibit-cell after"><p>Portal do cliente com progresso, relatórios e visitas sempre atualizados — sem teres de responder.</p></div>
-                </div>
-              </div>
-            </div>
-          </section>
-
           <section className="block" id="funciona">
             <div className="wrap">
               <div className="section-head reveal">
@@ -409,17 +362,6 @@ export function HubView() {
                 <div className="step reveal"><p className="step-num">02</p><h3>Registo</h3><p>Se houver algo a corrigir, gera-se logo o auto de não conformidade. O relatório sai a seguir, com um clique.</p></div>
                 <div className="step reveal"><p className="step-num">03</p><h3>Portal</h3><p>Tudo aparece automaticamente no portal do cliente — sem reenviar, sem copiar, sem esperar.</p></div>
               </div>
-            </div>
-          </section>
-
-          <section className="block">
-            <div className="wrap">
-              <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
-                <p className="eyebrow" style={{ justifyContent: "center", display: "flex" }}>Segurança</p>
-                <h2>Cada cliente só vê a obra dele. A sério.</h2>
-                <p>Não é uma opção escondida num menu — é uma regra aplicada na própria base de dados, obra a obra, cliente a cliente.</p>
-              </div>
-              <div className="trust-note reveal" style={{ maxWidth: "42rem", marginInline: "auto" }}>&ldquo;Só vês os dados da tua obra. O acesso é validado do lado do servidor — e não apenas escondido na interface.&rdquo;</div>
             </div>
           </section>
 
