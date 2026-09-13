@@ -72,8 +72,7 @@ body.hub-body { background: var(--bg); color: var(--text); font-family: var(--fo
 .hub-page .brand-word { font-family: var(--font-mono); font-size: 0.82rem; letter-spacing: 0.16em; color: var(--heading); font-weight: 600; }
 .hub-page .switcher { display: flex; align-items: center; gap: 0.25rem; background: var(--surface-2); border: 1px solid var(--border-soft); border-radius: 8px; padding: 0.25rem; }
 .hub-page .switcher a { font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.7rem; border-radius: 6px; text-decoration: none; color: var(--text-muted); transition: background 0.15s ease, color 0.15s ease; white-space: nowrap; }
-.hub-page .switcher a.is-active { background: var(--accent); color: var(--accent-contrast); }
-.hub-page .switcher a:hover:not(.is-active) { color: var(--heading); }
+.hub-page .switcher a:hover { color: var(--heading); }
 .hub-page .entrar-wrap { position: relative; }
 .hub-page .switcher-entrar { font-family: var(--font-body); font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.7rem; border-radius: 6px; border: none; background: transparent; cursor: pointer; color: var(--accent-deep); transition: background 0.15s ease, color 0.15s ease; white-space: nowrap; }
 .hub-page .switcher-entrar:hover, .hub-page .switcher-entrar.is-open { color: var(--heading); background: var(--surface); }
@@ -94,17 +93,15 @@ body.hub-body { background: var(--bg); color: var(--text); font-family: var(--fo
 @media (max-width: 560px) {
   .hub-page .switcher { gap: 0.15rem; }
   .hub-page .switcher a, .hub-page .switcher-entrar { padding: 0.4rem 0.5rem; font-size: 0.72rem; }
-  .hub-page .switcher a[data-route="hub"] span.full { display: none; }
-  .hub-page .switcher a[data-route="hub"] span.short { display: inline-flex; }
+  .hub-page .switcher a.nav-home span.full { display: none; }
+  .hub-page .switcher a.nav-home span.short { display: inline-flex; }
   .hub-page .entrar-menu { right: -0.5rem; width: 14rem; }
 }
 
-/* ---------- View visibility ---------- */
-.hub-page .view { display: none; }
-.hub-page .view.is-active { display: block; }
-
+.hub-page section[id] { scroll-margin-top: 76px; }
 .hub-page section.block { padding-block: clamp(3rem, 7vw, 5.5rem); border-top: 1px solid var(--border-soft); }
-.hub-page .view > section.block:first-of-type { border-top: none; }
+.hub-page main > section.block:first-of-type { border-top: none; }
+.hub-page section#fiscalizacao, .hub-page section#plataforma { border-top: 1px solid var(--border-soft); }
 .hub-page #muda, .hub-page #funciona, .hub-page #porque { background: var(--surface); }
 .hub-page .section-head { max-width: 42rem; margin-bottom: clamp(2rem, 4vw, 3rem); }
 .hub-page .section-head h2 { font-size: clamp(1.7rem, 2.4vw + 1rem, 2.5rem); margin-top: 0.6rem; line-height: 1.15; }
@@ -137,8 +134,8 @@ body.hub-body { background: var(--bg); color: var(--text); font-family: var(--fo
 @media (max-width: 640px) { .hub-page .hero::before { width: 90vw; height: 360px; opacity: 0.1; } }
 .hub-page .hero-grid { position: relative; display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
 @media (max-width: 900px) { .hub-page .hero-grid { grid-template-columns: 1fr; } }
-.hub-page .hero h1 { font-size: clamp(2.2rem, 3.6vw + 1rem, 3.7rem); line-height: 1.08; letter-spacing: -0.01em; margin-block: 1rem 1.35rem; }
-.hub-page .hero h1 em { font-style: normal; font-weight: 700; color: var(--accent); font-size: 1.12em; }
+.hub-page .hero .hero-title { font-size: clamp(2.2rem, 3.6vw + 1rem, 3.7rem); line-height: 1.08; letter-spacing: -0.01em; margin-block: 1rem 1.35rem; }
+.hub-page .hero .hero-title em { font-style: normal; font-weight: 700; color: var(--accent); font-size: 1.12em; }
 .hub-page .hero-sub { font-size: 1.08rem; color: var(--text-muted); max-width: 34rem; line-height: 1.65; }
 .hub-page .hero-ctas { display: flex; align-items: center; gap: 1rem; margin-top: 2.1rem; flex-wrap: wrap; }
 .hub-page .hero-note { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); margin-top: 1.75rem; letter-spacing: 0.02em; }
@@ -400,26 +397,17 @@ body.hub-body { background: var(--bg); color: var(--text); font-family: var(--fo
 .hub-page .foot-brand .brand-word { font-size: 0.78rem; }
 
 /* ---------- Hub view ---------- */
-.hub-page .hub-hero { padding-block: clamp(1rem, 3vh, 2rem) clamp(0.75rem, 2vh, 1.25rem); text-align: center; }
+.hub-page .hub-hero { padding-block: clamp(2.5rem, 6vw, 4rem) clamp(1.5rem, 4vw, 2.5rem); text-align: center; }
 .hub-page .hub-mark { display: flex; align-items: center; justify-content: center; gap: 0.65rem; margin-bottom: clamp(0.75rem, 2vh, 1.25rem); }
 .hub-page .hub-mark img { height: clamp(28px, 4.5vh, 36px); width: auto; }
 .hub-page .hub-mark span { font-family: var(--font-mono); font-size: 0.9rem; letter-spacing: 0.2em; color: var(--heading); font-weight: 600; }
-.hub-page .hub-hero h1 { font-size: clamp(1.6rem, 2.4vw + 1.2vh, 2.6rem); max-width: 40rem; margin-inline: auto; }
-.hub-page .hub-hero .hero-sub { max-width: 32rem; margin-inline: auto; margin-top: 0.85rem; font-size: 1rem; }
+.hub-page .hub-hero h1 { font-size: clamp(1.8rem, 2.4vw + 1.2vh, 3rem); max-width: 40rem; margin-inline: auto; }
+.hub-page .hub-hero .hero-sub { max-width: 32rem; margin-inline: auto; margin-top: 0.85rem; font-size: 1.05rem; }
+.hub-page .hub-hero .hero-portal { margin-top: 1.5rem; }
 
-/* No-scroll hub route: shell becomes a fixed-height flex column that fits in one viewport.
-   Desktop only — on mobile the hub content doesn't reliably fit one screen, so it scrolls
-   like every other view instead of clipping. */
-@media (min-width: 781px) {
-  body.route-hub { height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-  body.route-hub header.site { flex-shrink: 0; position: static; }
-  body.route-hub main { flex: 1; min-height: 0; display: flex; }
-  body.route-hub .view.is-active { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
-  body.route-hub footer { display: none; }
-}
-.hub-page .split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1rem, 2.5vw, 1.75rem); padding-block: clamp(0.5rem, 1.5vh, 1rem) clamp(0.75rem, 2vh, 1.5rem); max-width: 62rem; margin-inline: auto; }
-@media (max-width: 780px) { .hub-page .split { grid-template-columns: 1fr; } }
-@media (max-height: 720px) { .hub-page .split-art { display: none; } }
+.hub-page .split { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2.5vw, 1.75rem); max-width: 74rem; margin-inline: auto; }
+@media (max-width: 980px) { .hub-page .split { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) { .hub-page .split { grid-template-columns: 1fr; } }
 
 .hub-page .split-card {
   display: block; text-decoration: none; position: relative; overflow: hidden;
@@ -442,6 +430,7 @@ body.hub-body { background: var(--bg); color: var(--text); font-family: var(--fo
 }
 .hub-page .split-art.tint-a { background: color-mix(in srgb, var(--heading) 6%, var(--surface-2)); }
 .hub-page .split-art.tint-b { background: color-mix(in srgb, var(--accent) 10%, var(--surface-2)); }
+.hub-page .split-art.tint-c { background: color-mix(in srgb, var(--ok) 10%, var(--surface-2)); }
 
 .hub-page .split-icon {
   position: relative; z-index: 1;

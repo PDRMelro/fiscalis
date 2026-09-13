@@ -7,6 +7,7 @@ export type ResultadoPedido = { error: string | null };
 const ROTULO_TIPO: Record<string, string> = {
   demonstracao: "Pedido de demonstração da plataforma",
   orcamento: "Pedido de orçamento de fiscalização",
+  consultoria: "Pedido de consultoria técnica",
 };
 
 export async function enviarPedido(_prev: ResultadoPedido, formData: FormData): Promise<ResultadoPedido> {

@@ -12,6 +12,10 @@ const TITULOS: Record<string, { titulo: string; texto: string }> = {
     titulo: "Pedir um orçamento",
     texto: "Conta-me em que fase está a tua obra, onde é (região Centro ou Norte), e o que precisas de acompanhar.",
   },
+  consultoria: {
+    titulo: "Pedir uma consulta técnica",
+    texto: "Conta-me o que precisas de esclarecer — antes de comprar, antes de assinar um orçamento, ou uma segunda opinião sobre um problema.",
+  },
 };
 
 export default async function PedidoPage({
@@ -20,7 +24,7 @@ export default async function PedidoPage({
   searchParams: Promise<{ tipo?: string }>;
 }) {
   const { tipo: tipoParam } = await searchParams;
-  const tipo = tipoParam === "orcamento" ? "orcamento" : "demonstracao";
+  const tipo = tipoParam === "orcamento" ? "orcamento" : tipoParam === "consultoria" ? "consultoria" : "demonstracao";
   const { titulo, texto } = TITULOS[tipo];
 
   return (

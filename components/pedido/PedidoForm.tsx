@@ -65,7 +65,13 @@ export function PedidoForm({ tipo }: { tipo: string }) {
         <textarea
           name="mensagem"
           rows={3}
-          placeholder={tipo === "orcamento" ? "Fase da obra, localização, o que precisas de acompanhar..." : "A tua empresa, quantas obras acompanhas..."}
+          placeholder={
+            tipo === "orcamento"
+              ? "Fase da obra, localização, o que precisas de acompanhar..."
+              : tipo === "consultoria"
+              ? "O que precisas de esclarecer, e para quando..."
+              : "A tua empresa, quantas obras acompanhas..."
+          }
           className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] text-[#1F1D19] bg-white focus:outline-none focus:border-[#14283A] resize-none"
         />
       </div>
