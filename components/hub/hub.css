@@ -99,15 +99,16 @@ body.hub-body { background: var(--bg); color: var(--text); font-family: var(--fo
   .hub-page .entrar-menu { right: -0.5rem; width: 14rem; }
 }
 
-/* ---------- View visibility ---------- */
+/* ---------- View / tab visibility ---------- */
 .hub-page .view { display: none; }
 .hub-page .view.is-active { display: block; }
+.hub-page .tab-panel { display: none; }
+.hub-page .tab-panel.is-active { display: block; }
 
 .hub-page section[id] { scroll-margin-top: 76px; }
 .hub-page section.block { padding-block: clamp(3rem, 7vw, 5.5rem); border-top: 1px solid var(--border-soft); }
 .hub-page .view > section.block:first-of-type { border-top: none; }
-.hub-page section#fiscalizacao, .hub-page section#plataforma { border-top: 1px solid var(--border-soft); }
-.hub-page #muda, .hub-page #funciona, .hub-page #porque { background: var(--surface); }
+.hub-page .tab-panel > section.block:first-of-type { border-top: none; }
 .hub-page .section-head { max-width: 42rem; margin-bottom: clamp(2rem, 4vw, 3rem); }
 .hub-page .section-head h2 { font-size: clamp(1.7rem, 2.4vw + 1rem, 2.5rem); margin-top: 0.6rem; line-height: 1.15; }
 .hub-page .section-head p { color: var(--text-muted); margin-top: 0.9rem; font-size: 1.02rem; }
@@ -468,3 +469,13 @@ body.hub-body { background: var(--bg); color: var(--text); font-family: var(--fo
 .hub-page .split-card p { color: var(--text-muted); font-size: 0.92rem; line-height: 1.55; }
 .hub-page .split-card .go { display: inline-flex; align-items: center; gap: 0.4rem; margin-top: 1rem; font-size: 0.85rem; font-weight: 700; color: var(--heading); }
 .hub-page .split-card:hover .go .btn-arrow { translate: 3px 0; }
+
+/* ---------- Serviços: separador de tabs ---------- */
+.hub-page .tab-bar { display: flex; justify-content: center; gap: 0.6rem; flex-wrap: wrap; margin-top: clamp(1.75rem, 4vw, 2.5rem); }
+.hub-page .tab-bar a {
+  font-family: var(--font-body); font-size: 0.88rem; font-weight: 600; padding: 0.7rem 1.4rem;
+  border-radius: 999px; border: 1px solid var(--border); color: var(--text-muted); text-decoration: none;
+  transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+}
+.hub-page .tab-bar a:hover:not(.is-active) { border-color: var(--accent-deep); color: var(--heading); }
+.hub-page .tab-bar a.is-active { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }

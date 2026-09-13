@@ -9,7 +9,8 @@ import { ObraAnimada } from "./ObraAnimada";
 import "./hub.css";
 
 type Route = "hub" | "servicos";
-const SUB_IDS = ["fiscalizacao", "consultoria", "plataforma"];
+type ServicoTab = "fiscalizacao" | "consultoria" | "plataforma";
+const SUB_IDS: ServicoTab[] = ["fiscalizacao", "consultoria", "plataforma"];
 
 function subscribeToHash(callback: () => void) {
   window.addEventListener("hashchange", callback);
@@ -18,7 +19,7 @@ function subscribeToHash(callback: () => void) {
 
 function getHashSnapshot(): Route {
   const h = (window.location.hash || "").replace("#", "");
-  return h === "servicos" || SUB_IDS.includes(h) ? "servicos" : "hub";
+  return h === "servicos" || (SUB_IDS as string[]).includes(h) ? "servicos" : "hub";
 }
 
 function getHashServerSnapshot(): Route {
@@ -27,6 +28,7 @@ function getHashServerSnapshot(): Route {
 
 export function HubView() {
   const route = useSyncExternalStore(subscribeToHash, getHashSnapshot, getHashServerSnapshot);
+  const [activeTab, setActiveTab] = useState<ServicoTab>("fiscalizacao");
   const [entrarOpen, setEntrarOpen] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
 
@@ -47,15 +49,10 @@ export function HubView() {
   useEffect(() => {
     function handleHash() {
       const hash = window.location.hash.replace("#", "");
-      if (SUB_IDS.includes(hash)) {
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            document.getElementById(hash)?.scrollIntoView({ behavior: "auto" });
-          });
-        });
-      } else {
-        window.scrollTo({ top: 0, behavior: "auto" });
+      if ((SUB_IDS as string[]).includes(hash)) {
+        setActiveTab(hash as ServicoTab);
       }
+      requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
     }
     window.addEventListener("hashchange", handleHash);
     handleHash();
@@ -238,9 +235,9 @@ export function HubView() {
           </div>
         </section>
 
-        {/* ============ SERVIÇOS (tudo o resto) ============ */}
+        {/* ============ SERVIÇOS (separado por separadores, não scroll contínuo) ============ */}
         <section className={route === "servicos" ? "view is-active" : "view"} data-view="servicos" id="servicos">
-          {/* ---- Compromisso ---- */}
+          {/* ---- Compromisso (comum aos 3) ---- */}
           <section className="block">
             <div className="wrap">
               <div className="section-head reveal" style={{ marginInline: "auto", textAlign: "center" }}>
@@ -249,11 +246,17 @@ export function HubView() {
                 <p>A mesma pessoa visita a obra e assina o relatório, sempre — sem equipas rotativas, sem &ldquo;quem calhar esta semana&rdquo;. Engenharia civil a sério, membro da Ordem dos Engenheiros.</p>
               </div>
               <div className="trust-note reveal" style={{ maxWidth: "42rem", marginInline: "auto" }}>Um único ponto de contacto, do primeiro dia ao último — sem perderes o fio à história da tua obra.</div>
+
+              <div className="tab-bar reveal">
+                <a href="#fiscalizacao" className={activeTab === "fiscalizacao" ? "is-active" : undefined}>Fiscalização de obra</a>
+                <a href="#consultoria" className={activeTab === "consultoria" ? "is-active" : undefined}>Consultoria técnica</a>
+                <a href="#plataforma" className={activeTab === "plataforma" ? "is-active" : undefined}>Plataforma digital</a>
+              </div>
             </div>
           </section>
 
           {/* ---- Fiscalização de obra ---- */}
-          <section id="fiscalizacao">
+          <section className={activeTab === "fiscalizacao" ? "tab-panel is-active" : "tab-panel"}>
             <div className="wrap hero">
               <div className="hero-grid">
                 <div>
@@ -295,61 +298,62 @@ export function HubView() {
                 <PortalTour />
               </div>
             </section>
+
+            <section className="block">
+              <div className="wrap">
+                <div className="cover reveal">
+                  <div>
+                    <p className="eyebrow">Próximo passo</p>
+                    <h2>Vamos falar da tua obra.</h2>
+                    <p>Em que fase está, onde é (região Centro ou Norte), e o que precisas de acompanhar — recebes uma proposta e os próximos passos.</p>
+                  </div>
+                  <div className="sign-box">
+                    <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>
+                    {WHATSAPP_NUMBER && (
+                      <a
+                        className="btn btn-whatsapp"
+                        href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+                          "Olá! Vim do site da Fiscalis e gostava de falar sobre a fiscalização da minha obra."
+                        )}`}
+                        target="_blank"
+                        rel="noopener"
+                      >
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true">
+                          <path d="M12.04 2.1C6.58 2.1 2.15 6.53 2.15 11.99c0 1.83.48 3.55 1.4 5.06L2 22l5.1-1.5a9.86 9.86 0 0 0 4.94 1.32h.01c5.46 0 9.9-4.43 9.9-9.9 0-2.64-1.03-5.13-2.9-6.99a9.83 9.83 0 0 0-6.99-2.9Zm5.8 14.16c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.12.12-1.8-.11-.42-.14-.95-.31-1.63-.6-2.88-1.24-4.76-4.13-4.9-4.32-.14-.2-1.17-1.56-1.17-2.97s.74-2.11 1-2.4c.27-.28.58-.35.77-.35.19 0 .38 0 .55.01.18.01.41-.07.64.49.24.58.81 2 .88 2.15.07.15.12.32.02.52-.09.2-.14.32-.28.49-.15.18-.3.39-.43.52-.14.14-.29.29-.13.57.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.44.29.15.46.13.63-.07.17-.2.71-.83.9-1.12.19-.28.38-.23.63-.13.26.1 1.63.77 1.91.9.29.15.48.22.55.34.07.12.07.68-.17 1.36Z" />
+                        </svg>
+                        Falar no WhatsApp
+                      </a>
+                    )}
+                    <div className="sign-line"><span>GERAL@FISCALIS-ENGENHARIA.PT</span></div>
+                  </div>
+                </div>
+              </div>
+            </section>
           </section>
 
           {/* ---- Consultoria técnica ---- */}
-          <section className="block" id="consultoria">
-            <div className="wrap">
-              <div className="section-head reveal">
-                <p className="eyebrow">Consultoria técnica</p>
-                <h2>Uma opinião técnica, sem compromisso de obra contínua.</h2>
-                <p>Nem sempre precisas de fiscalização regular — às vezes só de alguém que perceba do assunto, uma vez.</p>
-              </div>
-              <div className="steps">
-                <div className="step reveal"><p className="step-num">01</p><h3>Antes de comprar</h3><p>Uma vistoria técnica ao imóvel antes de avançares — para saberes exatamente o que estás a comprar.</p></div>
-                <div className="step reveal"><p className="step-num">02</p><h3>Validar um orçamento</h3><p>Uma segunda opinião sobre a proposta do empreiteiro, antes de assinares.</p></div>
-                <div className="step reveal"><p className="step-num">03</p><h3>Resolver uma dúvida</h3><p>Um parecer técnico pontual sobre um problema concreto, sem contrato de fiscalização.</p></div>
-              </div>
-              <div className="reveal" style={{ marginTop: "2.5rem", textAlign: "center" }}>
-                <a className="btn btn-primary" href="/pedido?tipo=consultoria">Pedir uma consulta <span className="btn-arrow">→</span></a>
-              </div>
-            </div>
-          </section>
-
-          {/* ---- CTA: fiscalização / consultoria ---- */}
-          <section className="block">
-            <div className="wrap">
-              <div className="cover reveal">
-                <div>
-                  <p className="eyebrow">Próximo passo</p>
-                  <h2>Vamos falar da tua obra.</h2>
-                  <p>Em que fase está, onde é (região Centro ou Norte), e o que precisas de acompanhar — recebes uma proposta e os próximos passos.</p>
+          <section className={activeTab === "consultoria" ? "tab-panel is-active" : "tab-panel"}>
+            <section className="block">
+              <div className="wrap">
+                <div className="section-head reveal">
+                  <p className="eyebrow">Consultoria técnica</p>
+                  <h2>Uma opinião técnica, sem compromisso de obra contínua.</h2>
+                  <p>Nem sempre precisas de fiscalização regular — às vezes só de alguém que perceba do assunto, uma vez.</p>
                 </div>
-                <div className="sign-box">
-                  <a className="btn btn-primary" href="/pedido?tipo=orcamento">Pedir um orçamento <span className="btn-arrow">→</span></a>
-                  {WHATSAPP_NUMBER && (
-                    <a
-                      className="btn btn-whatsapp"
-                      href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-                        "Olá! Vim do site da Fiscalis e gostava de falar sobre a fiscalização da minha obra."
-                      )}`}
-                      target="_blank"
-                      rel="noopener"
-                    >
-                      <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true">
-                        <path d="M12.04 2.1C6.58 2.1 2.15 6.53 2.15 11.99c0 1.83.48 3.55 1.4 5.06L2 22l5.1-1.5a9.86 9.86 0 0 0 4.94 1.32h.01c5.46 0 9.9-4.43 9.9-9.9 0-2.64-1.03-5.13-2.9-6.99a9.83 9.83 0 0 0-6.99-2.9Zm5.8 14.16c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.12.12-1.8-.11-.42-.14-.95-.31-1.63-.6-2.88-1.24-4.76-4.13-4.9-4.32-.14-.2-1.17-1.56-1.17-2.97s.74-2.11 1-2.4c.27-.28.58-.35.77-.35.19 0 .38 0 .55.01.18.01.41-.07.64.49.24.58.81 2 .88 2.15.07.15.12.32.02.52-.09.2-.14.32-.28.49-.15.18-.3.39-.43.52-.14.14-.29.29-.13.57.17.29.75 1.24 1.61 2.01 1.11.99 2.04 1.3 2.33 1.44.29.15.46.13.63-.07.17-.2.71-.83.9-1.12.19-.28.38-.23.63-.13.26.1 1.63.77 1.91.9.29.15.48.22.55.34.07.12.07.68-.17 1.36Z" />
-                      </svg>
-                      Falar no WhatsApp
-                    </a>
-                  )}
-                  <div className="sign-line"><span>GERAL@FISCALIS-ENGENHARIA.PT</span></div>
+                <div className="steps">
+                  <div className="step reveal"><p className="step-num">01</p><h3>Antes de comprar</h3><p>Uma vistoria técnica ao imóvel antes de avançares — para saberes exatamente o que estás a comprar.</p></div>
+                  <div className="step reveal"><p className="step-num">02</p><h3>Validar um orçamento</h3><p>Uma segunda opinião sobre a proposta do empreiteiro, antes de assinares.</p></div>
+                  <div className="step reveal"><p className="step-num">03</p><h3>Resolver uma dúvida</h3><p>Um parecer técnico pontual sobre um problema concreto, sem contrato de fiscalização.</p></div>
+                </div>
+                <div className="reveal" style={{ marginTop: "2.5rem", textAlign: "center" }}>
+                  <a className="btn btn-primary" href="/pedido?tipo=consultoria">Pedir uma consulta <span className="btn-arrow">→</span></a>
                 </div>
               </div>
-            </div>
+            </section>
           </section>
 
           {/* ---- Plataforma digital ---- */}
-          <section id="plataforma">
+          <section className={activeTab === "plataforma" ? "tab-panel is-active" : "tab-panel"}>
             <div className="wrap hero">
               <div className="hero-grid">
                 <div>
@@ -394,7 +398,7 @@ export function HubView() {
               </div>
             </section>
 
-            <section className="block" id="funciona">
+            <section className="block">
               <div className="wrap">
                 <div className="section-head reveal">
                   <p className="eyebrow">Como funciona</p>
