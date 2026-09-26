@@ -21,7 +21,12 @@ export async function atualizarPerfilFiscal(formData: FormData): Promise<Resulta
       cedula_profissional: String(formData.get("cedula_profissional") ?? "").trim(),
     };
 
-    const { error } = await supabase.from("perfil_fiscal").update(campos).eq("tenant_id", tenantId);
+    // upsert (não update): uma empresa nova ainda não tem nenhuma linha em
+    // perfil_fiscal, por isso um update simples não gravava nada (0 linhas
+    // afetadas, sem erro) na primeira vez que alguém preenchia este formulário.
+    const { error } = await supabase
+      .from("perfil_fiscal")
+      .upsert({ ...campos, tenant_id: tenantId }, { onConflict: "tenant_id" });
     if (error) return { error: error.message };
 
     revalidatePath("/configuracoes");
@@ -42,12 +47,25 @@ export async function registarSeguroRC(ficheiro: { nome: string; path: string })
       .from("perfil_fiscal")
       .select("seguro_rc_path")
       .eq("tenant_id", tenantId)
-      .single();
+      .maybeSingle();
 
-    const { error } = await supabase
-      .from("perfil_fiscal")
-      .update({ seguro_rc_path: ficheiro.path, seguro_rc_nome_ficheiro: ficheiro.nome })
-      .eq("tenant_id", tenantId);
+    const camposSeguro = { seguro_rc_path: ficheiro.path, seguro_rc_nome_ficheiro: ficheiro.nome };
+
+    // Se ainda não existir nenhuma linha para este tenant (empresa nova que
+    // ainda não guardou o perfil principal), cria-a com os campos
+    // obrigatórios vazios em vez de um update que não afetaria nenhuma linha.
+    const { error } = atual
+      ? await supabase.from("perfil_fiscal").update(camposSeguro).eq("tenant_id", tenantId)
+      : await supabase.from("perfil_fiscal").insert({
+          tenant_id: tenantId,
+          nome: "",
+          qualificacao: "",
+          morada_fiscal: "",
+          nif: "",
+          cartao_cidadao: "",
+          cedula_profissional: "",
+          ...camposSeguro,
+        });
     if (error) return { error: error.message };
 
     if (atual?.seguro_rc_path) {
