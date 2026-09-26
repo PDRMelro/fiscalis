@@ -169,26 +169,40 @@ export async function reativarAcessoTenant(tenantId: string): Promise<void> {
  * isto é só para limpar empresas de teste ou pedidos criados por engano, não
  * para apagar uma empresa com dados reais.
  */
-export async function eliminarTenant(tenantId: string): Promise<void> {
+export async function eliminarTenant(_prev: ResultadoAprovacao, formData: FormData): Promise<ResultadoAprovacao> {
   const supabase = await exigirSuperAdmin();
-  if (!supabase) throw new Error("Sem permissões.");
+  if (!supabase) return { error: "Sem permissões." };
+
+  const tenantId = String(formData.get("tenantId") ?? "").trim();
+  if (!tenantId) return { error: "Empresa inválida." };
 
   const { data: tenant } = await supabase.from("tenants").select("cancelado_em").eq("id", tenantId).single();
-  if (!tenant?.cancelado_em) throw new Error("Só é possível eliminar uma empresa depois de lhe cancelar o acesso.");
+  if (!tenant?.cancelado_em) return { error: "Só é possível eliminar uma empresa depois de lhe cancelar o acesso." };
 
   const admin = createAdminClient();
 
-  const { data: perfis } = await admin.from("profiles").select("id").eq("tenant_id", tenantId);
+  const { data: perfis, error: perfisError } = await admin.from("profiles").select("id").eq("tenant_id", tenantId);
+  if (perfisError) {
+    console.error("eliminarTenant: falha ao listar perfis", perfisError);
+    return { error: `Não foi possível eliminar: ${perfisError.message}` };
+  }
+
   for (const perfil of perfis ?? []) {
-    await admin.auth.admin.deleteUser(perfil.id);
+    const { error: deleteUserError } = await admin.auth.admin.deleteUser(perfil.id);
+    if (deleteUserError) {
+      console.error("eliminarTenant: falha ao eliminar utilizador", deleteUserError);
+      return { error: `Não foi possível eliminar a conta de acesso: ${deleteUserError.message}` };
+    }
   }
 
   const { error } = await admin.from("tenants").delete().eq("id", tenantId);
   if (error) {
-    throw new Error(
-      "Não foi possível eliminar: ainda há dados associados a esta empresa (obras, propostas, etc.)."
-    );
+    console.error("eliminarTenant: falha ao eliminar tenant", error);
+    return {
+      error: `Não foi possível eliminar: ${error.message || "ainda há dados associados a esta empresa (obras, propostas, etc.)."}`,
+    };
   }
 
   revalidatePath("/empresas");
+  return { error: null };
 }

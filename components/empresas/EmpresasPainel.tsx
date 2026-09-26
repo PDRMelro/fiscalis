@@ -147,6 +147,31 @@ function LinkConviteBotao({ tenantId }: { tenantId: string }) {
   );
 }
 
+function EliminarTenantBotao({ tenantId, nomeEmpresa }: { tenantId: string; nomeEmpresa: string }) {
+  const [state, formAction, pending] = useActionState(eliminarTenant, initialAprovacao);
+
+  return (
+    <div>
+      <form action={formAction}>
+        <input type="hidden" name="tenantId" value={tenantId} />
+        <button
+          type="submit"
+          disabled={pending}
+          onClick={(e) => {
+            if (!confirm(`Eliminar definitivamente "${nomeEmpresa}"? Esta ação não pode ser desfeita.`)) {
+              e.preventDefault();
+            }
+          }}
+          className="text-[11px] font-medium text-[#B0402F] flex items-center gap-1 disabled:opacity-60"
+        >
+          <Trash2 size={12} /> {pending ? "A eliminar..." : "Eliminar"}
+        </button>
+      </form>
+      {state.error && <p className="text-[11px] text-[#B0402F] mt-1 max-w-[220px]">{state.error}</p>}
+    </div>
+  );
+}
+
 function TenantLinha({ tenant }: { tenant: TenantComContagens }) {
   const estado = estadoTenant(tenant);
   const ehFiscalis = tenant.ativo_ate === null;
@@ -186,21 +211,7 @@ function TenantLinha({ tenant }: { tenant: TenantComContagens }) {
               {tenant.cancelado_em ? "Reativar" : "Cancelar acesso"}
             </button>
           </form>
-          {tenant.cancelado_em && (
-            <form action={eliminarTenant.bind(null, tenant.id)}>
-              <button
-                type="submit"
-                onClick={(e) => {
-                  if (!confirm(`Eliminar definitivamente "${tenant.nome_empresa}"? Esta ação não pode ser desfeita.`)) {
-                    e.preventDefault();
-                  }
-                }}
-                className="text-[11px] font-medium text-[#B0402F] flex items-center gap-1"
-              >
-                <Trash2 size={12} /> Eliminar
-              </button>
-            </form>
-          )}
+          {tenant.cancelado_em && <EliminarTenantBotao tenantId={tenant.id} nomeEmpresa={tenant.nome_empresa} />}
         </div>
       )}
     </div>
