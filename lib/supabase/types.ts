@@ -334,6 +334,10 @@ export type Database = {
       is_fiscal: { Args: Record<string, never>; Returns: boolean };
       is_fiscal_principal: { Args: Record<string, never>; Returns: boolean };
       fiscal_pode_ver_obra: { Args: { p_obra_id: string }; Returns: boolean };
+      armazenamento_por_tenant: {
+        Args: Record<string, never>;
+        Returns: { tenant_id: string; bytes: number }[];
+      };
       resolve_obra_por_codigo: {
         Args: { p_codigo: string };
         Returns: { obra_id: string; obra_nome: string }[];

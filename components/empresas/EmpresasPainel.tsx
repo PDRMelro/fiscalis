@@ -13,9 +13,10 @@ import {
   type ResultadoLink,
 } from "@/lib/actions/tenants";
 import { LinkCopiavel } from "@/components/ui/LinkCopiavel";
+import { formatarBytes } from "@/lib/format";
 import type { TenantPedidoRow, TenantRow } from "@/lib/supabase/types";
 
-type TenantComContagens = TenantRow & { numClientes: number; numObras: number };
+type TenantComContagens = TenantRow & { numClientes: number; numObras: number; bytesArmazenados: number };
 
 const initialAprovacao: ResultadoAprovacao = { error: null };
 const initialLink: ResultadoLink = { error: null, link: null };
@@ -166,6 +167,7 @@ function TenantLinha({ tenant }: { tenant: TenantComContagens }) {
       </p>
       <p className="text-[12px] text-[#4A4740] w-20">{tenant.numClientes} clientes</p>
       <p className="text-[12px] text-[#4A4740] w-16">{tenant.numObras} obras</p>
+      <p className="text-[12px] text-[#4A4740] w-20">{formatarBytes(tenant.bytesArmazenados)}</p>
       <div className="w-full sm:w-auto sm:min-w-[180px]">
         {ehFiscalis ? null : tenant.password_definida_em ? (
           <p className="text-[11px] text-[#8A8578]">Ativado em {formatarData(tenant.password_definida_em)}</p>
@@ -196,9 +198,11 @@ function TenantLinha({ tenant }: { tenant: TenantComContagens }) {
 export function EmpresasPainel({
   pedidos,
   tenants,
+  totalBytesArmazenados,
 }: {
   pedidos: TenantPedidoRow[];
   tenants: TenantComContagens[];
+  totalBytesArmazenados: number;
 }) {
   return (
     <>
@@ -216,7 +220,12 @@ export function EmpresasPainel({
         ))}
       </div>
 
-      <p className="text-[13px] font-medium text-[#4A4740] mb-2">Empresas</p>
+      <div className="flex items-center justify-between mb-2 max-w-4xl">
+        <p className="text-[13px] font-medium text-[#4A4740]">Empresas</p>
+        <p className="text-[11px] text-[#8A8578]">
+          Armazenamento total: <span className="font-medium text-[#4A4740]">{formatarBytes(totalBytesArmazenados)}</span>
+        </p>
+      </div>
       <div className="bg-white border border-[#E4E1D6] rounded-xl max-w-4xl overflow-x-auto">
         {tenants.map((tenant) => (
           <TenantLinha key={tenant.id} tenant={tenant} />

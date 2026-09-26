@@ -13,10 +13,14 @@ export default async function EmpresasPage() {
   const { data: profile } = await supabase.from("profiles").select("is_super_admin").eq("id", user.id).single();
   if (!profile?.is_super_admin) redirect("/dashboard");
 
-  const [{ data: pedidos }, { data: tenants }] = await Promise.all([
+  const [{ data: pedidos }, { data: tenants }, { data: armazenamento }] = await Promise.all([
     supabase.from("tenant_pedidos").select("*").eq("estado", "pendente").order("criado_em", { ascending: true }),
     supabase.from("tenants").select("*").order("criado_em", { ascending: true }),
+    supabase.rpc("armazenamento_por_tenant"),
   ]);
+
+  const bytesPorTenant = new Map((armazenamento ?? []).map((a) => [a.tenant_id, a.bytes]));
+  const totalBytes = (armazenamento ?? []).reduce((soma, a) => soma + a.bytes, 0);
 
   const tenantsComContagens = await Promise.all(
     (tenants ?? []).map(async (tenant) => {
@@ -28,14 +32,19 @@ export default async function EmpresasPage() {
           .eq("role", "client"),
         supabase.from("obras").select("id", { count: "exact", head: true }).eq("tenant_id", tenant.id),
       ]);
-      return { ...tenant, numClientes: numClientes ?? 0, numObras: numObras ?? 0 };
+      return {
+        ...tenant,
+        numClientes: numClientes ?? 0,
+        numObras: numObras ?? 0,
+        bytesArmazenados: bytesPorTenant.get(tenant.id) ?? 0,
+      };
     })
   );
 
   return (
     <>
       <PageHeader title="Empresas" subtitle="Pedidos de acesso e empresas ativas na plataforma" />
-      <EmpresasPainel pedidos={pedidos ?? []} tenants={tenantsComContagens} />
+      <EmpresasPainel pedidos={pedidos ?? []} tenants={tenantsComContagens} totalBytesArmazenados={totalBytes} />
     </>
   );
 }

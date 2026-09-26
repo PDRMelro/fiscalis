@@ -42,6 +42,15 @@ export function formatarTempoRelativo(data: string | null | undefined): string {
   return `há ${anos} ano${anos > 1 ? "s" : ""}`;
 }
 
+/** 12345678 -> "11.8 MB". */
+export function formatarBytes(bytes: number): string {
+  if (!bytes || bytes <= 0) return "0 MB";
+  const unidades = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), unidades.length - 1);
+  const valor = bytes / Math.pow(1024, i);
+  return `${valor.toFixed(i === 0 ? 0 : 1)} ${unidades[i]}`;
+}
+
 /** Input <input type="date"> espera sempre "yyyy-mm-dd". */
 export function paraInputDate(data: string | Date | null | undefined): string {
   if (!data) return "";
