@@ -161,3 +161,34 @@ export async function reativarAcessoTenant(tenantId: string): Promise<void> {
 
   revalidatePath("/empresas");
 }
+
+/**
+ * Elimina definitivamente uma empresa com acesso já cancelado, incluindo a(s)
+ * conta(s) de login associadas. Falha de propósito (por causa das chaves
+ * estrangeiras) se ainda houver obras/propostas/etc. ligadas a este tenant —
+ * isto é só para limpar empresas de teste ou pedidos criados por engano, não
+ * para apagar uma empresa com dados reais.
+ */
+export async function eliminarTenant(tenantId: string): Promise<void> {
+  const supabase = await exigirSuperAdmin();
+  if (!supabase) throw new Error("Sem permissões.");
+
+  const { data: tenant } = await supabase.from("tenants").select("cancelado_em").eq("id", tenantId).single();
+  if (!tenant?.cancelado_em) throw new Error("Só é possível eliminar uma empresa depois de lhe cancelar o acesso.");
+
+  const admin = createAdminClient();
+
+  const { data: perfis } = await admin.from("profiles").select("id").eq("tenant_id", tenantId);
+  for (const perfil of perfis ?? []) {
+    await admin.auth.admin.deleteUser(perfil.id);
+  }
+
+  const { error } = await admin.from("tenants").delete().eq("id", tenantId);
+  if (error) {
+    throw new Error(
+      "Não foi possível eliminar: ainda há dados associados a esta empresa (obras, propostas, etc.)."
+    );
+  }
+
+  revalidatePath("/empresas");
+}

@@ -1,12 +1,13 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { Check, X, Copy, CheckCheck, Ban, RotateCcw, Link2 } from "lucide-react";
+import { Check, X, Copy, CheckCheck, Ban, RotateCcw, Link2, Trash2 } from "lucide-react";
 import {
   aprovarPedido,
   rejeitarPedido,
   cancelarAcessoTenant,
   reativarAcessoTenant,
+  eliminarTenant,
   gerarLinkConvite,
   type ResultadoAprovacao,
   type ResultadoLink,
@@ -173,17 +174,34 @@ function TenantLinha({ tenant }: { tenant: TenantComContagens }) {
         )}
       </div>
       {!ehFiscalis && (
-        <form action={(tenant.cancelado_em ? reativarAcessoTenant : cancelarAcessoTenant).bind(null, tenant.id)}>
-          <button
-            type="submit"
-            className={`text-[11px] font-medium flex items-center gap-1 ${
-              tenant.cancelado_em ? "text-[#3E7A4D]" : "text-[#B0402F]"
-            }`}
-          >
-            {tenant.cancelado_em ? <RotateCcw size={12} /> : <Ban size={12} />}
-            {tenant.cancelado_em ? "Reativar" : "Cancelar acesso"}
-          </button>
-        </form>
+        <div className="flex items-center gap-3">
+          <form action={(tenant.cancelado_em ? reativarAcessoTenant : cancelarAcessoTenant).bind(null, tenant.id)}>
+            <button
+              type="submit"
+              className={`text-[11px] font-medium flex items-center gap-1 ${
+                tenant.cancelado_em ? "text-[#3E7A4D]" : "text-[#B0402F]"
+              }`}
+            >
+              {tenant.cancelado_em ? <RotateCcw size={12} /> : <Ban size={12} />}
+              {tenant.cancelado_em ? "Reativar" : "Cancelar acesso"}
+            </button>
+          </form>
+          {tenant.cancelado_em && (
+            <form action={eliminarTenant.bind(null, tenant.id)}>
+              <button
+                type="submit"
+                onClick={(e) => {
+                  if (!confirm(`Eliminar definitivamente "${tenant.nome_empresa}"? Esta ação não pode ser desfeita.`)) {
+                    e.preventDefault();
+                  }
+                }}
+                className="text-[11px] font-medium text-[#B0402F] flex items-center gap-1"
+              >
+                <Trash2 size={12} /> Eliminar
+              </button>
+            </form>
+          )}
+        </div>
       )}
     </div>
   );
