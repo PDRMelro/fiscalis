@@ -195,6 +195,15 @@ export async function eliminarTenant(_prev: ResultadoAprovacao, formData: FormDa
     }
   }
 
+  // O pedido de acesso original que deu origem a este tenant também aponta
+  // para ele — apaga-se junto, já não faz sentido manter esse histórico
+  // isolado de uma empresa que deixou de existir.
+  const { error: pedidosError } = await admin.from("tenant_pedidos").delete().eq("tenant_id", tenantId);
+  if (pedidosError) {
+    console.error("eliminarTenant: falha ao eliminar pedidos associados", pedidosError);
+    return { error: `Não foi possível eliminar: ${pedidosError.message}` };
+  }
+
   const { error } = await admin.from("tenants").delete().eq("id", tenantId);
   if (error) {
     console.error("eliminarTenant: falha ao eliminar tenant", error);
