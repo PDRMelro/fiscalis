@@ -7,20 +7,30 @@ import { adicionarItemChecklist, eliminarItemChecklist } from "@/lib/actions/che
 import { ESPECIALIDADES_OBRA as ESPECIALIDADES } from "@/lib/especialidadesObra";
 import { SeguroRCCard } from "@/components/configuracoes/SeguroRCCard";
 import { PerfilFiscalForm } from "@/components/configuracoes/PerfilFiscalForm";
+import { AparenciaCard } from "@/components/configuracoes/AparenciaCard";
 
 export default async function ConfiguracoesPage() {
   const supabase = await createClient();
   const tenantId = await getMeuTenantId(supabase);
   if (!tenantId) redirect("/login");
 
-  const [{ data: perfil }, { data: checklist }] = await Promise.all([
+  const [{ data: perfil }, { data: checklist }, { data: tenant }] = await Promise.all([
     supabase.from("perfil_fiscal").select("*").eq("tenant_id", tenantId).single(),
     supabase.from("checklist_config").select("*").eq("tenant_id", tenantId).order("ordem", { ascending: true }),
+    supabase.from("tenants").select("*").eq("id", tenantId).single(),
   ]);
+
+  let logoUrl: string | null = null;
+  if (tenant?.logo_path) {
+    const { data } = await supabase.storage.from("tenant-branding").createSignedUrl(tenant.logo_path, 60 * 60);
+    logoUrl = data?.signedUrl ?? null;
+  }
 
   return (
     <>
       <PageHeader title="Configurações" subtitle="Dados do diretor de fiscalização e preferências da app" />
+
+      {tenant && <AparenciaCard tenant={tenant} logoUrl={logoUrl} />}
 
       <PerfilFiscalForm perfil={perfil} />
 

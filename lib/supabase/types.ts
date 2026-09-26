@@ -65,6 +65,8 @@ export type TenantRow = {
   plano: string | null;
   ativo_ate: string | null;
   cancelado_em: string | null;
+  cor_fundo_barra: string | null;
+  cor_destaque: string | null;
   criado_em: string;
 };
 
