@@ -17,15 +17,16 @@ export async function atualizarAparenciaTenant(formData: FormData): Promise<Resu
     const nomeEmpresa = String(formData.get("nome_empresa") ?? "").trim();
     const corFundoBarra = String(formData.get("cor_fundo_barra") ?? "").trim();
     const corDestaque = String(formData.get("cor_destaque") ?? "").trim();
+    const corTexto = String(formData.get("cor_texto") ?? "").trim();
 
     if (!nomeEmpresa) return { error: "O nome da empresa não pode ficar vazio." };
-    if (!HEX_COR.test(corFundoBarra) || !HEX_COR.test(corDestaque)) {
+    if (!HEX_COR.test(corFundoBarra) || !HEX_COR.test(corDestaque) || !HEX_COR.test(corTexto)) {
       return { error: "Cor inválida." };
     }
 
     const { error } = await supabase
       .from("tenants")
-      .update({ nome_empresa: nomeEmpresa, cor_fundo_barra: corFundoBarra, cor_destaque: corDestaque })
+      .update({ nome_empresa: nomeEmpresa, cor_fundo_barra: corFundoBarra, cor_destaque: corDestaque, cor_texto: corTexto })
       .eq("id", tenantId);
     if (error) return { error: error.message };
 

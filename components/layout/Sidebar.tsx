@@ -15,7 +15,7 @@ import {
   Landmark,
   X,
 } from "lucide-react";
-import { LOGO_SRC_DARK, COR_FUNDO_BARRA_OMISSAO, COR_DESTAQUE_OMISSAO } from "@/lib/branding";
+import { LOGO_SRC_DARK, COR_FUNDO_BARRA_OMISSAO, COR_DESTAQUE_OMISSAO, COR_TEXTO_OMISSAO } from "@/lib/branding";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -46,6 +46,7 @@ export function Sidebar({
   logoUrl,
   corFundoBarra,
   corDestaque,
+  corTexto,
   isSuperAdmin,
   numPedidosPendentes,
   aberto,
@@ -57,6 +58,7 @@ export function Sidebar({
   logoUrl: string | null;
   corFundoBarra: string | null;
   corDestaque: string | null;
+  corTexto: string | null;
   isSuperAdmin: boolean;
   numPedidosPendentes: number;
   aberto: boolean;
@@ -65,6 +67,7 @@ export function Sidebar({
   const pathname = usePathname();
   const corFundo = corFundoBarra || COR_FUNDO_BARRA_OMISSAO;
   const corAcento = corDestaque || COR_DESTAQUE_OMISSAO;
+  const corLetras = corTexto || COR_TEXTO_OMISSAO;
   const itensNav = isSuperAdmin ? [...NAV, NAV_SUPER_ADMIN] : NAV;
 
   return (
@@ -80,7 +83,9 @@ export function Sidebar({
           <div className="flex items-center gap-2 min-w-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={logoUrl || LOGO_SRC_DARK} alt={nomeEmpresa} className="h-8 w-auto max-w-9 object-contain shrink-0" />
-            <p className="text-white text-[13px] font-semibold tracking-wide truncate">{nomeEmpresa}</p>
+            <p className="text-[13px] font-semibold tracking-wide truncate" style={{ color: corLetras }}>
+              {nomeEmpresa}
+            </p>
           </div>
           <button type="button" onClick={onFechar} className="md:hidden text-[#9FB0BF] hover:text-white shrink-0">
             <X size={18} />
@@ -97,7 +102,7 @@ export function Sidebar({
                 href={item.href}
                 onClick={onFechar}
                 className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] transition-all duration-200 relative border ${
-                  active ? "" : "border-transparent text-[#9FB0BF] hover:text-white hover:bg-white/[0.04]"
+                  active ? "" : "border-transparent hover:bg-white/[0.04]"
                 }`}
                 style={
                   active
@@ -106,7 +111,7 @@ export function Sidebar({
                         borderColor: hexParaRgba(corAcento, 0.45),
                         color: corAcento,
                       }
-                    : undefined
+                    : { color: hexParaRgba(corLetras, 0.7) }
                 }
               >
                 {active && (
@@ -130,8 +135,12 @@ export function Sidebar({
         </nav>
 
         <div className="px-5 py-4 border-t border-white/10 relative">
-          <p className="text-[11px] text-[#9FB0BF]">{nome}</p>
-          <p className="text-[10px] text-[#6E8294]">{cargo}</p>
+          <p className="text-[11px]" style={{ color: hexParaRgba(corLetras, 0.75) }}>
+            {nome}
+          </p>
+          <p className="text-[10px]" style={{ color: hexParaRgba(corLetras, 0.5) }}>
+            {cargo}
+          </p>
         </div>
       </aside>
     </>

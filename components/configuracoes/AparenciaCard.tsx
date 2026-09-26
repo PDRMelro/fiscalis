@@ -5,7 +5,7 @@ import { ImageIcon, Trash2, Loader2, Upload } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { atualizarAparenciaTenant, registarLogoTenant, eliminarLogoTenant } from "@/lib/actions/tenant";
 import { nomeSeguro } from "@/lib/nomeSeguro";
-import { COR_FUNDO_BARRA_OMISSAO, COR_DESTAQUE_OMISSAO } from "@/lib/branding";
+import { COR_FUNDO_BARRA_OMISSAO, COR_DESTAQUE_OMISSAO, COR_TEXTO_OMISSAO } from "@/lib/branding";
 import type { TenantRow } from "@/lib/supabase/types";
 
 export function AparenciaCard({ tenant, logoUrl }: { tenant: TenantRow; logoUrl: string | null }) {
@@ -18,6 +18,7 @@ export function AparenciaCard({ tenant, logoUrl }: { tenant: TenantRow; logoUrl:
   const [guardado, setGuardado] = useState(false);
   const [corFundoBarra, setCorFundoBarra] = useState(tenant.cor_fundo_barra ?? COR_FUNDO_BARRA_OMISSAO);
   const [corDestaque, setCorDestaque] = useState(tenant.cor_destaque ?? COR_DESTAQUE_OMISSAO);
+  const [corTexto, setCorTexto] = useState(tenant.cor_texto ?? COR_TEXTO_OMISSAO);
 
   function enviarLogo(ficheiro: File) {
     setErroLogo(null);
@@ -134,7 +135,7 @@ export function AparenciaCard({ tenant, logoUrl }: { tenant: TenantRow; logoUrl:
             className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
           />
         </div>
-        <div className="grid grid-cols-2 gap-3 mb-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-2">
           <div>
             <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Cor da barra lateral</label>
             <div className="flex items-center gap-2">
@@ -146,6 +147,19 @@ export function AparenciaCard({ tenant, logoUrl }: { tenant: TenantRow; logoUrl:
                 className="w-9 h-9 rounded border border-[#DEDBD2] p-0.5 cursor-pointer shrink-0"
               />
               <span className="text-[11px] text-[#8A8578] font-mono">{corFundoBarra}</span>
+            </div>
+          </div>
+          <div>
+            <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Cor das letras</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                name="cor_texto"
+                value={corTexto}
+                onChange={(e) => setCorTexto(e.target.value)}
+                className="w-9 h-9 rounded border border-[#DEDBD2] p-0.5 cursor-pointer shrink-0"
+              />
+              <span className="text-[11px] text-[#8A8578] font-mono">{corTexto}</span>
             </div>
           </div>
           <div>

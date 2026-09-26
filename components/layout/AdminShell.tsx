@@ -14,6 +14,7 @@ export function AdminShell({
   logoUrl,
   corFundoBarra,
   corDestaque,
+  corTexto,
   ativoAte,
   isSuperAdmin,
   iniciais,
@@ -27,6 +28,7 @@ export function AdminShell({
   logoUrl: string | null;
   corFundoBarra: string | null;
   corDestaque: string | null;
+  corTexto: string | null;
   ativoAte: string | null;
   isSuperAdmin: boolean;
   iniciais: string;
@@ -48,6 +50,7 @@ export function AdminShell({
         logoUrl={logoUrl}
         corFundoBarra={corFundoBarra}
         corDestaque={corDestaque}
+        corTexto={corTexto}
         isSuperAdmin={isSuperAdmin}
         numPedidosPendentes={pedidosPendentes.length}
         aberto={menuAberto}

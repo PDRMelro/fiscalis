@@ -106,6 +106,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       logoUrl={logoUrl}
       corFundoBarra={tenant?.cor_fundo_barra ?? null}
       corDestaque={tenant?.cor_destaque ?? null}
+      corTexto={tenant?.cor_texto ?? null}
       ativoAte={tenant?.ativo_ate ?? null}
       isSuperAdmin={profile.is_super_admin}
       iniciais={iniciais || "AD"}

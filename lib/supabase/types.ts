@@ -68,6 +68,7 @@ export type TenantRow = {
   cancelado_em: string | null;
   cor_fundo_barra: string | null;
   cor_destaque: string | null;
+  cor_texto: string | null;
   password_definida_em: string | null;
   criado_em: string;
 };
