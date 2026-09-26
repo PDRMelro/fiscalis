@@ -1,10 +1,13 @@
-import { Document, Page, Text, StyleSheet, renderToBuffer, Image } from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet, renderToBuffer, Image } from "@react-pdf/renderer";
 import type { ObraRow, PerfilFiscalRow } from "@/lib/supabase/types";
 import { LOGO_SRC } from "@/lib/branding";
 
 const styles = StyleSheet.create({
   page: { padding: 48, fontSize: 11, fontFamily: "Helvetica", color: "#1F1D19" },
-  logo: { height: 28, marginBottom: 16 },
+  logosBox: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 16 },
+  logo: { height: 28 },
+  logoDivisor: { width: 1, height: 20, backgroundColor: "#DEDBD2" },
+  logoEmpresa: { height: 28 },
   titulo: { fontSize: 12, fontFamily: "Helvetica-Bold", textAlign: "center", textDecoration: "underline" },
   subtitulo: { fontSize: 12, fontFamily: "Helvetica-Bold", textAlign: "center", marginBottom: 18 },
   paragrafo: { lineHeight: 1.6, marginBottom: 10, textAlign: "justify" },
@@ -14,9 +17,11 @@ const styles = StyleSheet.create({
 export function TermoResponsabilidadeDoc({
   obra,
   perfil,
+  logoEmpresaUrl,
 }: {
   obra: ObraRow;
   perfil: PerfilFiscalRow;
+  logoEmpresaUrl?: string | null;
 }) {
   const descricaoObra = obra.termo_descricao_obra || "[descrição da obra]";
   const freguesia = obra.termo_freguesia || "[freguesia]";
@@ -26,7 +31,15 @@ export function TermoResponsabilidadeDoc({
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <Image src={LOGO_SRC} style={styles.logo} />
+        <View style={styles.logosBox}>
+          <Image src={LOGO_SRC} style={styles.logo} />
+          {logoEmpresaUrl && (
+            <>
+              <View style={styles.logoDivisor} />
+              <Image src={logoEmpresaUrl} style={styles.logoEmpresa} />
+            </>
+          )}
+        </View>
         <Text style={styles.titulo}>TERMO DE RESPONSABILIDADE</Text>
         <Text style={styles.subtitulo}>DO DIRETOR DE FISCALIZAÇÃO DE OBRA</Text>
 
@@ -52,6 +65,10 @@ export function TermoResponsabilidadeDoc({
   );
 }
 
-export async function gerarPdfTermoResponsabilidade(obra: ObraRow, perfil: PerfilFiscalRow) {
-  return renderToBuffer(<TermoResponsabilidadeDoc obra={obra} perfil={perfil} />);
+export async function gerarPdfTermoResponsabilidade(
+  obra: ObraRow,
+  perfil: PerfilFiscalRow,
+  logoEmpresaUrl?: string | null
+) {
+  return renderToBuffer(<TermoResponsabilidadeDoc obra={obra} perfil={perfil} logoEmpresaUrl={logoEmpresaUrl} />);
 }

@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { gerarPdfRelatorioVisita } from "@/lib/pdf/relatorioVisita";
 import { copiarParaDocumentosEnviados, type ResultadoAcao } from "@/lib/actions/documentos";
+import { obterLogoEmpresaUrl } from "@/lib/tenantLogo";
 
 export async function gerarRelatorio(visitaId: string, enviarCliente: boolean): Promise<ResultadoAcao> {
   try {
@@ -19,10 +20,11 @@ export async function gerarRelatorio(visitaId: string, enviarCliente: boolean): 
 
     const obra = visita.obras as unknown as import("@/lib/supabase/types").ObraRow;
 
-    const [{ data: ncs }, { data: fotosRows }, { data: perfil }] = await Promise.all([
+    const [{ data: ncs }, { data: fotosRows }, { data: perfil }, logoEmpresaUrl] = await Promise.all([
       supabase.from("nao_conformidades").select("*").eq("visita_id", visitaId),
       supabase.from("visita_fotos").select("*").eq("visita_id", visitaId),
       supabase.from("perfil_fiscal").select("nome").eq("tenant_id", obra.tenant_id).maybeSingle(),
+      obterLogoEmpresaUrl(supabase, obra.tenant_id),
     ]);
 
     const fotosBase64: string[] = [];
@@ -71,7 +73,8 @@ export async function gerarRelatorio(visitaId: string, enviarCliente: boolean): 
       visita,
       ncs ?? [],
       fotosBase64,
-      perfil?.nome ?? ""
+      perfil?.nome ?? "",
+      logoEmpresaUrl
     );
     const path = `${obra.id}/${relatorio.id}.pdf`;
 

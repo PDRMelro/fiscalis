@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { nomeSeguro } from "@/lib/nomeSeguro";
 import { gerarPdfTermoResponsabilidade } from "@/lib/pdf/termoResponsabilidade";
+import { obterLogoEmpresaUrl } from "@/lib/tenantLogo";
 
 export type ResultadoAcao = { error: string | null };
 
@@ -155,14 +156,13 @@ export async function gerarTermoResponsabilidade(obraId: string): Promise<Result
     const { data: obra, error: obraError } = await supabase.from("obras").select("*").eq("id", obraId).single();
     if (obraError || !obra) return { error: "Obra não encontrada." };
 
-    const { data: perfil, error: perfilError } = await supabase
-      .from("perfil_fiscal")
-      .select("*")
-      .eq("tenant_id", obra.tenant_id)
-      .single();
+    const [{ data: perfil, error: perfilError }, logoEmpresaUrl] = await Promise.all([
+      supabase.from("perfil_fiscal").select("*").eq("tenant_id", obra.tenant_id).single(),
+      obterLogoEmpresaUrl(supabase, obra.tenant_id),
+    ]);
     if (perfilError || !perfil) return { error: "Configura primeiro o teu perfil fiscal em Configurações." };
 
-    const buffer = await gerarPdfTermoResponsabilidade(obra, perfil);
+    const buffer = await gerarPdfTermoResponsabilidade(obra, perfil, logoEmpresaUrl);
     const nome = `Termo_Responsabilidade_${obra.nome.replace(/\s+/g, "")}.pdf`;
     const path = `${obraId}/${crypto.randomUUID()}-${nomeSeguro(nome)}`;
 

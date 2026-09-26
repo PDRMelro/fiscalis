@@ -18,7 +18,10 @@ const styles = StyleSheet.create({
     borderBottomColor: GOLD,
     paddingBottom: 10,
   },
+  logosBox: { flexDirection: "row", alignItems: "center", gap: 10 },
   logo: { height: 34 },
+  logoDivisor: { width: 1, height: 26, backgroundColor: BORDER },
+  logoEmpresa: { height: 34 },
   tituloBox: { alignItems: "flex-end" },
   titulo: { fontSize: 20, fontFamily: "Helvetica-Bold", color: NAVY, letterSpacing: 1 },
   subtitulo: { fontSize: 9, color: GOLD, fontFamily: "Helvetica-Bold", letterSpacing: 0.5 },
@@ -91,17 +94,27 @@ export function AutoNaoConformidadeDoc({
   obra,
   perfil,
   fotos,
+  logoEmpresaUrl,
 }: {
   nc: NaoConformidadeRow;
   obra: ObraRow;
   perfil: PerfilFiscalRow;
   fotos: string[]; // data URIs, usadas só no anexo
+  logoEmpresaUrl?: string | null;
 }) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Image src={LOGO_SRC} style={styles.logo} />
+          <View style={styles.logosBox}>
+            <Image src={LOGO_SRC} style={styles.logo} />
+            {logoEmpresaUrl && (
+              <>
+                <View style={styles.logoDivisor} />
+                <Image src={logoEmpresaUrl} style={styles.logoEmpresa} />
+              </>
+            )}
+          </View>
           <View style={styles.tituloBox}>
             <Text style={styles.titulo}>NÃO CONFORMIDADE</Text>
             <Text style={styles.subtitulo}>REGISTO DE NÃO CONFORMIDADE</Text>
@@ -296,7 +309,10 @@ export async function gerarPdfAutoNaoConformidade(
   nc: NaoConformidadeRow,
   obra: ObraRow,
   perfil: PerfilFiscalRow,
-  fotos: string[]
+  fotos: string[],
+  logoEmpresaUrl?: string | null
 ) {
-  return renderToBuffer(<AutoNaoConformidadeDoc nc={nc} obra={obra} perfil={perfil} fotos={fotos} />);
+  return renderToBuffer(
+    <AutoNaoConformidadeDoc nc={nc} obra={obra} perfil={perfil} fotos={fotos} logoEmpresaUrl={logoEmpresaUrl} />
+  );
 }

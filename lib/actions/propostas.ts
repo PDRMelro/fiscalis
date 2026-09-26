@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { gerarPdfPropostaServico } from "@/lib/pdf/propostaServico";
+import { obterLogoEmpresaUrl } from "@/lib/tenantLogo";
 import { copiarParaDocumentosEnviados } from "@/lib/actions/documentos";
 import type { EstadoProposta, FrequenciaVisitas, TipoServicoProposta } from "@/lib/supabase/types";
 
@@ -134,14 +135,13 @@ export async function gerarPdfProposta(propostaId: string, enviarCliente: boolea
       return { error: "Associa esta proposta a uma obra para a poderes enviar ao cliente." };
     }
 
-    const { data: perfil, error: perfilError } = await supabase
-      .from("perfil_fiscal")
-      .select("*")
-      .eq("tenant_id", proposta.tenant_id)
-      .single();
+    const [{ data: perfil, error: perfilError }, logoEmpresaUrl] = await Promise.all([
+      supabase.from("perfil_fiscal").select("*").eq("tenant_id", proposta.tenant_id).single(),
+      obterLogoEmpresaUrl(supabase, proposta.tenant_id),
+    ]);
     if (perfilError || !perfil) return { error: "Configura primeiro o teu perfil fiscal em Configurações." };
 
-    const buffer = await gerarPdfPropostaServico(proposta, perfil);
+    const buffer = await gerarPdfPropostaServico(proposta, perfil, logoEmpresaUrl);
     const nomeFicheiro = `Proposta_${proposta.codigo ?? propostaId}.pdf`;
     const path = `${propostaId}/${nomeFicheiro}`;
 

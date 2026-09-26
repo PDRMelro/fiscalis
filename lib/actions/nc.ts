@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { gerarPdfAutoNaoConformidade } from "@/lib/pdf/autoNaoConformidade";
+import { obterLogoEmpresaUrl } from "@/lib/tenantLogo";
 import { copiarParaDocumentosEnviados } from "@/lib/actions/documentos";
 import type { EstadoNC, Severidade, ResultadoVerificacao } from "@/lib/supabase/types";
 
@@ -220,9 +221,10 @@ export async function gerarPdfAutoNC(ncId: string, enviarCliente: boolean): Prom
     const { data: obra, error: obraError } = await supabase.from("obras").select("*").eq("id", nc.obra_id).single();
     if (obraError || !obra) return { error: "Obra não encontrada." };
 
-    const [{ data: perfil, error: perfilError }, { data: fotosRows }] = await Promise.all([
+    const [{ data: perfil, error: perfilError }, { data: fotosRows }, logoEmpresaUrl] = await Promise.all([
       supabase.from("perfil_fiscal").select("*").eq("tenant_id", obra.tenant_id).single(),
       supabase.from("nc_fotos").select("*").eq("nc_id", ncId),
+      obterLogoEmpresaUrl(supabase, obra.tenant_id),
     ]);
     if (perfilError || !perfil) return { error: "Configura primeiro o teu perfil fiscal em Configurações." };
 
@@ -235,7 +237,7 @@ export async function gerarPdfAutoNC(ncId: string, enviarCliente: boolean): Prom
       fotosBase64.push(`data:${tipo};base64,${buffer.toString("base64")}`);
     }
 
-    const buffer = await gerarPdfAutoNaoConformidade(nc, obra, perfil, fotosBase64);
+    const buffer = await gerarPdfAutoNaoConformidade(nc, obra, perfil, fotosBase64, logoEmpresaUrl);
     const path = `${nc.obra_id}/${ncId}/Auto_${nc.codigo}.pdf`;
 
     const { error: uploadError } = await supabase.storage
