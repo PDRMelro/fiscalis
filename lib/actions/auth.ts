@@ -51,7 +51,7 @@ export async function adminLogin(_prev: ActionResult, formData: FormData): Promi
     .eq("id", data.user.id)
     .single();
 
-  if (profile?.role !== "admin") {
+  if (profile?.role !== "admin" && profile?.role !== "fiscal") {
     await supabase.auth.signOut();
     return { error: "Esta conta não tem acesso de administrador." };
   }

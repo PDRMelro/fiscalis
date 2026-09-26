@@ -5,7 +5,7 @@
 // aliases de objeto recebem a assinatura de índice implícita que o
 // supabase-js exige para satisfazer `Record<string, GenericTable>`.
 
-export type Role = "admin" | "client";
+export type Role = "admin" | "client" | "fiscal";
 export type EstadoObra = "Em curso" | "Concluída" | "Suspensa";
 export type EstadoArea = "Concluído" | "Em andamento" | "Atenção" | "Atrasado" | "Pendente";
 export type Severidade = "Crítica" | "Maior" | "Menor";
@@ -23,6 +23,9 @@ export type ProfileRow = {
   obra_id: string | null;
   tenant_id: string | null;
   is_super_admin: boolean;
+  fiscal_principal: boolean;
+  qualificacao: string | null;
+  cedula_profissional: string | null;
   nome: string;
   email: string;
   ativo: boolean;
@@ -70,6 +73,12 @@ export type TenantRow = {
   cor_destaque: string | null;
   cor_texto: string | null;
   password_definida_em: string | null;
+  criado_em: string;
+};
+
+export type ObraFiscalRow = {
+  obra_id: string;
+  fiscal_id: string;
   criado_em: string;
 };
 
@@ -308,6 +317,7 @@ export type Database = {
       perfil_fiscal: TableDef<PerfilFiscalRow, never>;
       tenants: TableDef<TenantRow, "nome_empresa">;
       tenant_pedidos: TableDef<TenantPedidoRow, "nome_empresa" | "nome_responsavel" | "email">;
+      obra_fiscais: TableDef<ObraFiscalRow, "obra_id" | "fiscal_id">;
     };
     Views: {
       visitas_resumo: {
@@ -321,6 +331,9 @@ export type Database = {
       is_super_admin: { Args: Record<string, never>; Returns: boolean };
       my_tenant_id: { Args: Record<string, never>; Returns: string | null };
       obra_tenant_id: { Args: { p_obra_id: string }; Returns: string | null };
+      is_fiscal: { Args: Record<string, never>; Returns: boolean };
+      is_fiscal_principal: { Args: Record<string, never>; Returns: boolean };
+      fiscal_pode_ver_obra: { Args: { p_obra_id: string }; Returns: boolean };
       resolve_obra_por_codigo: {
         Args: { p_codigo: string };
         Returns: { obra_id: string; obra_nome: string }[];

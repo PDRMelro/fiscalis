@@ -17,6 +17,7 @@ export function AdminShell({
   corTexto,
   ativoAte,
   isSuperAdmin,
+  isFiscal,
   iniciais,
   alertas,
   pedidosPendentes,
@@ -31,6 +32,7 @@ export function AdminShell({
   corTexto: string | null;
   ativoAte: string | null;
   isSuperAdmin: boolean;
+  isFiscal: boolean;
   iniciais: string;
   alertas: Alerta[];
   pedidosPendentes: PedidoPendenteResumo[];
@@ -52,6 +54,7 @@ export function AdminShell({
         corDestaque={corDestaque}
         corTexto={corTexto}
         isSuperAdmin={isSuperAdmin}
+        isFiscal={isFiscal}
         numPedidosPendentes={pedidosPendentes.length}
         aberto={menuAberto}
         onFechar={() => setMenuAberto(false)}

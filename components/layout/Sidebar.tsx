@@ -13,6 +13,7 @@ import {
   CalendarDays,
   Users,
   Landmark,
+  HardHat,
   X,
 } from "lucide-react";
 import { LOGO_SRC_DARK, COR_FUNDO_BARRA_OMISSAO, COR_DESTAQUE_OMISSAO, COR_TEXTO_OMISSAO } from "@/lib/branding";
@@ -26,8 +27,11 @@ const NAV = [
   { href: "/relatorios", label: "Relatórios", icon: FileText },
   { href: "/propostas", label: "Propostas", icon: Send },
   { href: "/clientes", label: "Clientes", icon: Users },
+  { href: "/fiscais", label: "Fiscais", icon: HardHat },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
+
+const NAV_FISCAL_HREFS = new Set(["/dashboard", "/obras", "/visitas", "/calendario", "/nc", "/relatorios"]);
 
 const NAV_SUPER_ADMIN = { href: "/empresas", label: "Empresas", icon: Landmark };
 
@@ -48,6 +52,7 @@ export function Sidebar({
   corDestaque,
   corTexto,
   isSuperAdmin,
+  isFiscal,
   numPedidosPendentes,
   aberto,
   onFechar,
@@ -60,6 +65,7 @@ export function Sidebar({
   corDestaque: string | null;
   corTexto: string | null;
   isSuperAdmin: boolean;
+  isFiscal: boolean;
   numPedidosPendentes: number;
   aberto: boolean;
   onFechar: () => void;
@@ -68,7 +74,11 @@ export function Sidebar({
   const corFundo = corFundoBarra || COR_FUNDO_BARRA_OMISSAO;
   const corAcento = corDestaque || COR_DESTAQUE_OMISSAO;
   const corLetras = corTexto || COR_TEXTO_OMISSAO;
-  const itensNav = isSuperAdmin ? [...NAV, NAV_SUPER_ADMIN] : NAV;
+  const itensNav = isFiscal
+    ? NAV.filter((item) => NAV_FISCAL_HREFS.has(item.href))
+    : isSuperAdmin
+      ? [...NAV, NAV_SUPER_ADMIN]
+      : NAV;
 
   return (
     <>

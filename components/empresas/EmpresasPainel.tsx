@@ -1,7 +1,7 @@
 "use client";
 
-import { useActionState, useState } from "react";
-import { Check, X, Copy, CheckCheck, Ban, RotateCcw, Link2, Trash2 } from "lucide-react";
+import { useActionState } from "react";
+import { Check, X, Ban, RotateCcw, Link2, Trash2 } from "lucide-react";
 import {
   aprovarPedido,
   rejeitarPedido,
@@ -12,6 +12,7 @@ import {
   type ResultadoAprovacao,
   type ResultadoLink,
 } from "@/lib/actions/tenants";
+import { LinkCopiavel } from "@/components/ui/LinkCopiavel";
 import type { TenantPedidoRow, TenantRow } from "@/lib/supabase/types";
 
 type TenantComContagens = TenantRow & { numClientes: number; numObras: number };
@@ -22,34 +23,6 @@ const initialLink: ResultadoLink = { error: null, link: null };
 function formatarData(iso: string | null): string {
   if (!iso) return "—";
   return new Date(iso).toLocaleDateString("pt-PT");
-}
-
-function CaixaLink({ link }: { link: string }) {
-  const [copiado, setCopiado] = useState(false);
-
-  return (
-    <div className="mt-2 bg-[#F5F4EF] border border-[#E4E1D6] rounded-lg p-2.5 flex items-center gap-2">
-      <input
-        readOnly
-        value={link}
-        onFocus={(e) => e.currentTarget.select()}
-        className="flex-1 min-w-0 px-2.5 py-1.5 rounded-md border border-[#DEDBD2] text-[11px] text-[#1F1D19] bg-white font-mono"
-      />
-      <button
-        type="button"
-        onClick={() => {
-          navigator.clipboard.writeText(link).then(() => {
-            setCopiado(true);
-            setTimeout(() => setCopiado(false), 2000);
-          });
-        }}
-        className="shrink-0 px-2.5 py-1.5 rounded-md bg-[#14283A] text-white text-[11px] font-medium flex items-center gap-1"
-      >
-        {copiado ? <CheckCheck size={13} /> : <Copy size={13} />}
-        {copiado ? "Copiado" : "Copiar"}
-      </button>
-    </div>
-  );
 }
 
 function PedidoCard({ pedido }: { pedido: TenantPedidoRow }) {
@@ -142,7 +115,7 @@ function LinkConviteBotao({ tenantId }: { tenantId: string }) {
         </button>
       </form>
       {state.error && <p className="text-[11px] text-[#B0402F] mt-1">{state.error}</p>}
-      {state.link && <CaixaLink link={state.link} />}
+      {state.link && <LinkCopiavel link={state.link} />}
     </div>
   );
 }

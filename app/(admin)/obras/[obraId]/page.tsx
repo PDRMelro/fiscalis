@@ -8,6 +8,8 @@ import { EditarObraModal } from "@/components/obras/EditarObraModal";
 import { eliminarObra } from "@/lib/actions/obras";
 import { formatarData, formatarTempoRelativo } from "@/lib/format";
 import { GeralTab } from "@/components/obras/tabs/GeralTab";
+import { FiscaisObraCard } from "@/components/obras/tabs/FiscaisObraCard";
+import { getMeuTenantId } from "@/lib/tenant";
 import { VisitasTab } from "@/components/obras/tabs/VisitasTab";
 import { DocumentosTab } from "@/components/obras/tabs/DocumentosTab";
 import { OrcamentosTab } from "@/components/obras/tabs/OrcamentosTab";
@@ -26,9 +28,19 @@ export default async function ObraDetalhePage({
 }) {
   const { obraId } = await params;
   const { tab: tabParam } = await searchParams;
-  const tab: Tab = TABS.includes(tabParam as Tab) ? (tabParam as Tab) : "Geral";
 
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: viewerProfile } = user
+    ? await supabase.from("profiles").select("role").eq("id", user.id).single()
+    : { data: null };
+  const isFiscal = viewerProfile?.role === "fiscal";
+  const tabsVisiveis: readonly Tab[] = isFiscal ? ["Geral", "Visitas"] : TABS;
+
+  const tab: Tab = tabsVisiveis.includes(tabParam as Tab) ? (tabParam as Tab) : "Geral";
+
   const [{ data: obra }, { data: clientes }] = await Promise.all([
     supabase.from("obras").select("*").eq("id", obraId).single(),
     supabase.from("profiles").select("nome, portal_visto_em, ativo").eq("obra_id", obraId).eq("role", "client"),
@@ -44,17 +56,19 @@ export default async function ObraDetalhePage({
         title={obra.codigo ? `${obra.codigo} — ${obra.nome}` : obra.nome}
         subtitle={`${obra.local} · Cliente: ${obra.cliente_nome}${obra.inicio ? ` · Início: ${formatarData(obra.inicio)}` : ""}`}
         action={
-          <div className="flex items-center gap-2">
-            <EditarObraModal obra={obra} />
-            <form action={eliminarObra.bind(null, obra.id)}>
-              <ConfirmSubmitButton
-                confirmMessage={`Eliminar a obra "${obra.nome}"? Esta ação apaga também todas as visitas, NCs, documentos e registos associados.`}
-                className="text-[13px] text-[#B0402F] border border-[#F0CFC6] rounded-lg px-3.5 py-2"
-              >
-                Eliminar
-              </ConfirmSubmitButton>
-            </form>
-          </div>
+          isFiscal ? undefined : (
+            <div className="flex items-center gap-2">
+              <EditarObraModal obra={obra} />
+              <form action={eliminarObra.bind(null, obra.id)}>
+                <ConfirmSubmitButton
+                  confirmMessage={`Eliminar a obra "${obra.nome}"? Esta ação apaga também todas as visitas, NCs, documentos e registos associados.`}
+                  className="text-[13px] text-[#B0402F] border border-[#F0CFC6] rounded-lg px-3.5 py-2"
+                >
+                  Eliminar
+                </ConfirmSubmitButton>
+              </form>
+            </div>
+          )
         }
       />
 
@@ -86,7 +100,7 @@ export default async function ObraDetalhePage({
       )}
 
       <div className="flex gap-5 border-b border-[#E4E1D6] mb-5">
-        {TABS.map((t) => (
+        {tabsVisiveis.map((t) => (
           <Link
             key={t}
             href={`/obras/${obraId}?tab=${encodeURIComponent(t)}`}
@@ -99,7 +113,7 @@ export default async function ObraDetalhePage({
         ))}
       </div>
 
-      {tab === "Geral" && <GeralTabData obraId={obraId} />}
+      {tab === "Geral" && <GeralTabData obraId={obraId} isFiscal={isFiscal} />}
       {tab === "Visitas" && <VisitasTabData obraId={obraId} />}
       {tab === "Documentos" && <DocumentosTabData obraId={obraId} />}
       {tab === "Orçamentos" && <OrcamentosTabData obraId={obraId} />}
@@ -109,14 +123,44 @@ export default async function ObraDetalhePage({
   );
 }
 
-async function GeralTabData({ obraId }: { obraId: string }) {
+async function GeralTabData({ obraId, isFiscal }: { obraId: string; isFiscal: boolean }) {
   const supabase = await createClient();
-  const { data: areas } = await supabase
-    .from("obra_areas")
-    .select("*")
-    .eq("obra_id", obraId)
-    .order("ordem", { ascending: true });
-  return <GeralTab obraId={obraId} areas={areas ?? []} />;
+
+  if (isFiscal) {
+    const { data: areas } = await supabase
+      .from("obra_areas")
+      .select("*")
+      .eq("obra_id", obraId)
+      .order("ordem", { ascending: true });
+    return <GeralTab obraId={obraId} areas={areas ?? []} />;
+  }
+
+  const tenantId = await getMeuTenantId(supabase);
+
+  const [{ data: areas }, { data: fiscaisAssociados }, { data: atribuicoes }] = await Promise.all([
+    supabase.from("obra_areas").select("*").eq("obra_id", obraId).order("ordem", { ascending: true }),
+    tenantId
+      ? supabase
+          .from("profiles")
+          .select("*")
+          .eq("tenant_id", tenantId)
+          .eq("role", "fiscal")
+          .eq("fiscal_principal", false)
+          .order("nome", { ascending: true })
+      : Promise.resolve({ data: null }),
+    supabase.from("obra_fiscais").select("fiscal_id").eq("obra_id", obraId),
+  ]);
+
+  return (
+    <>
+      <GeralTab obraId={obraId} areas={areas ?? []} />
+      <FiscaisObraCard
+        obraId={obraId}
+        fiscaisAssociados={fiscaisAssociados ?? []}
+        atribuidosIds={new Set((atribuicoes ?? []).map((a) => a.fiscal_id))}
+      />
+    </>
+  );
 }
 
 async function VisitasTabData({ obraId }: { obraId: string }) {

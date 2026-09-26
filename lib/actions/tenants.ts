@@ -3,15 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-
-const SITE_URL = "https://www.fiscalis-engenharia.pt";
+import { construirLinkConvite } from "@/lib/inviteLink";
 
 export type ResultadoAprovacao = { error: string | null };
 export type ResultadoLink = { error: string | null; link: string | null };
-
-function construirLinkConvite(email: string, otp: string | undefined, tipo: "invite" | "recovery"): string {
-  return `${SITE_URL}/definir-password?email=${encodeURIComponent(email)}&token=${otp ?? ""}&tipo=${tipo}`;
-}
 
 async function exigirSuperAdmin() {
   const supabase = await createClient();

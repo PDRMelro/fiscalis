@@ -17,7 +17,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     .eq("id", user.id)
     .single();
 
-  if (!profile || profile.role !== "admin") redirect("/login");
+  if (!profile || (profile.role !== "admin" && profile.role !== "fiscal")) redirect("/login");
 
   const { data: tenant } = profile.tenant_id
     ? await supabase.from("tenants").select("*").eq("id", profile.tenant_id).single()
@@ -98,10 +98,13 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     .join("")
     .toUpperCase();
 
+  const cargo =
+    profile.role === "fiscal" ? (profile.fiscal_principal ? "Fiscal principal" : "Fiscal associado") : "Eng.º Civil";
+
   return (
     <AdminShell
       nome={nome}
-      cargo="Eng.º Civil"
+      cargo={cargo}
       nomeEmpresa={tenant?.nome_empresa ?? "Fiscalis Engenharia"}
       logoUrl={logoUrl}
       corFundoBarra={tenant?.cor_fundo_barra ?? null}
@@ -109,6 +112,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       corTexto={tenant?.cor_texto ?? null}
       ativoAte={tenant?.ativo_ate ?? null}
       isSuperAdmin={profile.is_super_admin}
+      isFiscal={profile.role === "fiscal"}
       iniciais={iniciais || "AD"}
       alertas={alertas}
       pedidosPendentes={pedidosPendentes}
