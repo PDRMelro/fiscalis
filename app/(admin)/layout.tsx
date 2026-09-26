@@ -90,6 +90,12 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     }));
   }
 
+  const { count: numMensagensNaoLidas } = await supabase
+    .from("mensagens")
+    .select("id", { count: "exact", head: true })
+    .eq("destinatario_id", user.id)
+    .eq("lida", false);
+
   const nome = profile.nome || "Administrador";
   const iniciais = nome
     .split(" ")
@@ -116,6 +122,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       iniciais={iniciais || "AD"}
       alertas={alertas}
       pedidosPendentes={pedidosPendentes}
+      numMensagensNaoLidas={numMensagensNaoLidas ?? 0}
     >
       {children}
     </AdminShell>

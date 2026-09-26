@@ -82,6 +82,22 @@ export type ObraFiscalRow = {
   criado_em: string;
 };
 
+export type MensagemRow = {
+  id: string;
+  remetente_id: string;
+  destinatario_id: string;
+  corpo: string;
+  lida: boolean;
+  criado_em: string;
+};
+
+export type PessoaParaConversar = {
+  id: string;
+  nome: string;
+  role: Role;
+  nome_empresa: string | null;
+};
+
 export type EstadoPedidoTenant = "pendente" | "aprovado" | "rejeitado";
 
 export type TenantPedidoRow = {
@@ -318,6 +334,7 @@ export type Database = {
       tenants: TableDef<TenantRow, "nome_empresa">;
       tenant_pedidos: TableDef<TenantPedidoRow, "nome_empresa" | "nome_responsavel" | "email">;
       obra_fiscais: TableDef<ObraFiscalRow, "obra_id" | "fiscal_id">;
+      mensagens: TableDef<MensagemRow, "remetente_id" | "destinatario_id" | "corpo">;
     };
     Views: {
       visitas_resumo: {
@@ -334,6 +351,8 @@ export type Database = {
       is_fiscal: { Args: Record<string, never>; Returns: boolean };
       is_fiscal_principal: { Args: Record<string, never>; Returns: boolean };
       fiscal_pode_ver_obra: { Args: { p_obra_id: string }; Returns: boolean };
+      pode_conversar: { Args: { p_outro_id: string }; Returns: boolean };
+      pessoas_para_conversar: { Args: Record<string, never>; Returns: PessoaParaConversar[] };
       armazenamento_por_tenant: {
         Args: Record<string, never>;
         Returns: { tenant_id: string; bytes: number }[];

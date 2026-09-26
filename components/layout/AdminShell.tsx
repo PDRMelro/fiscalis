@@ -21,6 +21,7 @@ export function AdminShell({
   iniciais,
   alertas,
   pedidosPendentes,
+  numMensagensNaoLidas,
   children,
 }: {
   nome: string;
@@ -36,6 +37,7 @@ export function AdminShell({
   iniciais: string;
   alertas: Alerta[];
   pedidosPendentes: PedidoPendenteResumo[];
+  numMensagensNaoLidas: number;
   children: ReactNode;
 }) {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -56,6 +58,7 @@ export function AdminShell({
         isSuperAdmin={isSuperAdmin}
         isFiscal={isFiscal}
         numPedidosPendentes={pedidosPendentes.length}
+        numMensagensNaoLidas={numMensagensNaoLidas}
         aberto={menuAberto}
         onFechar={() => setMenuAberto(false)}
       />
