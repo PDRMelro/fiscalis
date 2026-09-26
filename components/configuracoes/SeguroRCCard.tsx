@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { registarSeguroRC, eliminarSeguroRC } from "@/lib/actions/perfilFiscal";
 import { nomeSeguro } from "@/lib/nomeSeguro";
 
-export function SeguroRCCard({ nomeFicheiro }: { nomeFicheiro: string | null }) {
+export function SeguroRCCard({ nomeFicheiro, tenantId }: { nomeFicheiro: string | null; tenantId: string }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [arrastando, setArrastando] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -17,7 +17,7 @@ export function SeguroRCCard({ nomeFicheiro }: { nomeFicheiro: string | null }) 
     startTransition(async () => {
       try {
         const supabase = createClient();
-        const path = `seguro-rc/${crypto.randomUUID()}-${nomeSeguro(ficheiro.name)}`;
+        const path = `${tenantId}/seguro-rc/${crypto.randomUUID()}-${nomeSeguro(ficheiro.name)}`;
         const { error: uploadError } = await supabase.storage
           .from("perfil-fiscal")
           .upload(path, ficheiro, { contentType: ficheiro.type || undefined });

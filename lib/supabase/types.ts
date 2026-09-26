@@ -21,6 +21,8 @@ export type ProfileRow = {
   id: string;
   role: Role;
   obra_id: string | null;
+  tenant_id: string | null;
+  is_super_admin: boolean;
   nome: string;
   email: string;
   ativo: boolean;
@@ -36,6 +38,7 @@ export type ProfileRow = {
 
 export type ObraRow = {
   id: string;
+  tenant_id: string;
   nome: string;
   cliente_nome: string;
   local: string;
@@ -53,6 +56,16 @@ export type ObraRow = {
   termo_requerimento: string | null;
   created_at: string;
   updated_at: string;
+};
+
+export type TenantRow = {
+  id: string;
+  nome_empresa: string;
+  logo_path: string | null;
+  plano: string | null;
+  ativo_ate: string | null;
+  cancelado_em: string | null;
+  criado_em: string;
 };
 
 export type ObraAreaRow = {
@@ -133,6 +146,7 @@ export type NcFotoRow = {
 
 export type PropostaRow = {
   id: string;
+  tenant_id: string;
   codigo: string | null;
   cliente_nome: string;
   cliente_nif: string | null;
@@ -226,6 +240,7 @@ export type IntervenienteRow = {
 
 export type ChecklistConfigRow = {
   id: string;
+  tenant_id: string;
   especialidade: string;
   item: string;
   ordem: number;
@@ -233,7 +248,8 @@ export type ChecklistConfigRow = {
 };
 
 export type PerfilFiscalRow = {
-  id: boolean;
+  id: string;
+  tenant_id: string;
   nome: string;
   qualificacao: string;
   morada_fiscal: string;
@@ -270,6 +286,7 @@ export type Database = {
       intervenientes: TableDef<IntervenienteRow, "obra_id" | "papel" | "nome">;
       checklist_config: TableDef<ChecklistConfigRow, "especialidade" | "item">;
       perfil_fiscal: TableDef<PerfilFiscalRow, never>;
+      tenants: TableDef<TenantRow, "nome_empresa">;
     };
     Views: {
       visitas_resumo: {
@@ -280,6 +297,9 @@ export type Database = {
     Functions: {
       is_admin: { Args: Record<string, never>; Returns: boolean };
       my_obra_id: { Args: Record<string, never>; Returns: string | null };
+      is_super_admin: { Args: Record<string, never>; Returns: boolean };
+      my_tenant_id: { Args: Record<string, never>; Returns: string | null };
+      obra_tenant_id: { Args: { p_obra_id: string }; Returns: string | null };
       resolve_obra_por_codigo: {
         Args: { p_codigo: string };
         Returns: { obra_id: string; obra_nome: string }[];

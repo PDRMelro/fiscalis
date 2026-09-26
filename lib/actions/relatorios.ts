@@ -22,7 +22,7 @@ export async function gerarRelatorio(visitaId: string, enviarCliente: boolean): 
     const [{ data: ncs }, { data: fotosRows }, { data: perfil }] = await Promise.all([
       supabase.from("nao_conformidades").select("*").eq("visita_id", visitaId),
       supabase.from("visita_fotos").select("*").eq("visita_id", visitaId),
-      supabase.from("perfil_fiscal").select("nome").eq("id", true).maybeSingle(),
+      supabase.from("perfil_fiscal").select("nome").eq("tenant_id", obra.tenant_id).maybeSingle(),
     ]);
 
     const fotosBase64: string[] = [];

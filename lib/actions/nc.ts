@@ -217,13 +217,13 @@ export async function gerarPdfAutoNC(ncId: string, enviarCliente: boolean): Prom
     const { data: nc, error: ncError } = await supabase.from("nao_conformidades").select("*").eq("id", ncId).single();
     if (ncError || !nc) return { error: "Não conformidade não encontrada." };
 
-    const [{ data: obra, error: obraError }, { data: perfil, error: perfilError }, { data: fotosRows }] =
-      await Promise.all([
-        supabase.from("obras").select("*").eq("id", nc.obra_id).single(),
-        supabase.from("perfil_fiscal").select("*").eq("id", true).single(),
-        supabase.from("nc_fotos").select("*").eq("nc_id", ncId),
-      ]);
+    const { data: obra, error: obraError } = await supabase.from("obras").select("*").eq("id", nc.obra_id).single();
     if (obraError || !obra) return { error: "Obra não encontrada." };
+
+    const [{ data: perfil, error: perfilError }, { data: fotosRows }] = await Promise.all([
+      supabase.from("perfil_fiscal").select("*").eq("tenant_id", obra.tenant_id).single(),
+      supabase.from("nc_fotos").select("*").eq("nc_id", ncId),
+    ]);
     if (perfilError || !perfil) return { error: "Configura primeiro o teu perfil fiscal em Configurações." };
 
     const fotosBase64: string[] = [];

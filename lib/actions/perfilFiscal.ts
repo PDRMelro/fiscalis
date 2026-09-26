@@ -2,12 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getMeuTenantId } from "@/lib/tenant";
 
 export type ResultadoAcao = { error: string | null };
 
 export async function atualizarPerfilFiscal(formData: FormData): Promise<ResultadoAcao> {
   try {
     const supabase = await createClient();
+    const tenantId = await getMeuTenantId(supabase);
+    if (!tenantId) return { error: "A tua sessão expirou. Volta a entrar." };
+
     const campos = {
       nome: String(formData.get("nome") ?? "").trim(),
       qualificacao: String(formData.get("qualificacao") ?? "").trim(),
@@ -17,7 +21,7 @@ export async function atualizarPerfilFiscal(formData: FormData): Promise<Resulta
       cedula_profissional: String(formData.get("cedula_profissional") ?? "").trim(),
     };
 
-    const { error } = await supabase.from("perfil_fiscal").update(campos).eq("id", true);
+    const { error } = await supabase.from("perfil_fiscal").update(campos).eq("tenant_id", tenantId);
     if (error) return { error: error.message };
 
     revalidatePath("/configuracoes");
@@ -31,12 +35,19 @@ export async function atualizarPerfilFiscal(formData: FormData): Promise<Resulta
 export async function registarSeguroRC(ficheiro: { nome: string; path: string }): Promise<ResultadoAcao> {
   try {
     const supabase = await createClient();
-    const { data: atual } = await supabase.from("perfil_fiscal").select("seguro_rc_path").eq("id", true).single();
+    const tenantId = await getMeuTenantId(supabase);
+    if (!tenantId) return { error: "A tua sessão expirou. Volta a entrar." };
+
+    const { data: atual } = await supabase
+      .from("perfil_fiscal")
+      .select("seguro_rc_path")
+      .eq("tenant_id", tenantId)
+      .single();
 
     const { error } = await supabase
       .from("perfil_fiscal")
       .update({ seguro_rc_path: ficheiro.path, seguro_rc_nome_ficheiro: ficheiro.nome })
-      .eq("id", true);
+      .eq("tenant_id", tenantId);
     if (error) return { error: error.message };
 
     if (atual?.seguro_rc_path) {
@@ -54,11 +65,21 @@ export async function registarSeguroRC(ficheiro: { nome: string; path: string })
 export async function eliminarSeguroRC() {
   try {
     const supabase = await createClient();
-    const { data: atual } = await supabase.from("perfil_fiscal").select("seguro_rc_path").eq("id", true).single();
+    const tenantId = await getMeuTenantId(supabase);
+    if (!tenantId) return;
+
+    const { data: atual } = await supabase
+      .from("perfil_fiscal")
+      .select("seguro_rc_path")
+      .eq("tenant_id", tenantId)
+      .single();
     if (atual?.seguro_rc_path) {
       await supabase.storage.from("perfil-fiscal").remove([atual.seguro_rc_path]);
     }
-    await supabase.from("perfil_fiscal").update({ seguro_rc_path: null, seguro_rc_nome_ficheiro: null }).eq("id", true);
+    await supabase
+      .from("perfil_fiscal")
+      .update({ seguro_rc_path: null, seguro_rc_nome_ficheiro: null })
+      .eq("tenant_id", tenantId);
   } catch (err) {
     console.error("eliminarSeguroRC falhou", err);
   }

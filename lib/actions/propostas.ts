@@ -134,7 +134,11 @@ export async function gerarPdfProposta(propostaId: string, enviarCliente: boolea
       return { error: "Associa esta proposta a uma obra para a poderes enviar ao cliente." };
     }
 
-    const { data: perfil, error: perfilError } = await supabase.from("perfil_fiscal").select("*").eq("id", true).single();
+    const { data: perfil, error: perfilError } = await supabase
+      .from("perfil_fiscal")
+      .select("*")
+      .eq("tenant_id", proposta.tenant_id)
+      .single();
     if (perfilError || !perfil) return { error: "Configura primeiro o teu perfil fiscal em Configurações." };
 
     const buffer = await gerarPdfPropostaServico(proposta, perfil);

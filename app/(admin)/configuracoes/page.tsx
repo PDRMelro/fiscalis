@@ -1,5 +1,7 @@
 import { Trash2, ShieldCheck, WifiOff } from "lucide-react";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getMeuTenantId } from "@/lib/tenant";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { adicionarItemChecklist, eliminarItemChecklist } from "@/lib/actions/checklist";
 import { ESPECIALIDADES_OBRA as ESPECIALIDADES } from "@/lib/especialidadesObra";
@@ -8,9 +10,12 @@ import { PerfilFiscalForm } from "@/components/configuracoes/PerfilFiscalForm";
 
 export default async function ConfiguracoesPage() {
   const supabase = await createClient();
+  const tenantId = await getMeuTenantId(supabase);
+  if (!tenantId) redirect("/login");
+
   const [{ data: perfil }, { data: checklist }] = await Promise.all([
-    supabase.from("perfil_fiscal").select("*").eq("id", true).single(),
-    supabase.from("checklist_config").select("*").order("ordem", { ascending: true }),
+    supabase.from("perfil_fiscal").select("*").eq("tenant_id", tenantId).single(),
+    supabase.from("checklist_config").select("*").eq("tenant_id", tenantId).order("ordem", { ascending: true }),
   ]);
 
   return (
@@ -20,7 +25,7 @@ export default async function ConfiguracoesPage() {
       <PerfilFiscalForm perfil={perfil} />
 
       <div className="mb-8">
-        <SeguroRCCard nomeFicheiro={perfil?.seguro_rc_nome_ficheiro ?? null} />
+        <SeguroRCCard nomeFicheiro={perfil?.seguro_rc_nome_ficheiro ?? null} tenantId={tenantId} />
       </div>
 
       <p className="text-[13px] font-medium text-[#4A4740] mb-2">Checklist de visita (configurável)</p>

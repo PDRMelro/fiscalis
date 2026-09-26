@@ -152,11 +152,14 @@ export async function gerarTermoResponsabilidade(obraId: string): Promise<Result
   try {
     const supabase = await createClient();
 
-    const [{ data: obra, error: obraError }, { data: perfil, error: perfilError }] = await Promise.all([
-      supabase.from("obras").select("*").eq("id", obraId).single(),
-      supabase.from("perfil_fiscal").select("*").eq("id", true).single(),
-    ]);
+    const { data: obra, error: obraError } = await supabase.from("obras").select("*").eq("id", obraId).single();
     if (obraError || !obra) return { error: "Obra não encontrada." };
+
+    const { data: perfil, error: perfilError } = await supabase
+      .from("perfil_fiscal")
+      .select("*")
+      .eq("tenant_id", obra.tenant_id)
+      .single();
     if (perfilError || !perfil) return { error: "Configura primeiro o teu perfil fiscal em Configurações." };
 
     const buffer = await gerarPdfTermoResponsabilidade(obra, perfil);

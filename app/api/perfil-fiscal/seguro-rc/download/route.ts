@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getMeuTenantId } from "@/lib/tenant";
 
 export async function GET() {
   const supabase = await createClient();
+  const tenantId = await getMeuTenantId(supabase);
+  if (!tenantId) return NextResponse.json({ error: "Sem sessão." }, { status: 401 });
 
   const { data: perfil } = await supabase
     .from("perfil_fiscal")
     .select("seguro_rc_path, seguro_rc_nome_ficheiro")
-    .eq("id", true)
+    .eq("tenant_id", tenantId)
     .single();
   if (!perfil?.seguro_rc_path) return NextResponse.json({ error: "Ficheiro não encontrado." }, { status: 404 });
 
