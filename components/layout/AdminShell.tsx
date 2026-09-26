@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
 
 type Alerta = { id: string; descricao: string; obra: string; prazo: string | null; atrasada: boolean };
+export type PedidoPendenteResumo = { id: string; nomeEmpresa: string; criadoEm: string };
 
 export function AdminShell({
   nome,
@@ -17,6 +18,7 @@ export function AdminShell({
   isSuperAdmin,
   iniciais,
   alertas,
+  pedidosPendentes,
   children,
 }: {
   nome: string;
@@ -29,6 +31,7 @@ export function AdminShell({
   isSuperAdmin: boolean;
   iniciais: string;
   alertas: Alerta[];
+  pedidosPendentes: PedidoPendenteResumo[];
   children: ReactNode;
 }) {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -46,6 +49,7 @@ export function AdminShell({
         corFundoBarra={corFundoBarra}
         corDestaque={corDestaque}
         isSuperAdmin={isSuperAdmin}
+        numPedidosPendentes={pedidosPendentes.length}
         aberto={menuAberto}
         onFechar={() => setMenuAberto(false)}
       />
@@ -56,6 +60,7 @@ export function AdminShell({
           ativoAte={ativoAte}
           iniciais={iniciais}
           alertas={alertas}
+          pedidosPendentes={pedidosPendentes}
           onAbrirMenu={() => setMenuAberto(true)}
         />
         <div className="flex-1 overflow-y-auto p-4 md:p-6">{children}</div>

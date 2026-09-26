@@ -47,6 +47,7 @@ export function Sidebar({
   corFundoBarra,
   corDestaque,
   isSuperAdmin,
+  numPedidosPendentes,
   aberto,
   onFechar,
 }: {
@@ -57,6 +58,7 @@ export function Sidebar({
   corFundoBarra: string | null;
   corDestaque: string | null;
   isSuperAdmin: boolean;
+  numPedidosPendentes: number;
   aberto: boolean;
   onFechar: () => void;
 }) {
@@ -117,6 +119,11 @@ export function Sidebar({
                 <span className={active ? "font-medium" : ""} style={active ? { letterSpacing: "0.01em" } : undefined}>
                   {item.label}
                 </span>
+                {item.href === "/empresas" && numPedidosPendentes > 0 && (
+                  <span className="ml-auto min-w-[16px] h-4 px-1 rounded-full bg-[#B0402F] text-white text-[9px] font-medium flex items-center justify-center">
+                    {numPedidosPendentes}
+                  </span>
+                )}
               </Link>
             );
           })}

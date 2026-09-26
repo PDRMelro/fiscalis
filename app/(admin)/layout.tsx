@@ -53,6 +53,21 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     console.error("AdminLayout: falha ao carregar alertas", err);
   }
 
+  let pedidosPendentes: { id: string; nomeEmpresa: string; criadoEm: string }[] = [];
+  if (profile.is_super_admin) {
+    const { data: pedidosRaw } = await supabase
+      .from("tenant_pedidos")
+      .select("id, nome_empresa, criado_em")
+      .eq("estado", "pendente")
+      .order("criado_em", { ascending: false });
+
+    pedidosPendentes = (pedidosRaw ?? []).map((p) => ({
+      id: p.id,
+      nomeEmpresa: p.nome_empresa,
+      criadoEm: p.criado_em,
+    }));
+  }
+
   const nome = profile.nome || "Administrador";
   const iniciais = nome
     .split(" ")
@@ -73,6 +88,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       isSuperAdmin={profile.is_super_admin}
       iniciais={iniciais || "AD"}
       alertas={alertas}
+      pedidosPendentes={pedidosPendentes}
     >
       {children}
     </AdminShell>
