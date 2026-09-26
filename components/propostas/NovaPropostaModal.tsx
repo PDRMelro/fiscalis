@@ -37,15 +37,15 @@ export function NovaPropostaModal({ obras }: { obras: { id: string; nome: string
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Cliente</label>
-                <input name="cliente_nome" required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+                <input name="cliente_nome" required autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
               </div>
               <div>
                 <label className="text-[12px] font-medium text-[#4A4740] block mb-1">NIF / Contribuinte</label>
-                <input name="cliente_nif" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+                <input name="cliente_nif" autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
               </div>
               <div className="col-span-2">
                 <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Morada fiscal do cliente</label>
-                <input name="cliente_morada_fiscal" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+                <input name="cliente_morada_fiscal" autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
               </div>
             </div>
           </div>
@@ -55,15 +55,15 @@ export function NovaPropostaModal({ obras }: { obras: { id: string; nome: string
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Tipo de obra</label>
-                <input name="tipo_obra" required placeholder="Ex: Remodelação de moradia" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+                <input name="tipo_obra" required placeholder="Ex: Remodelação de moradia" autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
               </div>
               <div>
                 <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Morada da obra</label>
-                <input name="local" required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+                <input name="local" required autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
               </div>
               <div>
                 <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Data de envio</label>
-                <input name="enviada_em" type="date" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+                <input name="enviada_em" type="date" autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
               </div>
             </div>
           </div>
@@ -119,11 +119,11 @@ export function NovaPropostaModal({ obras }: { obras: { id: string; nome: string
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Valor fixo anual (€)</label>
-                  <input name="valor_anual" type="number" step="0.01" min="0" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+                  <input name="valor_anual" type="number" step="0.01" min="0" autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
                 </div>
                 <div>
                   <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Valor por visita extra (€)</label>
-                  <input name="valor_visita_extra" type="number" step="0.01" min="0" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+                  <input name="valor_visita_extra" type="number" step="0.01" min="0" autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
                 </div>
               </div>
             </>
@@ -135,12 +135,13 @@ export function NovaPropostaModal({ obras }: { obras: { id: string; nome: string
                   name="descricao_servico"
                   rows={3}
                   placeholder="Ex: Análise e parecer técnico ao projeto de estabilidade, acompanhamento do processo de licenciamento..."
+                  autoComplete="off"
                   className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
                 />
               </div>
               <div className="w-1/2 pr-1.5">
                 <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Valor fixo do serviço (€)</label>
-                <input name="valor_servico" type="number" step="0.01" min="0" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+                <input name="valor_servico" type="number" step="0.01" min="0" autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
               </div>
             </div>
           )}

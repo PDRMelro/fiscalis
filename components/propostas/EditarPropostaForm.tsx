@@ -55,6 +55,7 @@ export function EditarPropostaForm({
                 name="cliente_nome"
                 defaultValue={proposta.cliente_nome}
                 required
+                autoComplete="off"
                 className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
               />
             </div>
@@ -63,6 +64,7 @@ export function EditarPropostaForm({
               <input
                 name="cliente_nif"
                 defaultValue={proposta.cliente_nif ?? ""}
+                autoComplete="off"
                 className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
               />
             </div>
@@ -71,6 +73,7 @@ export function EditarPropostaForm({
               <input
                 name="cliente_morada_fiscal"
                 defaultValue={proposta.cliente_morada_fiscal ?? ""}
+                autoComplete="off"
                 className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
               />
             </div>
@@ -88,6 +91,7 @@ export function EditarPropostaForm({
                 name="tipo_obra"
                 defaultValue={proposta.tipo_obra}
                 required
+                autoComplete="off"
                 className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
               />
             </div>
@@ -99,6 +103,7 @@ export function EditarPropostaForm({
                 name="local"
                 defaultValue={proposta.local}
                 required
+                autoComplete="off"
                 className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
               />
             </div>
@@ -108,6 +113,7 @@ export function EditarPropostaForm({
                 name="enviada_em"
                 type="date"
                 defaultValue={proposta.enviada_em}
+                autoComplete="off"
                 className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
               />
             </div>
@@ -181,6 +187,7 @@ export function EditarPropostaForm({
                   step="0.01"
                   min="0"
                   defaultValue={proposta.valor_anual ?? ""}
+                  autoComplete="off"
                   className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
                 />
               </div>
@@ -192,6 +199,7 @@ export function EditarPropostaForm({
                   step="0.01"
                   min="0"
                   defaultValue={proposta.valor_visita_extra ?? ""}
+                  autoComplete="off"
                   className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
                 />
               </div>
@@ -206,6 +214,7 @@ export function EditarPropostaForm({
                 rows={3}
                 defaultValue={proposta.descricao_servico ?? ""}
                 placeholder="Ex: Análise e parecer técnico ao projeto de estabilidade, acompanhamento do processo de licenciamento..."
+                autoComplete="off"
                 className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
               />
             </div>
@@ -217,6 +226,7 @@ export function EditarPropostaForm({
                 step="0.01"
                 min="0"
                 defaultValue={proposta.valor_servico ?? ""}
+                autoComplete="off"
                 className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
               />
             </div>

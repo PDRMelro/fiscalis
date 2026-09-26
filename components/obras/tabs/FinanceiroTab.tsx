@@ -99,9 +99,9 @@ export function FinanceiroTab({
           action={adicionarAuto.bind(null, obraId)}
           className="flex items-center gap-2 px-5 py-3 border-t border-[#EDEBE2] bg-[#F5F4EF] flex-wrap"
         >
-          <input name="numero" required placeholder="N.º (ex: AM-06)" className="w-28 text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5" />
-          <input name="data" type="date" required className="text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5" />
-          <input name="valor" type="number" step="0.01" required placeholder="Valor €" className="w-28 text-[12px] font-mono border border-[#DEDBD2] rounded-lg px-2.5 py-1.5" />
+          <input name="numero" required placeholder="N.º (ex: AM-06)" autoComplete="off" className="w-28 text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5" />
+          <input name="data" type="date" required autoComplete="off" className="text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5" />
+          <input name="valor" type="number" step="0.01" required placeholder="Valor €" autoComplete="off" className="w-28 text-[12px] font-mono border border-[#DEDBD2] rounded-lg px-2.5 py-1.5" />
           <select name="estado" defaultValue="Pendente" className="text-[12px] border border-[#DEDBD2] rounded-lg px-2 py-1.5">
             <option value="Pendente">Pendente</option>
             <option value="Pago">Pago</option>

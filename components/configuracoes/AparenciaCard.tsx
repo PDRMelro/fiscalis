@@ -132,6 +132,7 @@ export function AparenciaCard({ tenant, logoUrl }: { tenant: TenantRow; logoUrl:
             name="nome_empresa"
             defaultValue={tenant.nome_empresa}
             required
+            autoComplete="off"
             className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
           />
         </div>

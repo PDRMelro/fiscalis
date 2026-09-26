@@ -28,16 +28,16 @@ export function EditarObraModal({ obra }: { obra: ObraRow }) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Nome</label>
-              <input name="nome" defaultValue={obra.nome} required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+              <input name="nome" defaultValue={obra.nome} required autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
             </div>
             <div>
               <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Cliente</label>
-              <input name="cliente_nome" defaultValue={obra.cliente_nome} required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+              <input name="cliente_nome" defaultValue={obra.cliente_nome} required autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
             </div>
           </div>
           <div>
             <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Localização</label>
-            <input name="local" defaultValue={obra.local} required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+            <input name="local" defaultValue={obra.local} required autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
           </div>
           <div>
             <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Localização exata no mapa</label>
@@ -46,7 +46,7 @@ export function EditarObraModal({ obra }: { obra: ObraRow }) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Início</label>
-              <input name="inicio" type="date" defaultValue={paraInputDate(obra.inicio)} className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+              <input name="inicio" type="date" defaultValue={paraInputDate(obra.inicio)} autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
             </div>
             <div>
               <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Estado</label>
@@ -65,12 +65,14 @@ export function EditarObraModal({ obra }: { obra: ObraRow }) {
                 name="termo_descricao_obra"
                 defaultValue={obra.termo_descricao_obra ?? ""}
                 placeholder="Descrição da obra (ex: construção de moradia unifamiliar)"
+                autoComplete="off"
                 className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
               />
               <input
                 name="termo_freguesia"
                 defaultValue={obra.termo_freguesia ?? ""}
                 placeholder="Freguesia"
+                autoComplete="off"
                 className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
               />
               <div className="grid grid-cols-2 gap-2">
@@ -81,6 +83,7 @@ export function EditarObraModal({ obra }: { obra: ObraRow }) {
                     placeholder="n/nnn/aaaa"
                     pattern="\d+/\d+/\d{4}"
                     title="Formato: n/nnn/aaaa"
+                    autoComplete="off"
                     className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
                   />
                   <p className="text-[10px] text-[#8A8578] mt-0.5">Formato: n/nnn/aaaa</p>
@@ -92,6 +95,7 @@ export function EditarObraModal({ obra }: { obra: ObraRow }) {
                     placeholder="nnnnn/aaaa"
                     pattern="\d+/\d{4}"
                     title="Formato: nnnnn/aaaa"
+                    autoComplete="off"
                     className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
                   />
                   <p className="text-[10px] text-[#8A8578] mt-0.5">Formato: nnnnn/aaaa</p>

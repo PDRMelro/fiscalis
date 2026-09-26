@@ -65,7 +65,7 @@ export default async function ConfiguracoesPage() {
             </option>
           ))}
         </select>
-        <input name="item" required placeholder="Novo item de verificação" className="flex-1 px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white" />
+        <input name="item" required placeholder="Novo item de verificação" autoComplete="off" className="flex-1 px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white" />
         <button type="submit" className="px-3 py-2 rounded-lg bg-[#14283A] text-white text-[12px] font-medium">
           Adicionar
         </button>

@@ -134,6 +134,7 @@ export function NovaNCForm({
             type="date"
             defaultValue={new Date().toISOString().slice(0, 10)}
             required
+            autoComplete="off"
             className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
           />
         </div>

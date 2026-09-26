@@ -42,6 +42,7 @@ export function IntervenienteCampos({
           required
           defaultValue={defaults?.papel}
           placeholder="Papel (ex: Dono de obra, Fiscal...)"
+          autoComplete="off"
           className="flex-1 min-w-[140px] text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5"
         />
       </div>
@@ -52,12 +53,14 @@ export function IntervenienteCampos({
           required
           defaultValue={defaults?.nome}
           placeholder="Nome"
+          autoComplete="off"
           className="flex-1 min-w-[140px] text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5"
         />
         <input
           name="contacto"
           defaultValue={defaults?.contacto ?? undefined}
           placeholder="Contacto"
+          autoComplete="off"
           className="flex-1 min-w-[140px] text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5"
         />
       </div>
@@ -67,6 +70,7 @@ export function IntervenienteCampos({
           name="empresa"
           defaultValue={defaults?.empresa ?? undefined}
           placeholder="Nome da empresa"
+          autoComplete="off"
           className="w-full text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5"
         />
       )}
@@ -77,6 +81,7 @@ export function IntervenienteCampos({
             name="cedula_profissional"
             defaultValue={defaults?.cedula_profissional ?? undefined}
             placeholder="N.º cédula profissional"
+            autoComplete="off"
             className="flex-1 min-w-[140px] text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5"
           />
           {(tipo === "Direção de Obra" || tipo === "Coordenador de Segurança") && (
@@ -84,6 +89,7 @@ export function IntervenienteCampos({
               name="colegio"
               defaultValue={defaults?.colegio ?? undefined}
               placeholder="Colégio / especialidade (ex: Civil)"
+              autoComplete="off"
               className="flex-1 min-w-[140px] text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5"
             />
           )}

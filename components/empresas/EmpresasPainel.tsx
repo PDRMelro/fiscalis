@@ -52,12 +52,13 @@ function PedidoCard({ pedido }: { pedido: TenantPedidoRow }) {
           <input
             name="plano"
             placeholder="Ex: 5 anos"
+            autoComplete="off"
             className="w-32 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
           />
         </div>
         <div>
           <label className="text-[10px] text-[#8A8578] block mb-0.5">Válido até</label>
-          <input name="ativoAte" type="date" className="px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]" />
+          <input name="ativoAte" type="date" autoComplete="off" className="px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]" />
         </div>
         <div>
           <label className="text-[10px] text-[#8A8578] block mb-0.5">Valor pago (€)</label>
@@ -67,6 +68,7 @@ function PedidoCard({ pedido }: { pedido: TenantPedidoRow }) {
             min="0"
             step="0.01"
             placeholder="Ex: 2500"
+            autoComplete="off"
             className="w-24 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
           />
         </div>

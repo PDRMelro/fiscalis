@@ -46,6 +46,7 @@ export default function ComecarPage() {
                   <input
                     name="nomeEmpresa"
                     required
+                    autoComplete="off"
                     className="mt-1 w-full border border-[#E4E1D6] rounded-lg px-3 py-2 text-[13px] text-[#1F1D19] bg-white outline-none focus:border-[#C9A050]"
                   />
                 </div>
@@ -54,6 +55,7 @@ export default function ComecarPage() {
                   <input
                     name="nomeResponsavel"
                     required
+                    autoComplete="off"
                     className="mt-1 w-full border border-[#E4E1D6] rounded-lg px-3 py-2 text-[13px] text-[#1F1D19] bg-white outline-none focus:border-[#C9A050]"
                   />
                 </div>
@@ -63,6 +65,7 @@ export default function ComecarPage() {
                     name="email"
                     type="email"
                     required
+                    autoComplete="off"
                     className="mt-1 w-full border border-[#E4E1D6] rounded-lg px-3 py-2 text-[13px] text-[#1F1D19] bg-white outline-none focus:border-[#C9A050]"
                   />
                 </div>
@@ -71,6 +74,7 @@ export default function ComecarPage() {
                   <input
                     name="telefone"
                     type="tel"
+                    autoComplete="off"
                     className="mt-1 w-full border border-[#E4E1D6] rounded-lg px-3 py-2 text-[13px] text-[#1F1D19] bg-white outline-none focus:border-[#C9A050]"
                   />
                 </div>
@@ -80,6 +84,7 @@ export default function ComecarPage() {
                     name="mensagem"
                     rows={3}
                     placeholder="Ex: número de obras, tipo de necessidade..."
+                    autoComplete="off"
                     className="mt-1 w-full border border-[#E4E1D6] rounded-lg px-3 py-2 text-[13px] text-[#1F1D19] bg-white outline-none focus:border-[#C9A050] resize-none"
                   />
                 </div>

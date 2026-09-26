@@ -12,6 +12,7 @@ export function LinkCopiavel({ link }: { link: string }) {
         readOnly
         value={link}
         onFocus={(e) => e.currentTarget.select()}
+        autoComplete="off"
         className="flex-1 min-w-0 px-2.5 py-1.5 rounded-md border border-[#DEDBD2] text-[11px] text-[#1F1D19] bg-white font-mono"
       />
       <button

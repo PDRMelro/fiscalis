@@ -20,19 +20,20 @@ export function CamposNC({ defaults }: { defaults?: Partial<NaoConformidadeRow> 
             name="local_zona"
             defaultValue={defaults?.local_zona ?? ""}
             placeholder="Ex: Piso 1, fachada norte"
+            autoComplete="off"
             className={campo}
           />
         </div>
         <div>
           <label className={rotulo}>Frente / fase</label>
-          <input name="frente_fase" defaultValue={defaults?.frente_fase ?? ""} className={campo} />
+          <input name="frente_fase" defaultValue={defaults?.frente_fase ?? ""} autoComplete="off" className={campo} />
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className={rotulo}>Contrato n.º</label>
-          <input name="contrato_numero" defaultValue={defaults?.contrato_numero ?? ""} className={campo} />
+          <input name="contrato_numero" defaultValue={defaults?.contrato_numero ?? ""} autoComplete="off" className={campo} />
         </div>
         <div>
           <label className={rotulo}>Empreiteiro / subempreiteiro</label>
@@ -40,6 +41,7 @@ export function CamposNC({ defaults }: { defaults?: Partial<NaoConformidadeRow> 
             name="responsavel"
             defaultValue={defaults?.responsavel ?? ""}
             placeholder="Ex: Empreiteiro Geral"
+            autoComplete="off"
             className={campo}
           />
         </div>
@@ -63,6 +65,7 @@ export function CamposNC({ defaults }: { defaults?: Partial<NaoConformidadeRow> 
             name="origem"
             defaultValue={defaults?.origem ?? ""}
             placeholder="Ex: Inspeção de rotina, auditoria, reclamação..."
+            autoComplete="off"
             className={campo}
           />
         </div>
@@ -79,6 +82,7 @@ export function CamposNC({ defaults }: { defaults?: Partial<NaoConformidadeRow> 
           required
           rows={3}
           placeholder="O que foi observado em obra..."
+          autoComplete="off"
           className={`${campo} resize-none`}
         />
       </div>
@@ -95,6 +99,7 @@ export function CamposNC({ defaults }: { defaults?: Partial<NaoConformidadeRow> 
             required
             rows={2}
             placeholder="Requisito contratual, normativo ou legal não cumprido..."
+            autoComplete="off"
             className={`${campo} resize-none`}
           />
         </div>
@@ -105,6 +110,7 @@ export function CamposNC({ defaults }: { defaults?: Partial<NaoConformidadeRow> 
             defaultValue={defaults?.evidencias ?? ""}
             rows={2}
             placeholder="Fotografias, relatórios, medições, ensaios, etc."
+            autoComplete="off"
             className={`${campo} resize-none`}
           />
         </div>
@@ -122,6 +128,7 @@ export function CamposNC({ defaults }: { defaults?: Partial<NaoConformidadeRow> 
             name="classificacao_justificacao"
             defaultValue={defaults?.classificacao_justificacao ?? ""}
             placeholder="Justificação (opcional)"
+            autoComplete="off"
             className={campo}
           />
         </div>
@@ -132,10 +139,11 @@ export function CamposNC({ defaults }: { defaults?: Partial<NaoConformidadeRow> 
             defaultValue={defaults?.acao_corretiva ?? ""}
             rows={2}
             placeholder="O que tem de ser feito para eliminar a não conformidade..."
+            autoComplete="off"
             className={`${campo} resize-none mb-2`}
           />
           <label className={rotulo}>Prazo para correção</label>
-          <input name="prazo" type="date" defaultValue={defaults?.prazo ?? ""} className={campo} />
+          <input name="prazo" type="date" defaultValue={defaults?.prazo ?? ""} autoComplete="off" className={campo} />
         </div>
       </div>
 
@@ -143,7 +151,7 @@ export function CamposNC({ defaults }: { defaults?: Partial<NaoConformidadeRow> 
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className={rotulo}>Verificação efetuada em</label>
-          <input name="data_verificacao" type="date" defaultValue={defaults?.data_verificacao ?? ""} className={campo} />
+          <input name="data_verificacao" type="date" defaultValue={defaults?.data_verificacao ?? ""} autoComplete="off" className={campo} />
         </div>
         <div>
           <label className={rotulo}>Resultado</label>
@@ -160,6 +168,7 @@ export function CamposNC({ defaults }: { defaults?: Partial<NaoConformidadeRow> 
           name="evidencias_verificacao"
           defaultValue={defaults?.evidencias_verificacao ?? ""}
           rows={2}
+          autoComplete="off"
           className={`${campo} resize-none`}
         />
       </div>
@@ -171,6 +180,7 @@ export function CamposNC({ defaults }: { defaults?: Partial<NaoConformidadeRow> 
           name="observacoes_recomendacoes"
           defaultValue={defaults?.observacoes_recomendacoes ?? ""}
           rows={2}
+          autoComplete="off"
           className={`${campo} resize-none`}
         />
       </div>

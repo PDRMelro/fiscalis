@@ -48,6 +48,7 @@ export function PesquisaGlobal() {
           onFocus={() => setAberto(true)}
           onBlur={() => setTimeout(() => setAberto(false), 150)}
           placeholder="Pesquisar obras, NC, documentos..."
+          autoComplete="off"
           className="bg-transparent text-[13px] outline-none w-full text-[#1F1D19] placeholder:text-[#8A8578]"
         />
       </div>

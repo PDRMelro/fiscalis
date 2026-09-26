@@ -37,6 +37,7 @@ export function GeralTab({ obraId, areas }: { obraId: string; areas: ObraAreaRow
                   min={0}
                   max={100}
                   defaultValue={a.progresso}
+                  autoComplete="off"
                   className="w-14 text-[11px] font-mono border border-[#E4E1D6] rounded px-1.5 py-0.5"
                 />
                 <button type="submit" className="text-[11px] text-[#14283A] underline underline-offset-2">
@@ -67,6 +68,7 @@ export function GeralTab({ obraId, areas }: { obraId: string; areas: ObraAreaRow
           name="area"
           required
           placeholder="Nova área (ex: Impermeabilizações)"
+          autoComplete="off"
           className="flex-1 text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5"
         />
         <input
@@ -75,6 +77,7 @@ export function GeralTab({ obraId, areas }: { obraId: string; areas: ObraAreaRow
           min={0}
           max={100}
           defaultValue={0}
+          autoComplete="off"
           className="w-16 text-[12px] font-mono border border-[#DEDBD2] rounded-lg px-2 py-1.5"
         />
         <select name="estado" defaultValue="Pendente" className="text-[12px] border border-[#DEDBD2] rounded-lg px-2 py-1.5">

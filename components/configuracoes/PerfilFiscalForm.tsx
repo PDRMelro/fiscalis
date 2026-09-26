@@ -45,27 +45,27 @@ export function PerfilFiscalForm({ perfil }: { perfil: PerfilFiscalRow | null })
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Nome</label>
-          <input name="nome" defaultValue={perfil?.nome} required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+          <input name="nome" defaultValue={perfil?.nome} required autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
         </div>
         <div>
           <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Qualificação</label>
-          <input name="qualificacao" defaultValue={perfil?.qualificacao} required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+          <input name="qualificacao" defaultValue={perfil?.qualificacao} required autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
         </div>
         <div className="col-span-2">
           <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Morada fiscal</label>
-          <input name="morada_fiscal" defaultValue={perfil?.morada_fiscal} required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+          <input name="morada_fiscal" defaultValue={perfil?.morada_fiscal} required autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
         </div>
         <div>
           <label className="text-[12px] font-medium text-[#4A4740] block mb-1">NIF</label>
-          <input name="nif" defaultValue={perfil?.nif} required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+          <input name="nif" defaultValue={perfil?.nif} required autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
         </div>
         <div>
           <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Cartão de Cidadão</label>
-          <input name="cartao_cidadao" defaultValue={perfil?.cartao_cidadao} required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+          <input name="cartao_cidadao" defaultValue={perfil?.cartao_cidadao} required autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
         </div>
         <div className="col-span-2">
           <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Cédula profissional</label>
-          <input name="cedula_profissional" defaultValue={perfil?.cedula_profissional} required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+          <input name="cedula_profissional" defaultValue={perfil?.cedula_profissional} required autoComplete="off" className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
         </div>
       </div>
       <p className="text-[11px] text-[#8A8578] mt-2">

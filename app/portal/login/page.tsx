@@ -26,6 +26,7 @@ export default function PortalLoginPage() {
               type="email"
               required
               placeholder="o-teu-email@exemplo.com"
+              autoComplete="off"
               className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] text-[#1F1D19] bg-white focus:outline-none focus:border-[#14283A] mb-3"
             />
             <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Palavra-passe</label>

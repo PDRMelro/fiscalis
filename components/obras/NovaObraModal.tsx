@@ -26,6 +26,7 @@ export function NovaObraModal() {
             <input
               name="nome"
               required
+              autoComplete="off"
               className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] focus:outline-none focus:border-[#14283A]"
             />
           </div>
@@ -34,6 +35,7 @@ export function NovaObraModal() {
             <input
               name="cliente_nome"
               required
+              autoComplete="off"
               className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] focus:outline-none focus:border-[#14283A]"
             />
           </div>
@@ -42,6 +44,7 @@ export function NovaObraModal() {
             <input
               name="local"
               required
+              autoComplete="off"
               className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] focus:outline-none focus:border-[#14283A]"
             />
           </div>
@@ -55,6 +58,7 @@ export function NovaObraModal() {
               <input
                 name="inicio"
                 type="date"
+                autoComplete="off"
                 className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] focus:outline-none focus:border-[#14283A]"
               />
             </div>
@@ -64,6 +68,7 @@ export function NovaObraModal() {
                 name="honorario_mensal"
                 type="number"
                 step="0.01"
+                autoComplete="off"
                 className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] focus:outline-none focus:border-[#14283A]"
               />
             </div>

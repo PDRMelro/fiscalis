@@ -64,6 +64,7 @@ export function AgendarVisitaForm({
             value={data}
             onChange={(e) => setData(e.target.value)}
             required
+            autoComplete="off"
             className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white focus:outline-none focus:border-[#14283A]"
           />
         </div>
@@ -84,6 +85,7 @@ export function AgendarVisitaForm({
         onChange={(e) => setNotas(e.target.value)}
         rows={3}
         placeholder="O que está previsto verificar nesta visita..."
+        autoComplete="off"
         className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white focus:outline-none focus:border-[#14283A] resize-none"
       />
 

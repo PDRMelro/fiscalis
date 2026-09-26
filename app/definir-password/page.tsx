@@ -31,6 +31,7 @@ function DefinirPasswordForm() {
         <input
           value={email}
           disabled
+          autoComplete="off"
           className="mt-1 w-full border border-[#E4E1D6] rounded-lg px-3 py-2 text-[13px] text-[#8A8578] bg-[#F5F4EF]"
         />
       </div>

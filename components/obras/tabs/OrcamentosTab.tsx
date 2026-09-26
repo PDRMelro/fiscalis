@@ -87,6 +87,7 @@ export function OrcamentosTab({
                         step="0.01"
                         defaultValue={i.valor_executado}
                         title="Valor executado (sem IVA)"
+                        autoComplete="off"
                         className="w-20 font-mono text-[12px] border border-[#E4E1D6] rounded px-1.5 py-0.5"
                       />
                       <div className="flex items-center gap-0.5">
@@ -96,6 +97,7 @@ export function OrcamentosTab({
                           step="0.01"
                           defaultValue={i.taxa_iva}
                           title="Taxa de IVA (%)"
+                          autoComplete="off"
                           className="w-12 font-mono text-[12px] border border-[#E4E1D6] rounded px-1 py-0.5"
                         />
                         <span className="text-[11px] text-[#8A8578]">%</span>
@@ -142,12 +144,12 @@ export function OrcamentosTab({
           action={adicionarOrcamento.bind(null, obraId)}
           className="flex items-center gap-2 px-5 py-3 border-t border-[#EDEBE2] bg-[#F5F4EF] flex-wrap"
         >
-          <input name="servico" required placeholder="Serviço" className="flex-1 min-w-[120px] text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5" />
-          <input name="fornecedor" required placeholder="Fornecedor" className="flex-1 min-w-[120px] text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5" />
-          <input name="valor_orcamentado" type="number" step="0.01" required placeholder="Orçamentado € (s/IVA)" className="w-36 text-[12px] font-mono border border-[#DEDBD2] rounded-lg px-2.5 py-1.5" />
-          <input name="valor_executado" type="number" step="0.01" defaultValue={0} placeholder="Executado €" className="w-28 text-[12px] font-mono border border-[#DEDBD2] rounded-lg px-2.5 py-1.5" />
+          <input name="servico" required placeholder="Serviço" autoComplete="off" className="flex-1 min-w-[120px] text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5" />
+          <input name="fornecedor" required placeholder="Fornecedor" autoComplete="off" className="flex-1 min-w-[120px] text-[12px] border border-[#DEDBD2] rounded-lg px-2.5 py-1.5" />
+          <input name="valor_orcamentado" type="number" step="0.01" required placeholder="Orçamentado € (s/IVA)" autoComplete="off" className="w-36 text-[12px] font-mono border border-[#DEDBD2] rounded-lg px-2.5 py-1.5" />
+          <input name="valor_executado" type="number" step="0.01" defaultValue={0} placeholder="Executado €" autoComplete="off" className="w-28 text-[12px] font-mono border border-[#DEDBD2] rounded-lg px-2.5 py-1.5" />
           <div className="flex items-center gap-1">
-            <input name="taxa_iva" type="number" step="0.01" defaultValue={23} title="Taxa de IVA (%)" className="w-14 text-[12px] font-mono border border-[#DEDBD2] rounded-lg px-2 py-1.5" />
+            <input name="taxa_iva" type="number" step="0.01" defaultValue={23} title="Taxa de IVA (%)" autoComplete="off" className="w-14 text-[12px] font-mono border border-[#DEDBD2] rounded-lg px-2 py-1.5" />
             <span className="text-[12px] text-[#8A8578]">% IVA</span>
           </div>
           <button type="submit" className="text-[12px] text-white bg-[#14283A] rounded-lg px-3 py-1.5">
