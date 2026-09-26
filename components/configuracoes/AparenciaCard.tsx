@@ -22,6 +22,13 @@ export function AparenciaCard({ tenant, logoUrl }: { tenant: TenantRow; logoUrl:
 
   function enviarLogo(ficheiro: File) {
     setErroLogo(null);
+
+    if (!["image/png", "image/jpeg"].includes(ficheiro.type)) {
+      setErroLogo("O logótipo tem de ser um ficheiro PNG ou JPG.");
+      if (inputRef.current) inputRef.current.value = "";
+      return;
+    }
+
     startLogoTransition(async () => {
       try {
         const supabase = createClient();
@@ -101,7 +108,7 @@ export function AparenciaCard({ tenant, logoUrl }: { tenant: TenantRow; logoUrl:
             <input
               ref={inputRef}
               type="file"
-              accept="image/*"
+              accept="image/png,image/jpeg"
               className="hidden"
               onChange={(e) => e.target.files?.[0] && enviarLogo(e.target.files[0])}
             />
@@ -111,7 +118,7 @@ export function AparenciaCard({ tenant, logoUrl }: { tenant: TenantRow; logoUrl:
               <Upload size={16} className="text-[#8A8578] shrink-0" />
             )}
             <span className="text-[#8A8578] text-[11px]">
-              {pendingLogo ? "A enviar..." : "Arrasta ou clica para escolher o logótipo"}
+              {pendingLogo ? "A enviar..." : "Arrasta ou clica para escolher o logótipo (PNG ou JPG)"}
             </span>
           </div>
           {logoUrl && !pendingLogo && (
