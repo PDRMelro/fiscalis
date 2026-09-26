@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { AdminShell } from "@/components/layout/AdminShell";
+import { ContaExpirada } from "@/components/layout/ContaExpirada";
+import { adminLogout } from "@/lib/actions/auth";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
   const supabase = await createClient();
@@ -21,6 +23,28 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     ? await supabase.from("tenants").select("*").eq("id", profile.tenant_id).single()
     : { data: null };
 
+  const hojeISO = new Date().toISOString().slice(0, 10);
+  if (!profile.is_super_admin && tenant) {
+    if (tenant.cancelado_em) {
+      return (
+        <ContaExpirada
+          nomeEmpresa={tenant.nome_empresa}
+          motivo="O acesso desta empresa foi cancelado. Contacta a Fiscalis para mais informações."
+          logout={adminLogout}
+        />
+      );
+    }
+    if (tenant.ativo_ate && tenant.ativo_ate < hojeISO) {
+      return (
+        <ContaExpirada
+          nomeEmpresa={tenant.nome_empresa}
+          motivo="O período de acesso desta empresa terminou. Contacta a Fiscalis para renovar."
+          logout={adminLogout}
+        />
+      );
+    }
+  }
+
   let logoUrl: string | null = null;
   if (tenant?.logo_path) {
     const { data: assinado } = await supabase.storage
@@ -31,8 +55,6 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
   let alertas: { id: string; descricao: string; prazo: string | null; obra: string; atrasada: boolean }[] = [];
   try {
-    const hojeISO = new Date().toISOString().slice(0, 10);
-
     const { data: alertasRaw } = await supabase
       .from("nao_conformidades")
       .select("id, descricao, prazo, obras(nome)")

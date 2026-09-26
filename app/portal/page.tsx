@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { LOGO_SRC_DARK } from "@/lib/branding";
 import { clientLogout } from "@/lib/actions/auth";
+import { ContaExpirada } from "@/components/layout/ContaExpirada";
 import { DocumentosClienteSection } from "@/components/portal/DocumentosClienteSection";
 import { OrcamentoDocumentosClienteButton } from "@/components/portal/OrcamentoDocumentosClienteButton";
 import { CalendarioPortalCliente } from "@/components/portal/CalendarioPortalCliente";
@@ -37,6 +38,27 @@ export default async function PortalHomePage() {
           <button className="text-[12px] text-[#8A8578] underline underline-offset-2">Sair</button>
         </form>
       </div>
+    );
+  }
+
+  const { data: tenant } = await supabase.from("tenants").select("nome_empresa, ativo_ate, cancelado_em").eq("id", obra.tenant_id).single();
+  const hojeISO = new Date().toISOString().slice(0, 10);
+  if (tenant?.cancelado_em) {
+    return (
+      <ContaExpirada
+        nomeEmpresa={tenant.nome_empresa}
+        motivo="O acesso a esta plataforma foi suspenso. Contacta o teu engenheiro fiscal."
+        logout={clientLogout}
+      />
+    );
+  }
+  if (tenant?.ativo_ate && tenant.ativo_ate < hojeISO) {
+    return (
+      <ContaExpirada
+        nomeEmpresa={tenant.nome_empresa}
+        motivo="O período de acesso a esta plataforma terminou. Contacta o teu engenheiro fiscal."
+        logout={clientLogout}
+      />
     );
   }
 
