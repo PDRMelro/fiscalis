@@ -18,7 +18,8 @@ export default async function MensagensPage() {
   const user = await getUserSafe(supabase);
   if (!user) redirect("/login");
 
-  const { data: pessoas } = await supabase.rpc("pessoas_para_conversar");
+  const { data: pessoas, error: pessoasError } = await supabase.rpc("pessoas_para_conversar");
+  if (pessoasError) console.error("MensagensPage: falha em pessoas_para_conversar", pessoasError);
 
   const contactos = await Promise.all(
     (pessoas ?? []).map(async (pessoa) => {
@@ -46,6 +47,11 @@ export default async function MensagensPage() {
   return (
     <>
       <PageHeader title="Mensagens" subtitle="Conversas internas" />
+      {pessoasError && (
+        <p className="text-[12px] text-[#B0402F] font-mono mb-3 max-w-2xl">
+          Erro ao carregar contactos: {pessoasError.message}
+        </p>
+      )}
       <div className="bg-white border border-[#E4E1D6] rounded-xl max-w-2xl overflow-hidden">
         {contactos.length === 0 && (
           <p className="text-[13px] text-[#8A8578] px-4 py-6 text-center">Sem ninguém disponível para conversar.</p>
