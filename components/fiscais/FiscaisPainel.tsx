@@ -31,7 +31,12 @@ function NovoFiscalForm() {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Nome</label>
-            <input name="nome" required className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]" />
+            <input
+              name="nome"
+              required
+              autoComplete="off"
+              className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
+            />
           </div>
           <div>
             <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Email</label>
@@ -39,6 +44,7 @@ function NovoFiscalForm() {
               name="email"
               type="email"
               required
+              autoComplete="off"
               className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
             />
           </div>
@@ -49,6 +55,7 @@ function NovoFiscalForm() {
             <input
               name="qualificacao"
               placeholder="Ex: Eng.º Civil"
+              autoComplete="off"
               className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
             />
           </div>
@@ -56,6 +63,7 @@ function NovoFiscalForm() {
             <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Cédula profissional</label>
             <input
               name="cedulaProfissional"
+              autoComplete="off"
               className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px]"
             />
           </div>
