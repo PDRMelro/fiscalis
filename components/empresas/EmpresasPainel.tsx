@@ -88,6 +88,17 @@ function PedidoCard({ pedido }: { pedido: TenantPedidoRow }) {
             <label className="text-[10px] text-[#8A8578] block mb-0.5">Válido até</label>
             <input name="ativoAte" type="date" className="px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]" />
           </div>
+          <div>
+            <label className="text-[10px] text-[#8A8578] block mb-0.5">Valor pago (€)</label>
+            <input
+              name="valorPago"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Ex: 2500"
+              className="w-24 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
+            />
+          </div>
           <button
             type="submit"
             disabled={pending}
@@ -132,6 +143,11 @@ function TenantLinha({ tenant }: { tenant: TenantComContagens }) {
       </div>
       <span className={`text-[10px] font-medium border rounded px-1.5 py-0.5 ${estado.cor}`}>{estado.texto}</span>
       <p className="text-[12px] text-[#4A4740] w-28">Válido até: {formatarData(tenant.ativo_ate)}</p>
+      <p className="text-[12px] text-[#4A4740] w-24">
+        {tenant.valor_pago != null
+          ? tenant.valor_pago.toLocaleString("pt-PT", { style: "currency", currency: "EUR" })
+          : "sem valor"}
+      </p>
       <p className="text-[12px] text-[#4A4740] w-20">{tenant.numClientes} clientes</p>
       <p className="text-[12px] text-[#4A4740] w-16">{tenant.numObras} obras</p>
       <p className="text-[11px] text-[#8A8578] w-36">

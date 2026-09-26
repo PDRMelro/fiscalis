@@ -63,6 +63,7 @@ export type TenantRow = {
   nome_empresa: string;
   logo_path: string | null;
   plano: string | null;
+  valor_pago: number | null;
   ativo_ate: string | null;
   cancelado_em: string | null;
   cor_fundo_barra: string | null;

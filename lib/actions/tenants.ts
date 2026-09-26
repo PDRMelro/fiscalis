@@ -26,7 +26,12 @@ export async function aprovarPedido(_prev: ResultadoAprovacao, formData: FormDat
   const pedidoId = String(formData.get("pedidoId") ?? "").trim();
   const plano = String(formData.get("plano") ?? "").trim();
   const ativoAte = String(formData.get("ativoAte") ?? "").trim();
+  const valorPagoTexto = String(formData.get("valorPago") ?? "").trim();
+  const valorPago = valorPagoTexto ? Number(valorPagoTexto) : null;
   if (!pedidoId) return { error: "Pedido inválido.", link: null };
+  if (valorPagoTexto && (Number.isNaN(valorPago) || valorPago! < 0)) {
+    return { error: "Valor pago inválido.", link: null };
+  }
 
   const { data: pedido, error: pedidoError } = await supabase
     .from("tenant_pedidos")
@@ -40,7 +45,7 @@ export async function aprovarPedido(_prev: ResultadoAprovacao, formData: FormDat
 
   const { data: tenant, error: tenantError } = await admin
     .from("tenants")
-    .insert({ nome_empresa: pedido.nome_empresa, plano: plano || null, ativo_ate: ativoAte || null })
+    .insert({ nome_empresa: pedido.nome_empresa, plano: plano || null, ativo_ate: ativoAte || null, valor_pago: valorPago })
     .select()
     .single();
   if (tenantError || !tenant) {
