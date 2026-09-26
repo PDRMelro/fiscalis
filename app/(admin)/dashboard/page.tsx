@@ -1,6 +1,19 @@
 import Link from "next/link";
-import { Calendar, Building2, Activity, AlertTriangle, CheckCircle2, Hammer, MapPin, Clock, CalendarClock, AlarmClock } from "lucide-react";
+import {
+  Calendar,
+  Building2,
+  Activity,
+  AlertTriangle,
+  CheckCircle2,
+  Hammer,
+  MapPin,
+  Clock,
+  CalendarClock,
+  AlarmClock,
+  HardHat,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { getMeuTenantId } from "@/lib/tenant";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { StatCard } from "@/components/ui/StatCard";
 import { EstadoDot, AreaEstadoTag } from "@/components/ui/Tags";
@@ -55,6 +68,46 @@ export default async function DashboardPage() {
       .eq("obra_id", obraDestaque.id)
       .order("ordem", { ascending: true });
     areasDestaque = data ?? [];
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: viewerProfile } = user
+    ? await supabase.from("profiles").select("role").eq("id", user.id).single()
+    : { data: null };
+  const isAdmin = viewerProfile?.role === "admin";
+
+  let fiscaisResumo: { id: string; nome: string; principal: boolean; ativo: boolean; numObras: number }[] = [];
+  if (isAdmin) {
+    const tenantId = await getMeuTenantId(supabase);
+    if (tenantId) {
+      const { data: fiscais } = await supabase
+        .from("profiles")
+        .select("id, nome, fiscal_principal, ativo")
+        .eq("tenant_id", tenantId)
+        .eq("role", "fiscal")
+        .order("nome", { ascending: true });
+
+      const fiscalIds = (fiscais ?? []).map((f) => f.id);
+      const { data: atribuicoes } =
+        fiscalIds.length > 0
+          ? await supabase.from("obra_fiscais").select("fiscal_id").in("fiscal_id", fiscalIds)
+          : { data: [] as { fiscal_id: string }[] };
+
+      const contagemPorFiscal = new Map<string, number>();
+      for (const a of atribuicoes ?? []) {
+        contagemPorFiscal.set(a.fiscal_id, (contagemPorFiscal.get(a.fiscal_id) ?? 0) + 1);
+      }
+
+      fiscaisResumo = (fiscais ?? []).map((f) => ({
+        id: f.id,
+        nome: f.nome,
+        principal: f.fiscal_principal,
+        ativo: f.ativo,
+        numObras: f.fiscal_principal ? todasObras.length : (contagemPorFiscal.get(f.id) ?? 0),
+      }));
+    }
   }
 
   return (
@@ -131,6 +184,38 @@ export default async function DashboardPage() {
         <StatCard label="Não conformidades abertas" value={ncAbertas} tone="warn" icon={AlertTriangle} />
         <StatCard label="Não conformidades encerradas" value={ncEncerradas} tone="ok" icon={CheckCircle2} />
       </div>
+
+      {isAdmin && fiscaisResumo.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[13px] font-medium text-[#4A4740] flex items-center gap-1.5">
+              <HardHat size={14} className="text-[#8A4A17]" /> Fiscais
+            </p>
+            <Link href="/fiscais" className="text-[11px] text-[#14283A] underline underline-offset-2">
+              Gerir fiscais
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {fiscaisResumo.map((f) => (
+              <div key={f.id} className="bg-white border border-[#E4E1D6] rounded-xl p-4">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <p className="text-[13px] font-medium text-[#14283A] truncate">{f.nome}</p>
+                  {!f.ativo && (
+                    <span className="text-[10px] text-[#B0402F] bg-[#FBEAE6] border border-[#E8B9AC] rounded px-1.5 py-0.5 shrink-0">
+                      Inativo
+                    </span>
+                  )}
+                </div>
+                <p className="text-[12px] text-[#8A8578]">
+                  {f.principal
+                    ? "Fiscal principal · todas as obras"
+                    : `${f.numObras} obra${f.numObras === 1 ? "" : "s"} atribuída${f.numObras === 1 ? "" : "s"}`}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
         <div className="lg:col-span-3 bg-white border border-[#E4E1D6] rounded-xl p-5">
