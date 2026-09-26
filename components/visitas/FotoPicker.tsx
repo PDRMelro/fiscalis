@@ -1,7 +1,8 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Camera, X } from "lucide-react";
+import { comprimirImagem } from "@/lib/comprimirImagem";
 
 export type FotoSelecionada = { id: string; url: string; nome: string; file: File };
 
@@ -13,6 +14,10 @@ export function FotoPicker({
   onChange: (fotos: FotoSelecionada[]) => void;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const fotosRef = useRef(fotos);
+  useEffect(() => {
+    fotosRef.current = fotos;
+  }, [fotos]);
 
   function adicionarFicheiros(fileList: FileList) {
     const novas = Array.from(fileList).map((file) => ({
@@ -22,6 +27,15 @@ export function FotoPicker({
       file,
     }));
     onChange([...fotos, ...novas]);
+
+    novas.forEach((foto) => {
+      comprimirImagem(foto.file).then((comprimido) => {
+        if (comprimido === foto.file) return;
+        const atual = fotosRef.current;
+        if (!atual.some((f) => f.id === foto.id)) return;
+        onChange(atual.map((f) => (f.id === foto.id ? { ...f, file: comprimido } : f)));
+      });
+    });
   }
 
   function remover(id: string) {

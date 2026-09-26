@@ -5,6 +5,7 @@ import { Upload, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { registarDocumentoCliente } from "@/lib/actions/documentos";
 import { nomeSeguro } from "@/lib/nomeSeguro";
+import { comprimirImagem } from "@/lib/comprimirImagem";
 
 export function DocumentoUploadCliente({
   obraId,
@@ -34,10 +35,11 @@ export function DocumentoUploadCliente({
         const supabase = createClient();
 
         for (let i = 0; i < lista.length; i++) {
-          const ficheiro = lista[i];
+          const original = lista[i];
           setProgresso(lista.length > 1 ? `A enviar ${i + 1}/${lista.length}...` : "A enviar...");
 
           try {
+            const ficheiro = await comprimirImagem(original);
             const path = `${obraId}/${crypto.randomUUID()}-${nomeSeguro(ficheiro.name)}`;
             const { error: uploadError } = await supabase.storage
               .from("documentos")
@@ -54,8 +56,8 @@ export function DocumentoUploadCliente({
             );
             if (resultado.error) erros.push(`${ficheiro.name}: ${resultado.error}`);
           } catch (err) {
-            console.error("Falha ao enviar ficheiro", ficheiro.name, err);
-            erros.push(`${ficheiro.name}: falha inesperada ao enviar.`);
+            console.error("Falha ao enviar ficheiro", original.name, err);
+            erros.push(`${original.name}: falha inesperada ao enviar.`);
           }
         }
       } catch (err) {
