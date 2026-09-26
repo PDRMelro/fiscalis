@@ -8,6 +8,8 @@ export type ActionResult = { error: string } | { error: null };
 export async function definirPasswordConvite(_prev: ActionResult, formData: FormData): Promise<ActionResult> {
   const email = String(formData.get("email") ?? "").trim();
   const token = String(formData.get("token") ?? "").trim();
+  const tipoRaw = String(formData.get("tipo") ?? "invite").trim();
+  const tipo = tipoRaw === "recovery" ? "recovery" : "invite";
   const password = String(formData.get("password") ?? "");
   const confirmar = String(formData.get("confirmar") ?? "");
 
@@ -17,7 +19,7 @@ export async function definirPasswordConvite(_prev: ActionResult, formData: Form
 
   const supabase = await createClient();
 
-  const { error: otpError } = await supabase.auth.verifyOtp({ email, token, type: "invite" });
+  const { error: otpError } = await supabase.auth.verifyOtp({ email, token, type: tipo });
   if (otpError) return { error: "Este link já não é válido ou expirou. Pede um novo à Fiscalis." };
 
   const { error: updateError } = await supabase.auth.updateUser({ password });

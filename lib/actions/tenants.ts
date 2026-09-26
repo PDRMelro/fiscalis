@@ -6,7 +6,12 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 const SITE_URL = "https://www.fiscalis-engenharia.pt";
 
-export type ResultadoAprovacao = { error: string | null; link: string | null };
+export type ResultadoAprovacao = { error: string | null };
+export type ResultadoLink = { error: string | null; link: string | null };
+
+function construirLinkConvite(email: string, otp: string | undefined, tipo: "invite" | "recovery"): string {
+  return `${SITE_URL}/definir-password?email=${encodeURIComponent(email)}&token=${otp ?? ""}&tipo=${tipo}`;
+}
 
 async function exigirSuperAdmin() {
   const supabase = await createClient();
@@ -21,16 +26,16 @@ async function exigirSuperAdmin() {
 
 export async function aprovarPedido(_prev: ResultadoAprovacao, formData: FormData): Promise<ResultadoAprovacao> {
   const supabase = await exigirSuperAdmin();
-  if (!supabase) return { error: "Sem permissões.", link: null };
+  if (!supabase) return { error: "Sem permissões." };
 
   const pedidoId = String(formData.get("pedidoId") ?? "").trim();
   const plano = String(formData.get("plano") ?? "").trim();
   const ativoAte = String(formData.get("ativoAte") ?? "").trim();
   const valorPagoTexto = String(formData.get("valorPago") ?? "").trim();
   const valorPago = valorPagoTexto ? Number(valorPagoTexto) : null;
-  if (!pedidoId) return { error: "Pedido inválido.", link: null };
+  if (!pedidoId) return { error: "Pedido inválido." };
   if (valorPagoTexto && (Number.isNaN(valorPago) || valorPago! < 0)) {
-    return { error: "Valor pago inválido.", link: null };
+    return { error: "Valor pago inválido." };
   }
 
   const { data: pedido, error: pedidoError } = await supabase
@@ -39,7 +44,7 @@ export async function aprovarPedido(_prev: ResultadoAprovacao, formData: FormDat
     .eq("id", pedidoId)
     .eq("estado", "pendente")
     .single();
-  if (pedidoError || !pedido) return { error: "Pedido não encontrado ou já foi decidido.", link: null };
+  if (pedidoError || !pedido) return { error: "Pedido não encontrado ou já foi decidido." };
 
   const admin = createAdminClient();
 
@@ -50,7 +55,7 @@ export async function aprovarPedido(_prev: ResultadoAprovacao, formData: FormDat
     .single();
   if (tenantError || !tenant) {
     console.error("aprovarPedido: falha ao criar tenant", tenantError);
-    return { error: "Não foi possível criar a empresa.", link: null };
+    return { error: "Não foi possível criar a empresa." };
   }
 
   const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
@@ -61,7 +66,7 @@ export async function aprovarPedido(_prev: ResultadoAprovacao, formData: FormDat
   if (linkError || !linkData?.user) {
     await admin.from("tenants").delete().eq("id", tenant.id);
     console.error("aprovarPedido: falha ao criar conta", linkError);
-    return { error: `Não foi possível criar a conta de acesso: ${linkError?.message ?? "erro desconhecido"}`, link: null };
+    return { error: `Não foi possível criar a conta de acesso: ${linkError?.message ?? "erro desconhecido"}` };
   }
 
   // O trigger on_auth_user_created já criou um profile como "client" —
@@ -74,7 +79,7 @@ export async function aprovarPedido(_prev: ResultadoAprovacao, formData: FormDat
     await admin.auth.admin.deleteUser(linkData.user.id);
     await admin.from("tenants").delete().eq("id", tenant.id);
     console.error("aprovarPedido: falha ao atualizar profile", profileError);
-    return { error: "Não foi possível preparar a conta de acesso.", link: null };
+    return { error: "Não foi possível preparar a conta de acesso." };
   }
 
   await supabase
@@ -83,11 +88,44 @@ export async function aprovarPedido(_prev: ResultadoAprovacao, formData: FormDat
     .eq("id", pedidoId);
 
   revalidatePath("/empresas");
+  return { error: null };
+}
 
-  const otp = linkData.properties?.email_otp;
-  const link = `${SITE_URL}/definir-password?email=${encodeURIComponent(pedido.email)}&token=${otp ?? ""}`;
+/**
+ * Gera (ou regenera) o link de ativação da conta do administrador de um
+ * tenant — usado logo a seguir a aprovar, ou mais tarde se o link anterior
+ * se perder/expirar. Fica disponível na lista de empresas enquanto a
+ * conta não estiver ativada (password_definida_em null).
+ */
+export async function gerarLinkConvite(_prev: ResultadoLink, formData: FormData): Promise<ResultadoLink> {
+  const supabase = await exigirSuperAdmin();
+  if (!supabase) return { error: "Sem permissões.", link: null };
 
-  return { error: null, link };
+  const tenantId = String(formData.get("tenantId") ?? "").trim();
+  if (!tenantId) return { error: "Empresa inválida.", link: null };
+
+  const { data: adminProfile, error: profileError } = await supabase
+    .from("profiles")
+    .select("email")
+    .eq("tenant_id", tenantId)
+    .eq("role", "admin")
+    .limit(1)
+    .single();
+  if (profileError || !adminProfile) {
+    return { error: "Não foi encontrada nenhuma conta de administrador para esta empresa.", link: null };
+  }
+
+  const admin = createAdminClient();
+  const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+    type: "recovery",
+    email: adminProfile.email,
+  });
+  if (linkError || !linkData) {
+    console.error("gerarLinkConvite falhou", linkError);
+    return { error: "Não foi possível gerar o link.", link: null };
+  }
+
+  return { error: null, link: construirLinkConvite(adminProfile.email, linkData.properties?.email_otp, "recovery") };
 }
 
 export async function rejeitarPedido(pedidoId: string): Promise<void> {

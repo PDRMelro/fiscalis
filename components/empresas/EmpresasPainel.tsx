@@ -1,19 +1,22 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { Check, X, Copy, CheckCheck, Ban, RotateCcw } from "lucide-react";
+import { Check, X, Copy, CheckCheck, Ban, RotateCcw, Link2 } from "lucide-react";
 import {
   aprovarPedido,
   rejeitarPedido,
   cancelarAcessoTenant,
   reativarAcessoTenant,
+  gerarLinkConvite,
   type ResultadoAprovacao,
+  type ResultadoLink,
 } from "@/lib/actions/tenants";
 import type { TenantPedidoRow, TenantRow } from "@/lib/supabase/types";
 
 type TenantComContagens = TenantRow & { numClientes: number; numObras: number };
 
-const initialAprovacao: ResultadoAprovacao = { error: null, link: null };
+const initialAprovacao: ResultadoAprovacao = { error: null };
+const initialLink: ResultadoLink = { error: null, link: null };
 
 function formatarData(iso: string | null): string {
   if (!iso) return "—";
@@ -24,31 +27,26 @@ function CaixaLink({ link }: { link: string }) {
   const [copiado, setCopiado] = useState(false);
 
   return (
-    <div className="mt-3 bg-[#F5F4EF] border border-[#E4E1D6] rounded-lg p-3">
-      <p className="text-[11px] text-[#4A4740] mb-1.5">
-        Empresa criada. Envia este link a quem vai gerir a conta para definir a palavra-passe:
-      </p>
-      <div className="flex items-center gap-2">
-        <input
-          readOnly
-          value={link}
-          onFocus={(e) => e.currentTarget.select()}
-          className="flex-1 min-w-0 px-2.5 py-1.5 rounded-md border border-[#DEDBD2] text-[11px] text-[#1F1D19] bg-white font-mono"
-        />
-        <button
-          type="button"
-          onClick={() => {
-            navigator.clipboard.writeText(link).then(() => {
-              setCopiado(true);
-              setTimeout(() => setCopiado(false), 2000);
-            });
-          }}
-          className="shrink-0 px-2.5 py-1.5 rounded-md bg-[#14283A] text-white text-[11px] font-medium flex items-center gap-1"
-        >
-          {copiado ? <CheckCheck size={13} /> : <Copy size={13} />}
-          {copiado ? "Copiado" : "Copiar"}
-        </button>
-      </div>
+    <div className="mt-2 bg-[#F5F4EF] border border-[#E4E1D6] rounded-lg p-2.5 flex items-center gap-2">
+      <input
+        readOnly
+        value={link}
+        onFocus={(e) => e.currentTarget.select()}
+        className="flex-1 min-w-0 px-2.5 py-1.5 rounded-md border border-[#DEDBD2] text-[11px] text-[#1F1D19] bg-white font-mono"
+      />
+      <button
+        type="button"
+        onClick={() => {
+          navigator.clipboard.writeText(link).then(() => {
+            setCopiado(true);
+            setTimeout(() => setCopiado(false), 2000);
+          });
+        }}
+        className="shrink-0 px-2.5 py-1.5 rounded-md bg-[#14283A] text-white text-[11px] font-medium flex items-center gap-1"
+      >
+        {copiado ? <CheckCheck size={13} /> : <Copy size={13} />}
+        {copiado ? "Copiado" : "Copiar"}
+      </button>
     </div>
   );
 }
@@ -73,52 +71,48 @@ function PedidoCard({ pedido }: { pedido: TenantPedidoRow }) {
         <p className="text-[12px] text-[#4A4740] mt-1.5 italic">&ldquo;{pedido.mensagem}&rdquo;</p>
       )}
 
-      {!state.link ? (
-        <form action={formAction} className="flex flex-wrap items-end gap-2 mt-3">
-          <input type="hidden" name="pedidoId" value={pedido.id} />
-          <div>
-            <label className="text-[10px] text-[#8A8578] block mb-0.5">Plano</label>
-            <input
-              name="plano"
-              placeholder="Ex: 5 anos"
-              className="w-32 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
-            />
-          </div>
-          <div>
-            <label className="text-[10px] text-[#8A8578] block mb-0.5">Válido até</label>
-            <input name="ativoAte" type="date" className="px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]" />
-          </div>
-          <div>
-            <label className="text-[10px] text-[#8A8578] block mb-0.5">Valor pago (€)</label>
-            <input
-              name="valorPago"
-              type="number"
-              min="0"
-              step="0.01"
-              placeholder="Ex: 2500"
-              className="w-24 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={pending}
-            className="px-3 py-1.5 rounded-md bg-[#3E7A4D] text-white text-[12px] font-medium flex items-center gap-1 disabled:opacity-60"
-          >
-            <Check size={13} /> {pending ? "A aprovar..." : "Aprovar"}
-          </button>
-          <button
-            type="submit"
-            formAction={rejeitarPedido.bind(null, pedido.id)}
-            disabled={pending}
-            className="px-3 py-1.5 rounded-md border border-[#E4B8AC] text-[#B0402F] text-[12px] font-medium flex items-center gap-1 disabled:opacity-60"
-          >
-            <X size={13} /> Rejeitar
-          </button>
-          {state.error && <p className="text-[11px] text-[#B0402F] w-full">{state.error}</p>}
-        </form>
-      ) : (
-        <CaixaLink link={state.link} />
-      )}
+      <form action={formAction} className="flex flex-wrap items-end gap-2 mt-3">
+        <input type="hidden" name="pedidoId" value={pedido.id} />
+        <div>
+          <label className="text-[10px] text-[#8A8578] block mb-0.5">Plano</label>
+          <input
+            name="plano"
+            placeholder="Ex: 5 anos"
+            className="w-32 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
+          />
+        </div>
+        <div>
+          <label className="text-[10px] text-[#8A8578] block mb-0.5">Válido até</label>
+          <input name="ativoAte" type="date" className="px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]" />
+        </div>
+        <div>
+          <label className="text-[10px] text-[#8A8578] block mb-0.5">Valor pago (€)</label>
+          <input
+            name="valorPago"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Ex: 2500"
+            className="w-24 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={pending}
+          className="px-3 py-1.5 rounded-md bg-[#3E7A4D] text-white text-[12px] font-medium flex items-center gap-1 disabled:opacity-60"
+        >
+          <Check size={13} /> {pending ? "A aprovar..." : "Aprovar"}
+        </button>
+        <button
+          type="submit"
+          formAction={rejeitarPedido.bind(null, pedido.id)}
+          disabled={pending}
+          className="px-3 py-1.5 rounded-md border border-[#E4B8AC] text-[#B0402F] text-[12px] font-medium flex items-center gap-1 disabled:opacity-60"
+        >
+          <X size={13} /> Rejeitar
+        </button>
+        {state.error && <p className="text-[11px] text-[#B0402F] w-full">{state.error}</p>}
+      </form>
     </div>
   );
 }
@@ -129,6 +123,27 @@ function estadoTenant(tenant: TenantRow): { texto: string; cor: string } {
     return { texto: "Expirado", cor: "text-[#B0402F] bg-[#FBEAE6] border-[#E8B9AC]" };
   }
   return { texto: "Ativo", cor: "text-[#3E7A4D] bg-[#E9F3EB] border-[#BEDCC4]" };
+}
+
+function LinkConviteBotao({ tenantId }: { tenantId: string }) {
+  const [state, formAction, pending] = useActionState(gerarLinkConvite, initialLink);
+
+  return (
+    <div>
+      <form action={formAction}>
+        <input type="hidden" name="tenantId" value={tenantId} />
+        <button
+          type="submit"
+          disabled={pending}
+          className="text-[11px] font-medium text-[#14283A] flex items-center gap-1 disabled:opacity-60"
+        >
+          <Link2 size={12} /> {pending ? "A gerar..." : state.link ? "Gerar novo link" : "Gerar link de convite"}
+        </button>
+      </form>
+      {state.error && <p className="text-[11px] text-[#B0402F] mt-1">{state.error}</p>}
+      {state.link && <CaixaLink link={state.link} />}
+    </div>
+  );
 }
 
 function TenantLinha({ tenant }: { tenant: TenantComContagens }) {
@@ -150,9 +165,13 @@ function TenantLinha({ tenant }: { tenant: TenantComContagens }) {
       </p>
       <p className="text-[12px] text-[#4A4740] w-20">{tenant.numClientes} clientes</p>
       <p className="text-[12px] text-[#4A4740] w-16">{tenant.numObras} obras</p>
-      <p className="text-[11px] text-[#8A8578] w-36">
-        {tenant.password_definida_em ? `Ativado em ${formatarData(tenant.password_definida_em)}` : "Convite pendente"}
-      </p>
+      <div className="w-full sm:w-auto sm:min-w-[180px]">
+        {ehFiscalis ? null : tenant.password_definida_em ? (
+          <p className="text-[11px] text-[#8A8578]">Ativado em {formatarData(tenant.password_definida_em)}</p>
+        ) : (
+          <LinkConviteBotao tenantId={tenant.id} />
+        )}
+      </div>
       {!ehFiscalis && (
         <form action={(tenant.cancelado_em ? reativarAcessoTenant : cancelarAcessoTenant).bind(null, tenant.id)}>
           <button

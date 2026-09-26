@@ -12,6 +12,7 @@ function DefinirPasswordForm() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
   const token = searchParams.get("token") ?? "";
+  const tipo = searchParams.get("tipo") ?? "invite";
   const [state, formAction, pending] = useActionState(definirPasswordConvite, initialState);
 
   if (!email || !token) {
@@ -24,6 +25,7 @@ function DefinirPasswordForm() {
     <form action={formAction} className="space-y-3.5">
       <input type="hidden" name="email" value={email} />
       <input type="hidden" name="token" value={token} />
+      <input type="hidden" name="tipo" value={tipo} />
       <div>
         <label className="text-[12px] text-[#4A4740] font-medium">Email</label>
         <input
