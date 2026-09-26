@@ -5,10 +5,8 @@ import { ImageIcon, Trash2, Loader2, Upload } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { atualizarAparenciaTenant, registarLogoTenant, eliminarLogoTenant } from "@/lib/actions/tenant";
 import { nomeSeguro } from "@/lib/nomeSeguro";
+import { COR_FUNDO_BARRA_OMISSAO, COR_DESTAQUE_OMISSAO } from "@/lib/branding";
 import type { TenantRow } from "@/lib/supabase/types";
-
-const COR_FUNDO_OMISSAO = "#14283A";
-const COR_DESTAQUE_OMISSAO = "#C9A050";
 
 export function AparenciaCard({ tenant, logoUrl }: { tenant: TenantRow; logoUrl: string | null }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -18,7 +16,7 @@ export function AparenciaCard({ tenant, logoUrl }: { tenant: TenantRow; logoUrl:
   const [erroLogo, setErroLogo] = useState<string | null>(null);
   const [erroForm, setErroForm] = useState<string | null>(null);
   const [guardado, setGuardado] = useState(false);
-  const [corFundoBarra, setCorFundoBarra] = useState(tenant.cor_fundo_barra ?? COR_FUNDO_OMISSAO);
+  const [corFundoBarra, setCorFundoBarra] = useState(tenant.cor_fundo_barra ?? COR_FUNDO_BARRA_OMISSAO);
   const [corDestaque, setCorDestaque] = useState(tenant.cor_destaque ?? COR_DESTAQUE_OMISSAO);
 
   function enviarLogo(ficheiro: File) {

@@ -12,9 +12,10 @@ import {
   ClipboardList,
   CalendarDays,
   Users,
+  Landmark,
   X,
 } from "lucide-react";
-import { LOGO_SRC_DARK } from "@/lib/branding";
+import { LOGO_SRC_DARK, COR_FUNDO_BARRA_OMISSAO, COR_DESTAQUE_OMISSAO } from "@/lib/branding";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -28,42 +29,64 @@ const NAV = [
   { href: "/configuracoes", label: "Configurações", icon: Settings },
 ];
 
+const NAV_SUPER_ADMIN = { href: "/empresas", label: "Empresas", icon: Landmark };
+
+function hexParaRgba(hex: string, alfa: number): string {
+  const limpo = hex.replace("#", "");
+  const r = parseInt(limpo.slice(0, 2), 16);
+  const g = parseInt(limpo.slice(2, 4), 16);
+  const b = parseInt(limpo.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alfa})`;
+}
+
 export function Sidebar({
   nome,
   cargo,
+  nomeEmpresa,
+  logoUrl,
+  corFundoBarra,
+  corDestaque,
+  isSuperAdmin,
   aberto,
   onFechar,
 }: {
   nome: string;
   cargo: string;
+  nomeEmpresa: string;
+  logoUrl: string | null;
+  corFundoBarra: string | null;
+  corDestaque: string | null;
+  isSuperAdmin: boolean;
   aberto: boolean;
   onFechar: () => void;
 }) {
   const pathname = usePathname();
+  const corFundo = corFundoBarra || COR_FUNDO_BARRA_OMISSAO;
+  const corAcento = corDestaque || COR_DESTAQUE_OMISSAO;
+  const itensNav = isSuperAdmin ? [...NAV, NAV_SUPER_ADMIN] : NAV;
 
   return (
     <>
       {aberto && <div className="fixed inset-0 bg-black/40 z-40 md:hidden" onClick={onFechar} />}
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-50 w-[220px] shrink-0 flex flex-col bg-[#14283A] transform transition-transform duration-200 md:translate-x-0 ${
+        className={`fixed md:static inset-y-0 left-0 z-50 w-[220px] shrink-0 flex flex-col transform transition-transform duration-200 md:translate-x-0 ${
           aberto ? "translate-x-0" : "-translate-x-full"
         }`}
+        style={{ backgroundColor: corFundo }}
       >
         <div className="flex items-center justify-between gap-2 px-5 py-6 border-b border-white/[0.06]">
-          <div className="flex items-center gap-2">
-            <img src={LOGO_SRC_DARK} alt="Fiscalis" className="h-8 w-auto" />
-            <div className="leading-tight">
-              <p className="text-white text-[13px] font-semibold tracking-wide">FISCALIS</p>
-              <p className="text-[#C9A050] text-[9px] tracking-[0.15em] font-medium">ENGENHARIA</p>
-            </div>
+          <div className="flex items-center gap-2 min-w-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={logoUrl || LOGO_SRC_DARK} alt={nomeEmpresa} className="h-8 w-auto max-w-9 object-contain shrink-0" />
+            <p className="text-white text-[13px] font-semibold tracking-wide truncate">{nomeEmpresa}</p>
           </div>
-          <button type="button" onClick={onFechar} className="md:hidden text-[#9FB0BF] hover:text-white">
+          <button type="button" onClick={onFechar} className="md:hidden text-[#9FB0BF] hover:text-white shrink-0">
             <X size={18} />
           </button>
         </div>
 
         <nav className="flex-1 px-3 mt-3 space-y-0.5">
-          {NAV.map((item) => {
+          {itensNav.map((item) => {
             const Icon = item.icon;
             const active = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
@@ -72,18 +95,25 @@ export function Sidebar({
                 href={item.href}
                 onClick={onFechar}
                 className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] transition-all duration-200 relative border ${
-                  active ? "text-[#F6EDD8]" : "border-transparent text-[#9FB0BF] hover:text-white hover:bg-white/[0.04]"
+                  active ? "" : "border-transparent text-[#9FB0BF] hover:text-white hover:bg-white/[0.04]"
                 }`}
                 style={
                   active
-                    ? { backgroundColor: "rgba(201,160,80,0.16)", borderColor: "rgba(201,160,80,0.45)" }
+                    ? {
+                        backgroundColor: hexParaRgba(corAcento, 0.16),
+                        borderColor: hexParaRgba(corAcento, 0.45),
+                        color: corAcento,
+                      }
                     : undefined
                 }
               >
                 {active && (
-                  <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[2.5px] h-4 bg-[#E9CE8F] rounded-r" />
+                  <span
+                    className="absolute left-0 top-1/2 -translate-y-1/2 w-[2.5px] h-4 rounded-r"
+                    style={{ backgroundColor: corAcento }}
+                  />
                 )}
-                <Icon size={16} className={active ? "text-[#E9CE8F]" : ""} strokeWidth={active ? 2 : 1.75} />
+                <Icon size={16} style={active ? { color: corAcento } : undefined} strokeWidth={active ? 2 : 1.75} />
                 <span className={active ? "font-medium" : ""} style={active ? { letterSpacing: "0.01em" } : undefined}>
                   {item.label}
                 </span>

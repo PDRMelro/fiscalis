@@ -67,7 +67,23 @@ export type TenantRow = {
   cancelado_em: string | null;
   cor_fundo_barra: string | null;
   cor_destaque: string | null;
+  password_definida_em: string | null;
   criado_em: string;
+};
+
+export type EstadoPedidoTenant = "pendente" | "aprovado" | "rejeitado";
+
+export type TenantPedidoRow = {
+  id: string;
+  nome_empresa: string;
+  nome_responsavel: string;
+  email: string;
+  telefone: string | null;
+  mensagem: string | null;
+  estado: EstadoPedidoTenant;
+  tenant_id: string | null;
+  criado_em: string;
+  decidido_em: string | null;
 };
 
 export type ObraAreaRow = {
@@ -289,6 +305,7 @@ export type Database = {
       checklist_config: TableDef<ChecklistConfigRow, "especialidade" | "item">;
       perfil_fiscal: TableDef<PerfilFiscalRow, never>;
       tenants: TableDef<TenantRow, "nome_empresa">;
+      tenant_pedidos: TableDef<TenantPedidoRow, "nome_empresa" | "nome_responsavel" | "email">;
     };
     Views: {
       visitas_resumo: {

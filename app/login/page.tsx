@@ -75,6 +75,12 @@ export default function AdminLoginPage() {
             Acede ao Portal do Cliente
           </a>
         </p>
+        <p className="text-center text-[11px] text-[#6E8294] mt-1.5">
+          É uma empresa e quer usar a Fiscalis?{" "}
+          <a href="/comecar" className="text-[#C9A050] hover:underline">
+            Peça acesso aqui
+          </a>
+        </p>
       </div>
     </div>
   );

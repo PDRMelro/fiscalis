@@ -17,6 +17,18 @@ export default async function AdminLayout({ children }: { children: ReactNode })
 
   if (!profile || profile.role !== "admin") redirect("/login");
 
+  const { data: tenant } = profile.tenant_id
+    ? await supabase.from("tenants").select("*").eq("id", profile.tenant_id).single()
+    : { data: null };
+
+  let logoUrl: string | null = null;
+  if (tenant?.logo_path) {
+    const { data: assinado } = await supabase.storage
+      .from("tenant-branding")
+      .createSignedUrl(tenant.logo_path, 60 * 60);
+    logoUrl = assinado?.signedUrl ?? null;
+  }
+
   let alertas: { id: string; descricao: string; prazo: string | null; obra: string; atrasada: boolean }[] = [];
   try {
     const hojeISO = new Date().toISOString().slice(0, 10);
@@ -50,7 +62,18 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     .toUpperCase();
 
   return (
-    <AdminShell nome={nome} cargo="Eng.º Civil" empresa="Fiscalis Engenharia" iniciais={iniciais || "AD"} alertas={alertas}>
+    <AdminShell
+      nome={nome}
+      cargo="Eng.º Civil"
+      nomeEmpresa={tenant?.nome_empresa ?? "Fiscalis Engenharia"}
+      logoUrl={logoUrl}
+      corFundoBarra={tenant?.cor_fundo_barra ?? null}
+      corDestaque={tenant?.cor_destaque ?? null}
+      ativoAte={tenant?.ativo_ate ?? null}
+      isSuperAdmin={profile.is_super_admin}
+      iniciais={iniciais || "AD"}
+      alertas={alertas}
+    >
       {children}
     </AdminShell>
   );

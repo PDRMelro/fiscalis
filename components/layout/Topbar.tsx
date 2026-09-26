@@ -10,12 +10,14 @@ type Alerta = { id: string; descricao: string; obra: string; prazo: string | nul
 export function Topbar({
   nome,
   empresa,
+  ativoAte,
   iniciais,
   alertas,
   onAbrirMenu,
 }: {
   nome: string;
   empresa: string;
+  ativoAte: string | null;
   iniciais: string;
   alertas: Alerta[];
   onAbrirMenu: () => void;
@@ -117,6 +119,11 @@ export function Topbar({
             <div className="hidden sm:block leading-tight text-left">
               <p className="text-[13px] font-medium">{nome}</p>
               <p className="text-[11px] text-[#8A8578]">{empresa}</p>
+              {ativoAte && (
+                <p className="text-[10px] text-[#B08A3E]">
+                  Acesso válido até {new Date(`${ativoAte}T00:00:00`).toLocaleDateString("pt-PT")}
+                </p>
+              )}
             </div>
             <ChevronDown size={14} className="text-[#8A8578]" />
           </button>

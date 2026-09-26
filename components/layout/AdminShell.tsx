@@ -9,14 +9,24 @@ type Alerta = { id: string; descricao: string; obra: string; prazo: string | nul
 export function AdminShell({
   nome,
   cargo,
-  empresa,
+  nomeEmpresa,
+  logoUrl,
+  corFundoBarra,
+  corDestaque,
+  ativoAte,
+  isSuperAdmin,
   iniciais,
   alertas,
   children,
 }: {
   nome: string;
   cargo: string;
-  empresa: string;
+  nomeEmpresa: string;
+  logoUrl: string | null;
+  corFundoBarra: string | null;
+  corDestaque: string | null;
+  ativoAte: string | null;
+  isSuperAdmin: boolean;
   iniciais: string;
   alertas: Alerta[];
   children: ReactNode;
@@ -28,11 +38,22 @@ export function AdminShell({
       className="w-full min-h-screen bg-[#F5F4EF] flex text-[#1F1D19]"
       style={{ fontFamily: "Inter, system-ui, sans-serif" }}
     >
-      <Sidebar nome={nome} cargo={cargo} aberto={menuAberto} onFechar={() => setMenuAberto(false)} />
+      <Sidebar
+        nome={nome}
+        cargo={cargo}
+        nomeEmpresa={nomeEmpresa}
+        logoUrl={logoUrl}
+        corFundoBarra={corFundoBarra}
+        corDestaque={corDestaque}
+        isSuperAdmin={isSuperAdmin}
+        aberto={menuAberto}
+        onFechar={() => setMenuAberto(false)}
+      />
       <div className="flex-1 flex flex-col min-w-0">
         <Topbar
           nome={nome}
-          empresa={empresa}
+          empresa={nomeEmpresa}
+          ativoAte={ativoAte}
           iniciais={iniciais}
           alertas={alertas}
           onAbrirMenu={() => setMenuAberto(true)}
