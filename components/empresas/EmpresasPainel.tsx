@@ -13,7 +13,7 @@ import {
   type ResultadoLink,
 } from "@/lib/actions/tenants";
 import { LinkCopiavel } from "@/components/ui/LinkCopiavel";
-import { formatarBytes } from "@/lib/format";
+import { formatarBytes, corUtilizacao } from "@/lib/format";
 import { PACKS_TENANT } from "@/lib/tenantPacks";
 import type { TenantPedidoRow, TenantRow } from "@/lib/supabase/types";
 
@@ -147,6 +147,52 @@ function corUso(usado: number, limite: number | null): string {
   return "text-[#4A4740]";
 }
 
+function GraficoArmazenamento({ usado, limite }: { usado: number; limite: number | null }) {
+  const tamanho = 40;
+  const raio = 16;
+  const circunferencia = 2 * Math.PI * raio;
+
+  if (limite == null) {
+    return (
+      <div
+        className="shrink-0 rounded-full border-2 border-[#EDEBE2] flex items-center justify-center"
+        style={{ width: tamanho, height: tamanho }}
+        title="Sem limite de armazenamento"
+      >
+        <span className="text-[8px] text-[#8A8578]">—</span>
+      </div>
+    );
+  }
+
+  const pct = Math.min(100, Math.round((usado / limite) * 100));
+  const cor = corUtilizacao(pct);
+  const offset = circunferencia * (1 - pct / 100);
+
+  return (
+    <div className="relative shrink-0" style={{ width: tamanho, height: tamanho }} title={`${pct}% do armazenamento usado`}>
+      <svg width={tamanho} height={tamanho} className="-rotate-90">
+        <circle cx={tamanho / 2} cy={tamanho / 2} r={raio} fill="none" stroke="#EDEBE2" strokeWidth="4" />
+        <circle
+          cx={tamanho / 2}
+          cy={tamanho / 2}
+          r={raio}
+          fill="none"
+          stroke={cor}
+          strokeWidth="4"
+          strokeDasharray={circunferencia}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-[8px] font-medium" style={{ color: cor }}>
+          {pct}%
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function estadoTenant(tenant: TenantRow): { texto: string; cor: string } {
   if (tenant.cancelado_em) return { texto: "Cancelado", cor: "text-[#B0402F] bg-[#FBEAE6] border-[#E8B9AC]" };
   if (tenant.ativo_ate && tenant.ativo_ate < new Date().toISOString().slice(0, 10)) {
@@ -227,6 +273,7 @@ function TenantLinha({ tenant }: { tenant: TenantComContagens }) {
         {formatarBytes(tenant.bytesArmazenados)}
         {tenant.limite_armazenamento_bytes != null ? ` / ${formatarBytes(tenant.limite_armazenamento_bytes)}` : ""}
       </p>
+      <GraficoArmazenamento usado={tenant.bytesArmazenados} limite={tenant.limite_armazenamento_bytes} />
       <div className="w-full sm:w-auto sm:min-w-[180px]">
         {ehFiscalis ? null : tenant.password_definida_em ? (
           <p className="text-[11px] text-[#8A8578]">Ativado em {formatarData(tenant.password_definida_em)}</p>

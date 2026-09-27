@@ -51,6 +51,14 @@ export function formatarBytes(bytes: number): string {
   return `${valor.toFixed(i === 0 ? 0 : 1)} ${unidades[i]}`;
 }
 
+/** Cor (verde -> amarelo -> laranja -> vermelho) para uma percentagem de utilização de um limite. */
+export function corUtilizacao(pct: number): string {
+  if (pct >= 100) return "#B0402F";
+  if (pct >= 80) return "#C4791E";
+  if (pct >= 50) return "#D9A620";
+  return "#3E7A4D";
+}
+
 /** Input <input type="date"> espera sempre "yyyy-mm-dd". */
 export function paraInputDate(data: string | Date | null | undefined): string {
   if (!data) return "";
