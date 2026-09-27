@@ -1,13 +1,14 @@
 "use client";
 
-import { useActionState, useState } from "react";
-import { Check, X, Ban, RotateCcw, Link2, Trash2 } from "lucide-react";
+import { useActionState, useEffect, useRef, useState } from "react";
+import { Check, X, Ban, RotateCcw, Link2, Trash2, Pencil } from "lucide-react";
 import {
   aprovarPedido,
   rejeitarPedido,
   cancelarAcessoTenant,
   reativarAcessoTenant,
   eliminarTenant,
+  editarPackTenant,
   gerarLinkConvite,
   type ResultadoAprovacao,
   type ResultadoLink,
@@ -139,6 +140,113 @@ function PedidoCard({ pedido }: { pedido: TenantPedidoRow }) {
   );
 }
 
+function pacoteInicial(tenant: TenantRow): "base" | "pro" | "personalizado" {
+  if (
+    tenant.plano === PACKS_TENANT.base.nome &&
+    tenant.limite_clientes === PACKS_TENANT.base.limiteClientes &&
+    tenant.limite_armazenamento_bytes === PACKS_TENANT.base.limiteArmazenamentoBytes
+  ) {
+    return "base";
+  }
+  if (
+    tenant.plano === PACKS_TENANT.pro.nome &&
+    tenant.limite_clientes === PACKS_TENANT.pro.limiteClientes &&
+    tenant.limite_armazenamento_bytes === PACKS_TENANT.pro.limiteArmazenamentoBytes
+  ) {
+    return "pro";
+  }
+  return "personalizado";
+}
+
+function EditarPackForm({ tenant, aoFechar }: { tenant: TenantRow; aoFechar: () => void }) {
+  const [state, formAction, pending] = useActionState(editarPackTenant, initialAprovacao);
+  const [pack, setPack] = useState<"base" | "pro" | "personalizado">(() => pacoteInicial(tenant));
+  const estavaPending = useRef(false);
+
+  useEffect(() => {
+    if (estavaPending.current && !pending && !state.error) {
+      aoFechar();
+    }
+    estavaPending.current = pending;
+  }, [pending, state.error, aoFechar]);
+
+  return (
+    <form action={formAction} className="flex flex-wrap items-end gap-2 mt-2 pt-2 border-t border-[#F2F0E8] w-full">
+      <input type="hidden" name="tenantId" value={tenant.id} />
+      <div>
+        <label className="text-[10px] text-[#8A8578] block mb-0.5">Pack</label>
+        <select
+          name="pack"
+          value={pack}
+          onChange={(e) => setPack(e.target.value as typeof pack)}
+          className="px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px] bg-white"
+        >
+          <option value="base">
+            {PACKS_TENANT.base.nome} ({PACKS_TENANT.base.limiteClientes} clientes, {formatarBytes(PACKS_TENANT.base.limiteArmazenamentoBytes)})
+          </option>
+          <option value="pro">
+            {PACKS_TENANT.pro.nome} ({PACKS_TENANT.pro.limiteClientes} clientes, {formatarBytes(PACKS_TENANT.pro.limiteArmazenamentoBytes)})
+          </option>
+          <option value="personalizado">Personalizado</option>
+        </select>
+      </div>
+      {pack === "personalizado" && (
+        <>
+          <div>
+            <label className="text-[10px] text-[#8A8578] block mb-0.5">Nome do plano</label>
+            <input
+              name="planoPersonalizado"
+              defaultValue={tenant.plano ?? ""}
+              placeholder="Ex: 5 anos"
+              autoComplete="off"
+              className="w-28 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
+            />
+          </div>
+          <div>
+            <label className="text-[10px] text-[#8A8578] block mb-0.5">Limite clientes</label>
+            <input
+              name="limiteClientes"
+              type="number"
+              min="0"
+              defaultValue={tenant.limite_clientes ?? ""}
+              placeholder="sem limite"
+              autoComplete="off"
+              className="w-24 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
+            />
+          </div>
+          <div>
+            <label className="text-[10px] text-[#8A8578] block mb-0.5">Limite espaço (MB)</label>
+            <input
+              name="limiteArmazenamentoMb"
+              type="number"
+              min="0"
+              defaultValue={tenant.limite_armazenamento_bytes ? Math.round(tenant.limite_armazenamento_bytes / (1024 * 1024)) : ""}
+              placeholder="sem limite"
+              autoComplete="off"
+              className="w-24 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
+            />
+          </div>
+        </>
+      )}
+      <button
+        type="submit"
+        disabled={pending}
+        className="px-3 py-1.5 rounded-md bg-[#14283A] text-white text-[12px] font-medium disabled:opacity-60"
+      >
+        {pending ? "A guardar..." : "Guardar"}
+      </button>
+      <button
+        type="button"
+        onClick={aoFechar}
+        className="px-3 py-1.5 rounded-md border border-[#DEDBD2] text-[#4A4740] text-[12px] font-medium"
+      >
+        Cancelar
+      </button>
+      {state.error && <p className="text-[11px] text-[#B0402F] w-full">{state.error}</p>}
+    </form>
+  );
+}
+
 function corUso(usado: number, limite: number | null): string {
   if (limite == null) return "text-[#4A4740]";
   const pct = usado / limite;
@@ -250,12 +358,23 @@ function EliminarTenantBotao({ tenantId, nomeEmpresa }: { tenantId: string; nome
 function TenantLinha({ tenant }: { tenant: TenantComContagens }) {
   const estado = estadoTenant(tenant);
   const ehFiscalis = tenant.ativo_ate === null;
+  const [aEditarPack, setAEditarPack] = useState(false);
 
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-[#F2F0E8] last:border-0">
       <div className="min-w-[160px]">
         <p className="text-[13px] font-medium text-[#1F1D19]">{tenant.nome_empresa}</p>
-        <p className="text-[11px] text-[#8A8578]">{tenant.plano ?? "sem plano definido"}</p>
+        <div className="flex items-center gap-1">
+          <p className="text-[11px] text-[#8A8578]">{tenant.plano ?? "sem plano definido"}</p>
+          <button
+            type="button"
+            onClick={() => setAEditarPack((v) => !v)}
+            className="text-[#8A8578] hover:text-[#14283A]"
+            title="Editar plano"
+          >
+            <Pencil size={10} />
+          </button>
+        </div>
       </div>
       <span className={`text-[10px] font-medium border rounded px-1.5 py-0.5 ${estado.cor}`}>{estado.texto}</span>
       <p className="text-[12px] text-[#4A4740] w-28">Válido até: {formatarData(tenant.ativo_ate)}</p>
@@ -297,6 +416,7 @@ function TenantLinha({ tenant }: { tenant: TenantComContagens }) {
           {tenant.cancelado_em && <EliminarTenantBotao tenantId={tenant.id} nomeEmpresa={tenant.nome_empresa} />}
         </div>
       )}
+      {aEditarPack && <EditarPackForm tenant={tenant} aoFechar={() => setAEditarPack(false)} />}
     </div>
   );
 }

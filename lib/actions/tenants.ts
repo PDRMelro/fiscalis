@@ -20,15 +20,40 @@ async function exigirSuperAdmin() {
   return profile?.is_super_admin ? supabase : null;
 }
 
+type ResolucaoPack = { plano: string | null; limiteClientes: number | null; limiteArmazenamentoBytes: number | null };
+
+/** Erro de validação, devolvido diretamente pela action; resolução válida, quando não. */
+function resolverPack(formData: FormData): ResolucaoPack | { error: string } {
+  const packId = String(formData.get("pack") ?? "").trim();
+  const planoPersonalizado = String(formData.get("planoPersonalizado") ?? "").trim();
+  const limiteClientesTexto = String(formData.get("limiteClientes") ?? "").trim();
+  const limiteArmazenamentoMbTexto = String(formData.get("limiteArmazenamentoMb") ?? "").trim();
+
+  if (packId === "base" || packId === "pro") {
+    const pack = PACKS_TENANT[packId as PackId];
+    return { plano: pack.nome, limiteClientes: pack.limiteClientes, limiteArmazenamentoBytes: pack.limiteArmazenamentoBytes };
+  }
+
+  const limiteClientesNum = limiteClientesTexto ? Number(limiteClientesTexto) : null;
+  const limiteArmazenamentoMbNum = limiteArmazenamentoMbTexto ? Number(limiteArmazenamentoMbTexto) : null;
+  if (limiteClientesTexto && (Number.isNaN(limiteClientesNum) || limiteClientesNum! < 0)) {
+    return { error: "Limite de clientes inválido." };
+  }
+  if (limiteArmazenamentoMbTexto && (Number.isNaN(limiteArmazenamentoMbNum) || limiteArmazenamentoMbNum! < 0)) {
+    return { error: "Limite de armazenamento inválido." };
+  }
+  return {
+    plano: planoPersonalizado || null,
+    limiteClientes: limiteClientesNum,
+    limiteArmazenamentoBytes: limiteArmazenamentoMbNum ? Math.round(limiteArmazenamentoMbNum * 1024 * 1024) : null,
+  };
+}
+
 export async function aprovarPedido(_prev: ResultadoAprovacao, formData: FormData): Promise<ResultadoAprovacao> {
   const supabase = await exigirSuperAdmin();
   if (!supabase) return { error: "Sem permissões." };
 
   const pedidoId = String(formData.get("pedidoId") ?? "").trim();
-  const packId = String(formData.get("pack") ?? "").trim();
-  const planoPersonalizado = String(formData.get("planoPersonalizado") ?? "").trim();
-  const limiteClientesTexto = String(formData.get("limiteClientes") ?? "").trim();
-  const limiteArmazenamentoMbTexto = String(formData.get("limiteArmazenamentoMb") ?? "").trim();
   const ativoAte = String(formData.get("ativoAte") ?? "").trim();
   const valorPagoTexto = String(formData.get("valorPago") ?? "").trim();
   const valorPago = valorPagoTexto ? Number(valorPagoTexto) : null;
@@ -37,28 +62,9 @@ export async function aprovarPedido(_prev: ResultadoAprovacao, formData: FormDat
     return { error: "Valor pago inválido." };
   }
 
-  let plano: string | null;
-  let limiteClientes: number | null;
-  let limiteArmazenamentoBytes: number | null;
-
-  if (packId === "base" || packId === "pro") {
-    const pack = PACKS_TENANT[packId as PackId];
-    plano = pack.nome;
-    limiteClientes = pack.limiteClientes;
-    limiteArmazenamentoBytes = pack.limiteArmazenamentoBytes;
-  } else {
-    plano = planoPersonalizado || null;
-    const limiteClientesNum = limiteClientesTexto ? Number(limiteClientesTexto) : null;
-    const limiteArmazenamentoMbNum = limiteArmazenamentoMbTexto ? Number(limiteArmazenamentoMbTexto) : null;
-    if (limiteClientesTexto && (Number.isNaN(limiteClientesNum) || limiteClientesNum! < 0)) {
-      return { error: "Limite de clientes inválido." };
-    }
-    if (limiteArmazenamentoMbTexto && (Number.isNaN(limiteArmazenamentoMbNum) || limiteArmazenamentoMbNum! < 0)) {
-      return { error: "Limite de armazenamento inválido." };
-    }
-    limiteClientes = limiteClientesNum;
-    limiteArmazenamentoBytes = limiteArmazenamentoMbNum ? Math.round(limiteArmazenamentoMbNum * 1024 * 1024) : null;
-  }
+  const resolucao = resolverPack(formData);
+  if ("error" in resolucao) return resolucao;
+  const { plano, limiteClientes, limiteArmazenamentoBytes } = resolucao;
 
   const { data: pedido, error: pedidoError } = await supabase
     .from("tenant_pedidos")
@@ -189,6 +195,30 @@ export async function reativarAcessoTenant(tenantId: string): Promise<void> {
   if (error) throw new Error(error.message);
 
   revalidatePath("/empresas");
+}
+
+export async function editarPackTenant(_prev: ResultadoAprovacao, formData: FormData): Promise<ResultadoAprovacao> {
+  const supabase = await exigirSuperAdmin();
+  if (!supabase) return { error: "Sem permissões." };
+
+  const tenantId = String(formData.get("tenantId") ?? "").trim();
+  if (!tenantId) return { error: "Empresa inválida." };
+
+  const resolucao = resolverPack(formData);
+  if ("error" in resolucao) return resolucao;
+  const { plano, limiteClientes, limiteArmazenamentoBytes } = resolucao;
+
+  const { error } = await supabase
+    .from("tenants")
+    .update({ plano, limite_clientes: limiteClientes, limite_armazenamento_bytes: limiteArmazenamentoBytes })
+    .eq("id", tenantId);
+  if (error) {
+    console.error("editarPackTenant falhou", error);
+    return { error: "Não foi possível atualizar o plano." };
+  }
+
+  revalidatePath("/empresas");
+  return { error: null };
 }
 
 /**
