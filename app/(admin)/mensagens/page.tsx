@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { EliminarConversaBotao } from "@/components/mensagens/EliminarConversaBotao";
 
 function iniciaisDe(nome: string): string {
   return nome
@@ -57,12 +58,11 @@ export default async function MensagensPage() {
           <p className="text-[13px] text-[#8A8578] px-4 py-6 text-center">Sem ninguém disponível para conversar.</p>
         )}
         {contactos.map((c) => (
-          <Link
+          <div
             key={c.id}
-            href={`/mensagens/${c.id}`}
-            className="flex items-center justify-between gap-3 px-4 py-3 border-b border-[#F2F0E8] last:border-0 hover:bg-[#F9F8F4]"
+            className="flex items-center justify-between gap-2 border-b border-[#F2F0E8] last:border-0 hover:bg-[#F9F8F4]"
           >
-            <div className="flex items-center gap-3 min-w-0">
+            <Link href={`/mensagens/${c.id}`} className="flex items-center gap-3 min-w-0 flex-1 px-4 py-3">
               <div className="w-9 h-9 rounded-full bg-[#14283A] text-white flex items-center justify-center text-[12px] font-medium shrink-0">
                 {iniciaisDe(c.nome)}
               </div>
@@ -77,13 +77,16 @@ export default async function MensagensPage() {
                   {c.ultimaMensagem && ` · ${c.ultimaMensagem.corpo}`}
                 </p>
               </div>
+            </Link>
+            <div className="flex items-center gap-2 pr-3 shrink-0">
+              {c.naoLidas > 0 && (
+                <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-[#B0402F] text-white text-[10px] font-medium flex items-center justify-center">
+                  {c.naoLidas}
+                </span>
+              )}
+              <EliminarConversaBotao outroId={c.id} compacto />
             </div>
-            {c.naoLidas > 0 && (
-              <span className="shrink-0 min-w-[18px] h-[18px] px-1 rounded-full bg-[#B0402F] text-white text-[10px] font-medium flex items-center justify-center">
-                {c.naoLidas}
-              </span>
-            )}
-          </Link>
+          </div>
         ))}
       </div>
     </>
