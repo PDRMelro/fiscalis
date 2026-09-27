@@ -88,6 +88,11 @@ export async function clientSignUp(_prev: ActionResult, formData: FormData): Pro
 
   if (obraError || !obra) return { error: "Código de acesso da obra inválido." };
 
+  const { data: podeRegistar } = await supabase.rpc("pode_registar_cliente", { p_obra_id: obra.obra_id });
+  if (!podeRegistar) {
+    return { error: "Esta empresa atingiu o número máximo de clientes do seu plano. Contacta o teu engenheiro fiscal." };
+  }
+
   const { error: signUpError } = await supabase.auth.signUp({
     email,
     password,

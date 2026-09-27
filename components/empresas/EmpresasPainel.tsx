@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Check, X, Ban, RotateCcw, Link2, Trash2 } from "lucide-react";
 import {
   aprovarPedido,
@@ -14,6 +14,7 @@ import {
 } from "@/lib/actions/tenants";
 import { LinkCopiavel } from "@/components/ui/LinkCopiavel";
 import { formatarBytes } from "@/lib/format";
+import { PACKS_TENANT } from "@/lib/tenantPacks";
 import type { TenantPedidoRow, TenantRow } from "@/lib/supabase/types";
 
 type TenantComContagens = TenantRow & { numClientes: number; numObras: number; bytesArmazenados: number };
@@ -28,6 +29,7 @@ function formatarData(iso: string | null): string {
 
 function PedidoCard({ pedido }: { pedido: TenantPedidoRow }) {
   const [state, formAction, pending] = useActionState(aprovarPedido, initialAprovacao);
+  const [pack, setPack] = useState<"base" | "pro" | "personalizado">("base");
 
   return (
     <div className="bg-white border border-[#E4E1D6] rounded-xl p-4">
@@ -49,14 +51,57 @@ function PedidoCard({ pedido }: { pedido: TenantPedidoRow }) {
       <form action={formAction} className="flex flex-wrap items-end gap-2 mt-3">
         <input type="hidden" name="pedidoId" value={pedido.id} />
         <div>
-          <label className="text-[10px] text-[#8A8578] block mb-0.5">Plano</label>
-          <input
-            name="plano"
-            placeholder="Ex: 5 anos"
-            autoComplete="off"
-            className="w-32 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
-          />
+          <label className="text-[10px] text-[#8A8578] block mb-0.5">Pack</label>
+          <select
+            name="pack"
+            value={pack}
+            onChange={(e) => setPack(e.target.value as typeof pack)}
+            className="px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px] bg-white"
+          >
+            <option value="base">
+              {PACKS_TENANT.base.nome} ({PACKS_TENANT.base.limiteClientes} clientes, {formatarBytes(PACKS_TENANT.base.limiteArmazenamentoBytes)})
+            </option>
+            <option value="pro">
+              {PACKS_TENANT.pro.nome} ({PACKS_TENANT.pro.limiteClientes} clientes, {formatarBytes(PACKS_TENANT.pro.limiteArmazenamentoBytes)})
+            </option>
+            <option value="personalizado">Personalizado</option>
+          </select>
         </div>
+        {pack === "personalizado" && (
+          <>
+            <div>
+              <label className="text-[10px] text-[#8A8578] block mb-0.5">Nome do plano</label>
+              <input
+                name="planoPersonalizado"
+                placeholder="Ex: 5 anos"
+                autoComplete="off"
+                className="w-28 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] text-[#8A8578] block mb-0.5">Limite clientes</label>
+              <input
+                name="limiteClientes"
+                type="number"
+                min="0"
+                placeholder="sem limite"
+                autoComplete="off"
+                className="w-24 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] text-[#8A8578] block mb-0.5">Limite espaço (MB)</label>
+              <input
+                name="limiteArmazenamentoMb"
+                type="number"
+                min="0"
+                placeholder="sem limite"
+                autoComplete="off"
+                className="w-24 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
+              />
+            </div>
+          </>
+        )}
         <div>
           <label className="text-[10px] text-[#8A8578] block mb-0.5">Válido até</label>
           <input name="ativoAte" type="date" autoComplete="off" className="px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]" />
@@ -92,6 +137,14 @@ function PedidoCard({ pedido }: { pedido: TenantPedidoRow }) {
       </form>
     </div>
   );
+}
+
+function corUso(usado: number, limite: number | null): string {
+  if (limite == null) return "text-[#4A4740]";
+  const pct = usado / limite;
+  if (pct >= 1) return "text-[#B0402F] font-medium";
+  if (pct >= 0.8) return "text-[#C4791E] font-medium";
+  return "text-[#4A4740]";
 }
 
 function estadoTenant(tenant: TenantRow): { texto: string; cor: string } {
@@ -165,9 +218,15 @@ function TenantLinha({ tenant }: { tenant: TenantComContagens }) {
           ? tenant.valor_pago.toLocaleString("pt-PT", { style: "currency", currency: "EUR" })
           : "sem valor"}
       </p>
-      <p className="text-[12px] text-[#4A4740] w-20">{tenant.numClientes} clientes</p>
+      <p className={`text-[12px] w-24 ${corUso(tenant.numClientes, tenant.limite_clientes)}`}>
+        {tenant.numClientes}
+        {tenant.limite_clientes != null ? ` / ${tenant.limite_clientes}` : ""} clientes
+      </p>
       <p className="text-[12px] text-[#4A4740] w-16">{tenant.numObras} obras</p>
-      <p className="text-[12px] text-[#4A4740] w-20">{formatarBytes(tenant.bytesArmazenados)}</p>
+      <p className={`text-[12px] w-36 ${corUso(tenant.bytesArmazenados, tenant.limite_armazenamento_bytes)}`}>
+        {formatarBytes(tenant.bytesArmazenados)}
+        {tenant.limite_armazenamento_bytes != null ? ` / ${formatarBytes(tenant.limite_armazenamento_bytes)}` : ""}
+      </p>
       <div className="w-full sm:w-auto sm:min-w-[180px]">
         {ehFiscalis ? null : tenant.password_definida_em ? (
           <p className="text-[11px] text-[#8A8578]">Ativado em {formatarData(tenant.password_definida_em)}</p>

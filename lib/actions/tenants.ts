@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { construirLinkConvite } from "@/lib/inviteLink";
+import { PACKS_TENANT, type PackId } from "@/lib/tenantPacks";
 
 export type ResultadoAprovacao = { error: string | null };
 export type ResultadoLink = { error: string | null; link: string | null };
@@ -24,13 +25,39 @@ export async function aprovarPedido(_prev: ResultadoAprovacao, formData: FormDat
   if (!supabase) return { error: "Sem permissões." };
 
   const pedidoId = String(formData.get("pedidoId") ?? "").trim();
-  const plano = String(formData.get("plano") ?? "").trim();
+  const packId = String(formData.get("pack") ?? "").trim();
+  const planoPersonalizado = String(formData.get("planoPersonalizado") ?? "").trim();
+  const limiteClientesTexto = String(formData.get("limiteClientes") ?? "").trim();
+  const limiteArmazenamentoMbTexto = String(formData.get("limiteArmazenamentoMb") ?? "").trim();
   const ativoAte = String(formData.get("ativoAte") ?? "").trim();
   const valorPagoTexto = String(formData.get("valorPago") ?? "").trim();
   const valorPago = valorPagoTexto ? Number(valorPagoTexto) : null;
   if (!pedidoId) return { error: "Pedido inválido." };
   if (valorPagoTexto && (Number.isNaN(valorPago) || valorPago! < 0)) {
     return { error: "Valor pago inválido." };
+  }
+
+  let plano: string | null;
+  let limiteClientes: number | null;
+  let limiteArmazenamentoBytes: number | null;
+
+  if (packId === "base" || packId === "pro") {
+    const pack = PACKS_TENANT[packId as PackId];
+    plano = pack.nome;
+    limiteClientes = pack.limiteClientes;
+    limiteArmazenamentoBytes = pack.limiteArmazenamentoBytes;
+  } else {
+    plano = planoPersonalizado || null;
+    const limiteClientesNum = limiteClientesTexto ? Number(limiteClientesTexto) : null;
+    const limiteArmazenamentoMbNum = limiteArmazenamentoMbTexto ? Number(limiteArmazenamentoMbTexto) : null;
+    if (limiteClientesTexto && (Number.isNaN(limiteClientesNum) || limiteClientesNum! < 0)) {
+      return { error: "Limite de clientes inválido." };
+    }
+    if (limiteArmazenamentoMbTexto && (Number.isNaN(limiteArmazenamentoMbNum) || limiteArmazenamentoMbNum! < 0)) {
+      return { error: "Limite de armazenamento inválido." };
+    }
+    limiteClientes = limiteClientesNum;
+    limiteArmazenamentoBytes = limiteArmazenamentoMbNum ? Math.round(limiteArmazenamentoMbNum * 1024 * 1024) : null;
   }
 
   const { data: pedido, error: pedidoError } = await supabase
@@ -45,7 +72,14 @@ export async function aprovarPedido(_prev: ResultadoAprovacao, formData: FormDat
 
   const { data: tenant, error: tenantError } = await admin
     .from("tenants")
-    .insert({ nome_empresa: pedido.nome_empresa, plano: plano || null, ativo_ate: ativoAte || null, valor_pago: valorPago })
+    .insert({
+      nome_empresa: pedido.nome_empresa,
+      plano,
+      ativo_ate: ativoAte || null,
+      valor_pago: valorPago,
+      limite_clientes: limiteClientes,
+      limite_armazenamento_bytes: limiteArmazenamentoBytes,
+    })
     .select()
     .single();
   if (tenantError || !tenant) {

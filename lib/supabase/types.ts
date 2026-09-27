@@ -67,6 +67,8 @@ export type TenantRow = {
   logo_path: string | null;
   plano: string | null;
   valor_pago: number | null;
+  limite_clientes: number | null;
+  limite_armazenamento_bytes: number | null;
   ativo_ate: string | null;
   cancelado_em: string | null;
   cor_fundo_barra: string | null;
@@ -358,6 +360,8 @@ export type Database = {
         Args: Record<string, never>;
         Returns: { tenant_id: string; bytes: number }[];
       };
+      bytes_usados_por_tenant: { Args: { p_tenant_id: string }; Returns: number };
+      pode_registar_cliente: { Args: { p_obra_id: string }; Returns: boolean };
       resolve_obra_por_codigo: {
         Args: { p_codigo: string };
         Returns: { obra_id: string; obra_nome: string }[];
