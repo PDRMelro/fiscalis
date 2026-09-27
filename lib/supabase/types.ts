@@ -353,6 +353,7 @@ export type Database = {
       fiscal_pode_ver_obra: { Args: { p_obra_id: string }; Returns: boolean };
       pode_conversar: { Args: { p_outro_id: string }; Returns: boolean };
       pessoas_para_conversar: { Args: Record<string, never>; Returns: PessoaParaConversar[] };
+      pessoa_conversa: { Args: { p_id: string }; Returns: { id: string; nome: string }[] };
       armazenamento_por_tenant: {
         Args: Record<string, never>;
         Returns: { tenant_id: string; bytes: number }[];

@@ -13,16 +13,13 @@ export default async function ConversaPage({ params }: { params: Promise<{ id: s
   const user = await getUserSafe(supabase);
   if (!user) redirect("/login");
 
-  const [{ data: podeConversar, error: podeConversarError }, { data: outraPessoa, error: outraPessoaError }] =
-    await Promise.all([
-      supabase.rpc("pode_conversar", { p_outro_id: id }),
-      supabase.from("profiles").select("id, nome").eq("id", id).maybeSingle(),
-    ]);
+  const { data: outraPessoa, error: outraPessoaError } = await supabase
+    .rpc("pessoa_conversa", { p_id: id })
+    .maybeSingle();
 
-  if (podeConversarError) console.error("ConversaPage: falha em pode_conversar", podeConversarError);
-  if (outraPessoaError) console.error("ConversaPage: falha ao ler perfil do contacto", outraPessoaError);
+  if (outraPessoaError) console.error("ConversaPage: falha em pessoa_conversa", outraPessoaError);
 
-  if (podeConversarError || outraPessoaError || !podeConversar || !outraPessoa) {
+  if (outraPessoaError || !outraPessoa) {
     return (
       <>
         <Link
@@ -32,9 +29,8 @@ export default async function ConversaPage({ params }: { params: Promise<{ id: s
           <ChevronLeft size={15} /> Voltar às mensagens
         </Link>
         <PageHeader title="Não foi possível abrir esta conversa" />
-        <div className="bg-white border border-[#E4E1D6] rounded-xl p-5 max-w-xl text-[12px] text-[#4A4740] space-y-2 font-mono">
-          <p>pode_conversar: {String(podeConversar)}{podeConversarError ? ` — erro: ${podeConversarError.message}` : ""}</p>
-          <p>perfil encontrado: {outraPessoa ? "sim" : "não"}{outraPessoaError ? ` — erro: ${outraPessoaError.message}` : ""}</p>
+        <div className="bg-white border border-[#E4E1D6] rounded-xl p-5 max-w-xl text-[12px] text-[#4A4740] font-mono">
+          <p>{outraPessoaError ? `erro: ${outraPessoaError.message}` : "Esta conversa não é permitida."}</p>
         </div>
       </>
     );
