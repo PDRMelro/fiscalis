@@ -45,6 +45,9 @@ export default async function MensagensPage() {
     })
   );
 
+  const comConversa = contactos.filter((c) => c.ultimaMensagem);
+  const semConversa = contactos.filter((c) => !c.ultimaMensagem);
+
   return (
     <>
       <PageHeader title="Mensagens" subtitle="Conversas internas" />
@@ -53,11 +56,14 @@ export default async function MensagensPage() {
           Erro ao carregar contactos: {pessoasError.message}
         </p>
       )}
-      <div className="bg-white border border-[#E4E1D6] rounded-xl max-w-2xl overflow-hidden">
-        {contactos.length === 0 && (
-          <p className="text-[13px] text-[#8A8578] px-4 py-6 text-center">Sem ninguém disponível para conversar.</p>
+
+      <div className="bg-white border border-[#E4E1D6] rounded-xl max-w-2xl overflow-hidden mb-6">
+        {comConversa.length === 0 && (
+          <p className="text-[13px] text-[#8A8578] px-4 py-6 text-center">
+            Ainda sem conversas. Escolhe alguém abaixo para começar.
+          </p>
         )}
-        {contactos.map((c) => (
+        {comConversa.map((c) => (
           <div
             key={c.id}
             className="flex items-center justify-between gap-2 border-b border-[#F2F0E8] last:border-0 hover:bg-[#F9F8F4]"
@@ -89,6 +95,31 @@ export default async function MensagensPage() {
           </div>
         ))}
       </div>
+
+      {semConversa.length > 0 && (
+        <>
+          <p className="text-[13px] font-medium text-[#4A4740] mb-2">Iniciar nova conversa</p>
+          <div className="bg-white border border-[#E4E1D6] rounded-xl max-w-2xl overflow-hidden">
+            {semConversa.map((c) => (
+              <Link
+                key={c.id}
+                href={`/mensagens/${c.id}`}
+                className="flex items-center gap-3 px-4 py-3 border-b border-[#F2F0E8] last:border-0 hover:bg-[#F9F8F4]"
+              >
+                <div className="w-9 h-9 rounded-full bg-[#14283A] text-white flex items-center justify-center text-[12px] font-medium shrink-0">
+                  {iniciaisDe(c.nome)}
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[13px] font-medium text-[#1F1D19] truncate">{c.nome}</p>
+                  <p className="text-[11px] text-[#8A8578] truncate">
+                    {c.nome_empresa ?? (c.role === "admin" ? "Administrador" : "Fiscal")}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </>
+      )}
     </>
   );
 }
