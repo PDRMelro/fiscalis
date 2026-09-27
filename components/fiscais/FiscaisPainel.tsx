@@ -1,19 +1,22 @@
 "use client";
 
 import { useActionState } from "react";
-import { UserPlus, Star, StarOff, Link2, Ban, RotateCcw } from "lucide-react";
+import { UserPlus, Star, StarOff, Link2, Ban, RotateCcw, Trash2 } from "lucide-react";
 import {
   criarFiscal,
   gerarLinkConviteFiscal,
   alternarFiscalPrincipal,
   desativarFiscal,
   reativarFiscal,
+  eliminarFiscal,
   type ResultadoFiscal,
+  type ResultadoAcaoFiscal,
 } from "@/lib/actions/fiscais";
 import { LinkCopiavel } from "@/components/ui/LinkCopiavel";
 import type { ProfileRow } from "@/lib/supabase/types";
 
 const initialState: ResultadoFiscal = { error: null, link: null };
+const initialAcao: ResultadoAcaoFiscal = { error: null };
 
 function NovoFiscalForm() {
   const [state, formAction, pending] = useActionState(criarFiscal, initialState);
@@ -113,6 +116,31 @@ function LinkConviteBotaoFiscal({ fiscalId }: { fiscalId: string }) {
   );
 }
 
+function EliminarFiscalBotao({ fiscalId, nomeFiscal }: { fiscalId: string; nomeFiscal: string }) {
+  const [state, formAction, pending] = useActionState(eliminarFiscal, initialAcao);
+
+  return (
+    <div>
+      <form action={formAction}>
+        <input type="hidden" name="fiscalId" value={fiscalId} />
+        <button
+          type="submit"
+          disabled={pending}
+          onClick={(e) => {
+            if (!confirm(`Eliminar definitivamente "${nomeFiscal}"? Esta ação não pode ser desfeita.`)) {
+              e.preventDefault();
+            }
+          }}
+          className="text-[11px] font-medium text-[#B0402F] flex items-center gap-1 disabled:opacity-60"
+        >
+          <Trash2 size={12} /> {pending ? "A eliminar..." : "Eliminar"}
+        </button>
+      </form>
+      {state.error && <p className="text-[11px] text-[#B0402F] mt-1 max-w-[220px]">{state.error}</p>}
+    </div>
+  );
+}
+
 function FiscalLinha({ fiscal }: { fiscal: ProfileRow }) {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-[#F2F0E8] last:border-0">
@@ -160,6 +188,7 @@ function FiscalLinha({ fiscal }: { fiscal: ProfileRow }) {
             {fiscal.ativo ? "Desativar" : "Reativar"}
           </button>
         </form>
+        {!fiscal.ativo && <EliminarFiscalBotao fiscalId={fiscal.id} nomeFiscal={fiscal.nome} />}
       </div>
     </div>
   );

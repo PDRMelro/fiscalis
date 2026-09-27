@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { construirLinkConvite } from "@/lib/inviteLink";
 
 export type ResultadoFiscal = { error: string | null; link: string | null };
+export type ResultadoAcaoFiscal = { error: string | null };
 
 async function exigirAdminDoTenant() {
   const supabase = await createClient();
@@ -154,4 +155,41 @@ export async function reativarFiscal(fiscalId: string): Promise<void> {
   if (error) throw new Error(error.message);
 
   revalidatePath("/fiscais");
+}
+
+/**
+ * Elimina definitivamente um fiscal já desativado, incluindo a conta de
+ * login. Falha de propósito se o fiscal ainda estiver ativo — tem de ser
+ * desativado primeiro, tal como as empresas.
+ */
+export async function eliminarFiscal(
+  _prev: ResultadoAcaoFiscal,
+  formData: FormData
+): Promise<ResultadoAcaoFiscal> {
+  const contexto = await exigirAdminDoTenant();
+  if (!contexto) return { error: "Sem permissões." };
+  const { supabase, tenantId } = contexto;
+
+  const fiscalId = String(formData.get("fiscalId") ?? "").trim();
+  if (!fiscalId) return { error: "Fiscal inválido." };
+
+  const { data: fiscal, error: fiscalError } = await supabase
+    .from("profiles")
+    .select("ativo")
+    .eq("id", fiscalId)
+    .eq("tenant_id", tenantId)
+    .eq("role", "fiscal")
+    .single();
+  if (fiscalError || !fiscal) return { error: "Fiscal não encontrado." };
+  if (fiscal.ativo) return { error: "Só é possível eliminar um fiscal depois de o desativar." };
+
+  const admin = createAdminClient();
+  const { error } = await admin.auth.admin.deleteUser(fiscalId);
+  if (error) {
+    console.error("eliminarFiscal falhou", error);
+    return { error: `Não foi possível eliminar: ${error.message}` };
+  }
+
+  revalidatePath("/fiscais");
+  return { error: null };
 }
