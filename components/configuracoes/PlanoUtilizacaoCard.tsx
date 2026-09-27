@@ -1,9 +1,18 @@
 import { formatarBytes } from "@/lib/format";
 
-function corBarra(pct: number): string {
-  if (pct >= 100) return "#B0402F";
-  if (pct >= 80) return "#C4791E";
-  return "#14283A";
+// Verde -> amarelo -> laranja -> vermelho conforme a percentagem usada. A
+// barra desenha-se com o gradiente todo, e uma tampa da cor do fundo cobre
+// a parte ainda não usada — assim a cor no bordo da barra preenchida reflete
+// sempre o nível de utilização atual.
+const GRADIENTE_UTILIZACAO = "linear-gradient(to right, #3E7A4D 0%, #D9A620 50%, #C4791E 80%, #B0402F 100%)";
+
+function BarraUtilizacao({ pct }: { pct: number }) {
+  return (
+    <div className="relative w-full h-1.5 bg-[#EDEBE2] rounded-full overflow-hidden">
+      <div className="absolute inset-0 rounded-full" style={{ backgroundImage: GRADIENTE_UTILIZACAO }} />
+      <div className="absolute inset-y-0 right-0 bg-[#EDEBE2]" style={{ width: `${100 - pct}%` }} />
+    </div>
+  );
 }
 
 export function PlanoUtilizacaoCard({
@@ -35,13 +44,10 @@ export function PlanoUtilizacaoCard({
             <span className="text-[#8A8578]">
               {numClientes}
               {limiteClientes != null ? ` / ${limiteClientes}` : " (sem limite)"}
+              {pctClientes != null ? ` · ${pctClientes}%` : ""}
             </span>
           </div>
-          {pctClientes != null && (
-            <div className="w-full h-1.5 bg-[#EDEBE2] rounded-full overflow-hidden">
-              <div className="h-full rounded-full" style={{ width: `${pctClientes}%`, backgroundColor: corBarra(pctClientes) }} />
-            </div>
-          )}
+          {pctClientes != null && <BarraUtilizacao pct={pctClientes} />}
         </div>
         <div>
           <div className="flex items-center justify-between text-[12px] mb-1">
@@ -49,16 +55,10 @@ export function PlanoUtilizacaoCard({
             <span className="text-[#8A8578]">
               {formatarBytes(bytesUsados)}
               {limiteBytes != null ? ` / ${formatarBytes(limiteBytes)}` : " (sem limite)"}
+              {pctArmazenamento != null ? ` · ${pctArmazenamento}%` : ""}
             </span>
           </div>
-          {pctArmazenamento != null && (
-            <div className="w-full h-1.5 bg-[#EDEBE2] rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full"
-                style={{ width: `${pctArmazenamento}%`, backgroundColor: corBarra(pctArmazenamento) }}
-              />
-            </div>
-          )}
+          {pctArmazenamento != null && <BarraUtilizacao pct={pctArmazenamento} />}
         </div>
       </div>
 
