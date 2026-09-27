@@ -42,7 +42,11 @@ export default async function ConversaPage({ params }: { params: Promise<{ id: s
     .or(`and(remetente_id.eq.${user.id},destinatario_id.eq.${id}),and(remetente_id.eq.${id},destinatario_id.eq.${user.id})`)
     .order("criado_em", { ascending: true });
 
-  await marcarConversaComoLida(id);
+  try {
+    await marcarConversaComoLida(id);
+  } catch (err) {
+    console.error("ConversaPage: falha ao marcar como lida", err);
+  }
 
   return (
     <>

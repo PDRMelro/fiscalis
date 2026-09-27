@@ -30,6 +30,11 @@ export async function enviarMensagem(
   return { error: null };
 }
 
+// Chamada diretamente durante o carregamento da página da conversa (não a
+// partir de um formulário) — por isso não pode chamar revalidatePath aqui
+// (só é permitido em Server Actions/Route Handlers despoletados por uma
+// mutação); a lista de mensagens já fica atualizada sozinha da próxima vez
+// que a página de Mensagens carregar.
 export async function marcarConversaComoLida(outroId: string) {
   const supabase = await createClient();
   const user = await getUserSafe(supabase);
@@ -41,6 +46,4 @@ export async function marcarConversaComoLida(outroId: string) {
     .eq("destinatario_id", user.id)
     .eq("remetente_id", outroId)
     .eq("lida", false);
-
-  revalidatePath("/mensagens");
 }
