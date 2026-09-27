@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ConversaMensagens } from "@/components/mensagens/ConversaMensagens";
-import { marcarConversaComoLida } from "@/lib/actions/mensagens";
+import { EliminarConversaBotao } from "@/components/mensagens/EliminarConversaBotao";
 
 export default async function ConversaPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -42,12 +42,6 @@ export default async function ConversaPage({ params }: { params: Promise<{ id: s
     .or(`and(remetente_id.eq.${user.id},destinatario_id.eq.${id}),and(remetente_id.eq.${id},destinatario_id.eq.${user.id})`)
     .order("criado_em", { ascending: true });
 
-  try {
-    await marcarConversaComoLida(id);
-  } catch (err) {
-    console.error("ConversaPage: falha ao marcar como lida", err);
-  }
-
   return (
     <>
       <Link
@@ -56,7 +50,7 @@ export default async function ConversaPage({ params }: { params: Promise<{ id: s
       >
         <ChevronLeft size={15} /> Voltar às mensagens
       </Link>
-      <PageHeader title={outraPessoa.nome} />
+      <PageHeader title={outraPessoa.nome} action={<EliminarConversaBotao outroId={id} />} />
       <ConversaMensagens destinatarioId={id} mensagens={mensagens ?? []} meuId={user.id} />
     </>
   );

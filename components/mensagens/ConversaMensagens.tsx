@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useRef } from "react";
-import { enviarMensagem, type ResultadoAcao } from "@/lib/actions/mensagens";
+import { enviarMensagem, marcarConversaComoLida, type ResultadoAcao } from "@/lib/actions/mensagens";
 import type { MensagemRow } from "@/lib/supabase/types";
 
 const initialState: ResultadoAcao = { error: null };
@@ -26,6 +26,10 @@ export function ConversaMensagens({
   useEffect(() => {
     fimRef.current?.scrollIntoView({ block: "end" });
   }, [mensagens.length]);
+
+  useEffect(() => {
+    marcarConversaComoLida(destinatarioId).catch((err) => console.error("Falha ao marcar como lida", err));
+  }, [destinatarioId]);
 
   useEffect(() => {
     if (!pending && !state.error) formRef.current?.reset();

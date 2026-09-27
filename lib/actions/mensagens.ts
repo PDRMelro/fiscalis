@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 
@@ -26,24 +27,43 @@ export async function enviarMensagem(
   if (error) return { error: "Não foi possível enviar. Tenta outra vez." };
 
   revalidatePath(`/mensagens/${destinatarioId}`);
-  revalidatePath("/mensagens");
+  revalidatePath("/", "layout");
   return { error: null };
 }
 
-// Chamada diretamente durante o carregamento da página da conversa (não a
-// partir de um formulário) — por isso não pode chamar revalidatePath aqui
-// (só é permitido em Server Actions/Route Handlers despoletados por uma
-// mutação); a lista de mensagens já fica atualizada sozinha da próxima vez
-// que a página de Mensagens carregar.
+// Chamada a partir do cliente (useEffect em ConversaMensagens), não durante
+// a renderização da página — revalidatePath só é permitido dentro de uma
+// Server Action invocada assim, nunca a meio do carregamento normal de uma
+// página (foi exatamente isso que rebentava a conversa antes).
 export async function marcarConversaComoLida(outroId: string) {
   const supabase = await createClient();
   const user = await getUserSafe(supabase);
   if (!user) return;
 
-  await supabase
+  const { error } = await supabase
     .from("mensagens")
     .update({ lida: true })
     .eq("destinatario_id", user.id)
     .eq("remetente_id", outroId)
     .eq("lida", false);
+  if (error) return;
+
+  revalidatePath("/", "layout");
+}
+
+export async function eliminarConversa(outroId: string) {
+  const supabase = await createClient();
+  const user = await getUserSafe(supabase);
+  if (!user) throw new Error("Sem permissões.");
+
+  const { error } = await supabase
+    .from("mensagens")
+    .delete()
+    .or(
+      `and(remetente_id.eq.${user.id},destinatario_id.eq.${outroId}),and(remetente_id.eq.${outroId},destinatario_id.eq.${user.id})`
+    );
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/mensagens");
+  redirect("/mensagens");
 }
