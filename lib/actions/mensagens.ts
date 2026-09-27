@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
 
@@ -51,10 +50,10 @@ export async function marcarConversaComoLida(outroId: string) {
   revalidatePath("/", "layout");
 }
 
-export async function eliminarConversa(outroId: string) {
+export async function eliminarConversa(outroId: string): Promise<ResultadoAcao> {
   const supabase = await createClient();
   const user = await getUserSafe(supabase);
-  if (!user) throw new Error("Sem permissões.");
+  if (!user) return { error: "Sem permissões." };
 
   const { error } = await supabase
     .from("mensagens")
@@ -62,8 +61,11 @@ export async function eliminarConversa(outroId: string) {
     .or(
       `and(remetente_id.eq.${user.id},destinatario_id.eq.${outroId}),and(remetente_id.eq.${outroId},destinatario_id.eq.${user.id})`
     );
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error("eliminarConversa falhou", error);
+    return { error: error.message };
+  }
 
   revalidatePath("/mensagens");
-  redirect("/mensagens");
+  return { error: null };
 }

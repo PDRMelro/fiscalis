@@ -50,7 +50,7 @@ export default async function ConversaPage({ params }: { params: Promise<{ id: s
       >
         <ChevronLeft size={15} /> Voltar às mensagens
       </Link>
-      <PageHeader title={outraPessoa.nome} action={<EliminarConversaBotao outroId={id} />} />
+      <PageHeader title={outraPessoa.nome} action={<EliminarConversaBotao outroId={id} aposEliminarIrPara="/mensagens" />} />
       <ConversaMensagens destinatarioId={id} mensagens={mensagens ?? []} meuId={user.id} />
     </>
   );
