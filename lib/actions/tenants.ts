@@ -20,7 +20,12 @@ async function exigirSuperAdmin() {
   return profile?.is_super_admin ? supabase : null;
 }
 
-type ResolucaoPack = { plano: string | null; limiteClientes: number | null; limiteArmazenamentoBytes: number | null };
+type ResolucaoPack = {
+  plano: string | null;
+  limiteClientes: number | null;
+  limiteArmazenamentoBytes: number | null;
+  limiteFiscais: number | null;
+};
 
 /** Erro de validação, devolvido diretamente pela action; resolução válida, quando não. */
 function resolverPack(formData: FormData): ResolucaoPack | { error: string } {
@@ -28,24 +33,35 @@ function resolverPack(formData: FormData): ResolucaoPack | { error: string } {
   const planoPersonalizado = String(formData.get("planoPersonalizado") ?? "").trim();
   const limiteClientesTexto = String(formData.get("limiteClientes") ?? "").trim();
   const limiteArmazenamentoMbTexto = String(formData.get("limiteArmazenamentoMb") ?? "").trim();
+  const limiteFiscaisTexto = String(formData.get("limiteFiscais") ?? "").trim();
 
   if (packId === "base" || packId === "pro") {
     const pack = PACKS_TENANT[packId as PackId];
-    return { plano: pack.nome, limiteClientes: pack.limiteClientes, limiteArmazenamentoBytes: pack.limiteArmazenamentoBytes };
+    return {
+      plano: pack.nome,
+      limiteClientes: pack.limiteClientes,
+      limiteArmazenamentoBytes: pack.limiteArmazenamentoBytes,
+      limiteFiscais: pack.limiteFiscais,
+    };
   }
 
   const limiteClientesNum = limiteClientesTexto ? Number(limiteClientesTexto) : null;
   const limiteArmazenamentoMbNum = limiteArmazenamentoMbTexto ? Number(limiteArmazenamentoMbTexto) : null;
+  const limiteFiscaisNum = limiteFiscaisTexto ? Number(limiteFiscaisTexto) : null;
   if (limiteClientesTexto && (Number.isNaN(limiteClientesNum) || limiteClientesNum! < 0)) {
     return { error: "Limite de clientes inválido." };
   }
   if (limiteArmazenamentoMbTexto && (Number.isNaN(limiteArmazenamentoMbNum) || limiteArmazenamentoMbNum! < 0)) {
     return { error: "Limite de armazenamento inválido." };
   }
+  if (limiteFiscaisTexto && (Number.isNaN(limiteFiscaisNum) || limiteFiscaisNum! < 0)) {
+    return { error: "Limite de fiscais inválido." };
+  }
   return {
     plano: planoPersonalizado || null,
     limiteClientes: limiteClientesNum,
     limiteArmazenamentoBytes: limiteArmazenamentoMbNum ? Math.round(limiteArmazenamentoMbNum * 1024 * 1024) : null,
+    limiteFiscais: limiteFiscaisNum,
   };
 }
 
@@ -64,7 +80,7 @@ export async function aprovarPedido(_prev: ResultadoAprovacao, formData: FormDat
 
   const resolucao = resolverPack(formData);
   if ("error" in resolucao) return resolucao;
-  const { plano, limiteClientes, limiteArmazenamentoBytes } = resolucao;
+  const { plano, limiteClientes, limiteArmazenamentoBytes, limiteFiscais } = resolucao;
 
   const { data: pedido, error: pedidoError } = await supabase
     .from("tenant_pedidos")
@@ -85,6 +101,7 @@ export async function aprovarPedido(_prev: ResultadoAprovacao, formData: FormDat
       valor_pago: valorPago,
       limite_clientes: limiteClientes,
       limite_armazenamento_bytes: limiteArmazenamentoBytes,
+      limite_fiscais: limiteFiscais,
     })
     .select()
     .single();
@@ -206,11 +223,16 @@ export async function editarPackTenant(_prev: ResultadoAprovacao, formData: Form
 
   const resolucao = resolverPack(formData);
   if ("error" in resolucao) return resolucao;
-  const { plano, limiteClientes, limiteArmazenamentoBytes } = resolucao;
+  const { plano, limiteClientes, limiteArmazenamentoBytes, limiteFiscais } = resolucao;
 
   const { error } = await supabase
     .from("tenants")
-    .update({ plano, limite_clientes: limiteClientes, limite_armazenamento_bytes: limiteArmazenamentoBytes })
+    .update({
+      plano,
+      limite_clientes: limiteClientes,
+      limite_armazenamento_bytes: limiteArmazenamentoBytes,
+      limite_fiscais: limiteFiscais,
+    })
     .eq("id", tenantId);
   if (error) {
     console.error("editarPackTenant falhou", error);

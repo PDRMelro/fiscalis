@@ -24,7 +24,23 @@ async function exigirAdminDoTenant() {
 export async function criarFiscal(_prev: ResultadoFiscal, formData: FormData): Promise<ResultadoFiscal> {
   const contexto = await exigirAdminDoTenant();
   if (!contexto) return { error: "Sem permissões.", link: null };
-  const { tenantId } = contexto;
+  const { supabase, tenantId } = contexto;
+
+  const { data: tenant } = await supabase.from("tenants").select("limite_fiscais").eq("id", tenantId).single();
+  if (tenant?.limite_fiscais != null) {
+    const { count: numFiscais } = await supabase
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("tenant_id", tenantId)
+      .eq("role", "fiscal")
+      .eq("ativo", true);
+    if ((numFiscais ?? 0) >= tenant.limite_fiscais) {
+      return {
+        error: "Já atingiste o número máximo de fiscais do teu plano. Contacta a Fiscalis para aumentares o plano.",
+        link: null,
+      };
+    }
+  }
 
   const nome = String(formData.get("nome") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();

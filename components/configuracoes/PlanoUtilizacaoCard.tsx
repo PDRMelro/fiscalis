@@ -19,16 +19,21 @@ export function PlanoUtilizacaoCard({
   plano,
   numClientes,
   limiteClientes,
+  numFiscais,
+  limiteFiscais,
   bytesUsados,
   limiteBytes,
 }: {
   plano: string | null;
   numClientes: number;
   limiteClientes: number | null;
+  numFiscais: number;
+  limiteFiscais: number | null;
   bytesUsados: number;
   limiteBytes: number | null;
 }) {
   const pctClientes = limiteClientes ? Math.min(100, Math.round((numClientes / limiteClientes) * 100)) : null;
+  const pctFiscais = limiteFiscais ? Math.min(100, Math.round((numFiscais / limiteFiscais) * 100)) : null;
   const pctArmazenamento = limiteBytes ? Math.min(100, Math.round((bytesUsados / limiteBytes) * 100)) : null;
   const avisoArmazenamento = pctArmazenamento != null && pctArmazenamento >= 80;
 
@@ -48,6 +53,17 @@ export function PlanoUtilizacaoCard({
             </span>
           </div>
           {pctClientes != null && <BarraUtilizacao pct={pctClientes} />}
+        </div>
+        <div>
+          <div className="flex items-center justify-between text-[12px] mb-1">
+            <span className="text-[#4A4740]">Fiscais</span>
+            <span className="text-[#8A8578]">
+              {numFiscais}
+              {limiteFiscais != null ? ` / ${limiteFiscais}` : " (sem limite)"}
+              {pctFiscais != null ? ` · ${pctFiscais}%` : ""}
+            </span>
+          </div>
+          {pctFiscais != null && <BarraUtilizacao pct={pctFiscais} />}
         </div>
         <div>
           <div className="flex items-center justify-between text-[12px] mb-1">

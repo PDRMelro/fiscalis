@@ -69,6 +69,7 @@ export type TenantRow = {
   valor_pago: number | null;
   limite_clientes: number | null;
   limite_armazenamento_bytes: number | null;
+  limite_fiscais: number | null;
   ativo_ate: string | null;
   cancelado_em: string | null;
   cor_fundo_barra: string | null;

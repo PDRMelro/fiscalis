@@ -15,14 +15,26 @@ export default async function ConfiguracoesPage() {
   const tenantId = await getMeuTenantId(supabase);
   if (!tenantId) redirect("/login");
 
-  const [{ data: perfil }, { data: checklist }, { data: tenant }, { count: numClientes }, { data: bytesUsados }] =
-    await Promise.all([
-      supabase.from("perfil_fiscal").select("*").eq("tenant_id", tenantId).single(),
-      supabase.from("checklist_config").select("*").eq("tenant_id", tenantId).order("ordem", { ascending: true }),
-      supabase.from("tenants").select("*").eq("id", tenantId).single(),
-      supabase.from("profiles").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId).eq("role", "client"),
-      supabase.rpc("bytes_usados_por_tenant", { p_tenant_id: tenantId }),
-    ]);
+  const [
+    { data: perfil },
+    { data: checklist },
+    { data: tenant },
+    { count: numClientes },
+    { count: numFiscais },
+    { data: bytesUsados },
+  ] = await Promise.all([
+    supabase.from("perfil_fiscal").select("*").eq("tenant_id", tenantId).single(),
+    supabase.from("checklist_config").select("*").eq("tenant_id", tenantId).order("ordem", { ascending: true }),
+    supabase.from("tenants").select("*").eq("id", tenantId).single(),
+    supabase.from("profiles").select("id", { count: "exact", head: true }).eq("tenant_id", tenantId).eq("role", "client"),
+    supabase
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("tenant_id", tenantId)
+      .eq("role", "fiscal")
+      .eq("ativo", true),
+    supabase.rpc("bytes_usados_por_tenant", { p_tenant_id: tenantId }),
+  ]);
 
   let logoUrl: string | null = null;
   if (tenant?.logo_path) {
@@ -39,6 +51,8 @@ export default async function ConfiguracoesPage() {
           plano={tenant.plano}
           numClientes={numClientes ?? 0}
           limiteClientes={tenant.limite_clientes}
+          numFiscais={numFiscais ?? 0}
+          limiteFiscais={tenant.limite_fiscais}
           bytesUsados={bytesUsados ?? 0}
           limiteBytes={tenant.limite_armazenamento_bytes}
         />

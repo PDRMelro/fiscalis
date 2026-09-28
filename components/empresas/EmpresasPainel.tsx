@@ -60,10 +60,10 @@ function PedidoCard({ pedido }: { pedido: TenantPedidoRow }) {
             className="px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px] bg-white"
           >
             <option value="base">
-              {PACKS_TENANT.base.nome} ({PACKS_TENANT.base.limiteClientes} clientes, {formatarBytes(PACKS_TENANT.base.limiteArmazenamentoBytes)})
+              {PACKS_TENANT.base.nome} ({PACKS_TENANT.base.limiteClientes} clientes, {formatarBytes(PACKS_TENANT.base.limiteArmazenamentoBytes)}, {PACKS_TENANT.base.limiteFiscais} fiscais)
             </option>
             <option value="pro">
-              {PACKS_TENANT.pro.nome} ({PACKS_TENANT.pro.limiteClientes} clientes, {formatarBytes(PACKS_TENANT.pro.limiteArmazenamentoBytes)})
+              {PACKS_TENANT.pro.nome} ({PACKS_TENANT.pro.limiteClientes} clientes, {formatarBytes(PACKS_TENANT.pro.limiteArmazenamentoBytes)}, {PACKS_TENANT.pro.limiteFiscais} fiscais)
             </option>
             <option value="personalizado">Personalizado</option>
           </select>
@@ -94,6 +94,17 @@ function PedidoCard({ pedido }: { pedido: TenantPedidoRow }) {
               <label className="text-[10px] text-[#8A8578] block mb-0.5">Limite espaço (MB)</label>
               <input
                 name="limiteArmazenamentoMb"
+                type="number"
+                min="0"
+                placeholder="sem limite"
+                autoComplete="off"
+                className="w-24 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] text-[#8A8578] block mb-0.5">Limite fiscais</label>
+              <input
+                name="limiteFiscais"
                 type="number"
                 min="0"
                 placeholder="sem limite"
@@ -144,14 +155,16 @@ function pacoteInicial(tenant: TenantRow): "base" | "pro" | "personalizado" {
   if (
     tenant.plano === PACKS_TENANT.base.nome &&
     tenant.limite_clientes === PACKS_TENANT.base.limiteClientes &&
-    tenant.limite_armazenamento_bytes === PACKS_TENANT.base.limiteArmazenamentoBytes
+    tenant.limite_armazenamento_bytes === PACKS_TENANT.base.limiteArmazenamentoBytes &&
+    tenant.limite_fiscais === PACKS_TENANT.base.limiteFiscais
   ) {
     return "base";
   }
   if (
     tenant.plano === PACKS_TENANT.pro.nome &&
     tenant.limite_clientes === PACKS_TENANT.pro.limiteClientes &&
-    tenant.limite_armazenamento_bytes === PACKS_TENANT.pro.limiteArmazenamentoBytes
+    tenant.limite_armazenamento_bytes === PACKS_TENANT.pro.limiteArmazenamentoBytes &&
+    tenant.limite_fiscais === PACKS_TENANT.pro.limiteFiscais
   ) {
     return "pro";
   }
@@ -182,10 +195,10 @@ function EditarPackForm({ tenant, aoFechar }: { tenant: TenantRow; aoFechar: () 
           className="px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px] bg-white"
         >
           <option value="base">
-            {PACKS_TENANT.base.nome} ({PACKS_TENANT.base.limiteClientes} clientes, {formatarBytes(PACKS_TENANT.base.limiteArmazenamentoBytes)})
+            {PACKS_TENANT.base.nome} ({PACKS_TENANT.base.limiteClientes} clientes, {formatarBytes(PACKS_TENANT.base.limiteArmazenamentoBytes)}, {PACKS_TENANT.base.limiteFiscais} fiscais)
           </option>
           <option value="pro">
-            {PACKS_TENANT.pro.nome} ({PACKS_TENANT.pro.limiteClientes} clientes, {formatarBytes(PACKS_TENANT.pro.limiteArmazenamentoBytes)})
+            {PACKS_TENANT.pro.nome} ({PACKS_TENANT.pro.limiteClientes} clientes, {formatarBytes(PACKS_TENANT.pro.limiteArmazenamentoBytes)}, {PACKS_TENANT.pro.limiteFiscais} fiscais)
           </option>
           <option value="personalizado">Personalizado</option>
         </select>
@@ -221,6 +234,18 @@ function EditarPackForm({ tenant, aoFechar }: { tenant: TenantRow; aoFechar: () 
               type="number"
               min="0"
               defaultValue={tenant.limite_armazenamento_bytes ? Math.round(tenant.limite_armazenamento_bytes / (1024 * 1024)) : ""}
+              placeholder="sem limite"
+              autoComplete="off"
+              className="w-24 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
+            />
+          </div>
+          <div>
+            <label className="text-[10px] text-[#8A8578] block mb-0.5">Limite fiscais</label>
+            <input
+              name="limiteFiscais"
+              type="number"
+              min="0"
+              defaultValue={tenant.limite_fiscais ?? ""}
               placeholder="sem limite"
               autoComplete="off"
               className="w-24 px-2 py-1.5 rounded-md border border-[#DEDBD2] text-[12px]"
