@@ -3,11 +3,15 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import nodemailer from "nodemailer";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getUserSafe } from "@/lib/supabase/getUserSafe";
+import { construirLinkConvite } from "@/lib/inviteLink";
 import type { AuthError } from "@supabase/supabase-js";
 
 export type ActionResult = { error: string } | { error: null };
+export type ResultadoRecuperacao = { error: string | null; enviado: boolean };
 
 const COOKIE_LEMBRAR = "fiscalis-lembrar";
 
@@ -65,6 +69,57 @@ export async function adminLogout() {
   await supabase.auth.signOut();
   (await cookies()).delete(COOKIE_LEMBRAR);
   redirect("/login");
+}
+
+/**
+ * Recuperação de password self-service para administradores e fiscais.
+ * Gera o mesmo link de "recovery" que gerarLinkConvite/gerarLinkConviteFiscal
+ * já usam, mas em vez de o mostrar ao super admin para copiar à mão, envia-o
+ * diretamente por email à própria pessoa (reutilizando o Gmail já configurado
+ * para o formulário de contacto do site).
+ *
+ * A resposta é sempre a mesma, exista ou não uma conta com aquele email —
+ * para não revelar a um estranho se um endereço está registado na plataforma.
+ */
+export async function pedirRecuperacaoPassword(
+  _prev: ResultadoRecuperacao,
+  formData: FormData
+): Promise<ResultadoRecuperacao> {
+  const email = String(formData.get("email") ?? "").trim();
+  if (!email) return { error: "Introduz o teu email.", enviado: false };
+
+  const gmailUser = process.env.GMAIL_USER;
+  const gmailPass = process.env.GMAIL_APP_PASSWORD;
+  if (!gmailUser || !gmailPass) {
+    console.error("pedirRecuperacaoPassword: GMAIL_USER/GMAIL_APP_PASSWORD não configurados");
+    return { error: "O envio de emails ainda não está configurado. Contacta a Fiscalis diretamente.", enviado: false };
+  }
+
+  try {
+    const admin = createAdminClient();
+    const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({ type: "recovery", email });
+
+    if (!linkError && linkData?.properties?.email_otp) {
+      const link = construirLinkConvite(email, linkData.properties.email_otp, "recovery");
+      const transporter = nodemailer.createTransport({ service: "gmail", auth: { user: gmailUser, pass: gmailPass } });
+      await transporter.sendMail({
+        from: `"Fiscalis" <${gmailUser}>`,
+        to: email,
+        subject: "Repor a tua palavra-passe — Fiscalis",
+        text: [
+          "Recebemos um pedido para repor a palavra-passe da tua conta Fiscalis.",
+          "",
+          `Define uma nova palavra-passe aqui: ${link}`,
+          "",
+          "Se não pediste isto, ignora este email — a tua palavra-passe atual continua válida.",
+        ].join("\n"),
+      });
+    }
+  } catch (err) {
+    console.error("pedirRecuperacaoPassword falhou", err);
+  }
+
+  return { error: null, enviado: true };
 }
 
 export async function clientSignUp(_prev: ActionResult, formData: FormData): Promise<ActionResult> {

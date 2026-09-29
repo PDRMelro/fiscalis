@@ -47,15 +47,20 @@ export default function AdminLoginPage() {
               />
             </div>
 
-            <label className="flex items-center gap-2 text-[12px] text-[#4A4740]">
-              <input
-                name="manterLigado"
-                type="checkbox"
-                defaultChecked
-                className="w-3.5 h-3.5 accent-[#14283A]"
-              />
-              Manter-me ligado
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 text-[12px] text-[#4A4740]">
+                <input
+                  name="manterLigado"
+                  type="checkbox"
+                  defaultChecked
+                  className="w-3.5 h-3.5 accent-[#14283A]"
+                />
+                Manter-me ligado
+              </label>
+              <a href="/esqueci-password" className="text-[12px] text-[#C9A050] hover:underline">
+                Esqueceste a password?
+              </a>
+            </div>
 
             {state.error && <p className="text-[12px] text-[#B0402F]">{state.error}</p>}
 
