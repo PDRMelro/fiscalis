@@ -127,30 +127,12 @@ function formatarDataPdf(data: string | null) {
   return d.toLocaleDateString("pt-PT");
 }
 
-/**
- * Texto que o cliente assina na aceitação, para a proposta assinada valer
- * como compromisso de contratação entre as partes.
- */
-function textoDeclaracaoAceitacao(proposta: PropostaRow, perfil: PerfilFiscalRow, temPagamento: boolean) {
-  const empresa = proposta.cliente_tipo === "empresa";
-  const identificacao = proposta.cliente_nif
-    ? `${proposta.cliente_nome}, ${empresa ? "NIPC" : "NIF"} ${proposta.cliente_nif}`
-    : proposta.cliente_nome;
-  const representacao = empresa ? ", aqui representada pelo signatário," : proposta.cliente_nif ? "," : "";
-  const proposta_ = proposta.codigo ? `a proposta ${proposta.codigo}` : "a presente proposta";
-  const condicoes = temPagamento ? "nas condições comerciais e de pagamento" : "nas condições comerciais";
-  const visitasExtra =
-    proposta.tipo_servico === "fiscalizacao"
-      ? ", incluindo o pagamento de cada visita adicional que venha a solicitar, ao valor previsto"
-      : "";
-
-  return (
-    `${identificacao}${representacao} declara ter lido e aceitar integralmente ${proposta_}, adjudicando a ` +
-    `${perfil.nome} a prestação dos serviços nela descritos, ${condicoes} acima indicadas${visitasExtra}. ` +
-    "Com a assinatura deste documento, ambas as partes comprometem-se a cumprir o aqui acordado, valendo o " +
-    "mesmo como contrato de prestação de serviços entre as partes."
-  );
-}
+/** Texto que o cliente assina na aceitação, para a proposta assinada valer como contrato. */
+const DECLARACAO_ACEITACAO =
+  "O cliente declara ter lido e aceitar integralmente a presente proposta, adjudicando a prestação dos serviços " +
+  "nela descritos, conforme condições comerciais e de pagamento acima indicadas. Com a assinatura deste " +
+  "documento, ambas as partes comprometem-se a cumprir o aqui acordado, valendo o mesmo como contrato de " +
+  "prestação de serviços entre as partes.";
 
 export function PropostaServicoDoc({
   proposta,
@@ -348,7 +330,7 @@ export function PropostaServicoDoc({
         <View wrap={false}>
         <Text style={styles.seccao}>{numeroAceitacao}. Aceitação</Text>
         <View style={styles.declaracao}>
-          <Text style={styles.declaracaoTexto}>{textoDeclaracaoAceitacao(proposta, perfil, temPagamento)}</Text>
+          <Text style={styles.declaracaoTexto}>{DECLARACAO_ACEITACAO}</Text>
         </View>
         <View style={styles.assinaturas}>
           <View style={styles.assinatura}>
