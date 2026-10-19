@@ -56,13 +56,26 @@ function lerCamposProposta(formData: FormData) {
     valor_visita_extra: numeroOuNull(formData, "valor_visita_extra"),
     valor_servico: numeroOuNull(formData, "valor_servico"),
     descricao_servico: textoOuNull(formData, "descricao_servico"),
+    pagamento_adjudicacao_pct: numeroOuNull(formData, "pagamento_adjudicacao_pct"),
+    pagamento_adjudicacao_data: textoOuNull(formData, "pagamento_adjudicacao_data"),
+    pagamento_segunda_pct: numeroOuNull(formData, "pagamento_segunda_pct"),
+    pagamento_segunda_data: textoOuNull(formData, "pagamento_segunda_data"),
+    iban: textoOuNull(formData, "iban")?.replace(/\s+/g, "").toUpperCase() || null,
+    com_iva: formData.get("com_iva") === "on",
   };
+}
+
+const ERRO_PERCENTAGEM = "As percentagens das condições de pagamento não podem somar mais de 100%.";
+
+function percentagemPagamentoExcedida(campos: ReturnType<typeof lerCamposProposta>) {
+  return (campos.pagamento_adjudicacao_pct ?? 0) + (campos.pagamento_segunda_pct ?? 0) > 100;
 }
 
 export async function criarProposta(formData: FormData) {
   const supabase = await createClient();
   const campos = lerCamposProposta(formData);
   if (!campos.cliente_nome || !campos.local || !campos.tipo_obra) throw new Error("Preenche todos os campos.");
+  if (percentagemPagamentoExcedida(campos)) throw new Error(ERRO_PERCENTAGEM);
 
   const { error } = await supabase.from("propostas").insert(campos);
   if (error) throw new Error(error.message);
@@ -91,6 +104,7 @@ export async function atualizarProposta(id: string, formData: FormData): Promise
     if (!campos.cliente_nome || !campos.local || !campos.tipo_obra) {
       return { error: "Preenche cliente, local e tipo de obra." };
     }
+    if (percentagemPagamentoExcedida(campos)) return { error: ERRO_PERCENTAGEM };
 
     const { error } = await supabase.from("propostas").update(campos).eq("id", id);
     if (error) return { error: error.message };

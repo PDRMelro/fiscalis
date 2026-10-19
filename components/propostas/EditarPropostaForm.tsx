@@ -2,7 +2,11 @@
 
 import { useState, useTransition } from "react";
 import { atualizarProposta } from "@/lib/actions/propostas";
-import { CondicoesPropostaCampos, DadosClienteCampos } from "@/components/propostas/CamposProposta";
+import {
+  CondicoesPagamentoCampos,
+  CondicoesPropostaCampos,
+  DadosClienteCampos,
+} from "@/components/propostas/CamposProposta";
 import { GerarPdfPropostaButton } from "@/components/propostas/GerarPdfPropostaButton";
 import type { PropostaRow } from "@/lib/supabase/types";
 
@@ -95,6 +99,8 @@ export function EditarPropostaForm({
         </div>
 
         <CondicoesPropostaCampos proposta={proposta} />
+
+        <CondicoesPagamentoCampos proposta={proposta} />
 
         {erro && <p className="text-[12px] text-[#B0402F]">{erro}</p>}
         {guardado && !erro && <p className="text-[12px] text-[#2C6B45]">Alterações guardadas.</p>}

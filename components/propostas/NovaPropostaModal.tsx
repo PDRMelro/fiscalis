@@ -2,10 +2,20 @@
 
 import { Plus } from "lucide-react";
 import { ModalTrigger } from "@/components/ui/Modal";
-import { CondicoesPropostaCampos, DadosClienteCampos } from "@/components/propostas/CamposProposta";
+import {
+  CondicoesPagamentoCampos,
+  CondicoesPropostaCampos,
+  DadosClienteCampos,
+} from "@/components/propostas/CamposProposta";
 import { criarProposta } from "@/lib/actions/propostas";
 
-export function NovaPropostaModal({ obras }: { obras: { id: string; nome: string }[] }) {
+export function NovaPropostaModal({
+  obras,
+  ibanSugerido,
+}: {
+  obras: { id: string; nome: string }[];
+  ibanSugerido: string | null;
+}) {
   return (
     <ModalTrigger label="Novo pedido de cliente" icon={Plus} maxWidth="max-w-lg">
       {(close) => (
@@ -54,6 +64,8 @@ export function NovaPropostaModal({ obras }: { obras: { id: string; nome: string
           </div>
 
           <CondicoesPropostaCampos />
+
+          <CondicoesPagamentoCampos ibanSugerido={ibanSugerido} />
 
           <button type="submit" className="w-full mt-2 py-2.5 rounded-lg bg-[#14283A] text-white text-[13px] font-medium">
             Criar pedido

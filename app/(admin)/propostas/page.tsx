@@ -20,7 +20,12 @@ export default async function PropostasPage() {
       <PageHeader
         title="Propostas"
         subtitle="Pedidos de cliente e propostas enviadas"
-        action={<NovaPropostaModal obras={obras ?? []} />}
+        action={
+          <NovaPropostaModal
+            obras={obras ?? []}
+            ibanSugerido={propostas?.find((p) => p.iban)?.iban ?? null}
+          />
+        }
       />
       {(!propostas || propostas.length === 0) ? (
         <div className="bg-white border border-[#E4E1D6] rounded-xl p-8 text-center text-[13px] text-[#8A8578]">

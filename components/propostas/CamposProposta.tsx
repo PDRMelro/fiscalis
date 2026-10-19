@@ -277,3 +277,90 @@ export function CondicoesPropostaCampos({ proposta }: { proposta?: PropostaRow }
     </>
   );
 }
+
+export function CondicoesPagamentoCampos({
+  proposta,
+  ibanSugerido,
+}: {
+  proposta?: PropostaRow;
+  ibanSugerido?: string | null;
+}) {
+  return (
+    <div className="border-t border-[#F2F0E8] pt-3 space-y-3">
+      <p className="text-[12px] font-semibold text-[#14283A]">Condições de pagamento</p>
+
+      <label className="flex items-center gap-2 text-[13px] text-[#1F1D19]">
+        <input
+          type="checkbox"
+          name="com_iva"
+          defaultChecked={proposta?.com_iva ?? true}
+          className="accent-[#14283A]"
+        />
+        Acresce IVA à taxa legal em vigor
+        <span className="text-[11px] text-[#8A8578]">(desmarca se os valores forem sem IVA)</span>
+      </label>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className={LABEL}>Na adjudicação (%)</label>
+          <input
+            name="pagamento_adjudicacao_pct"
+            type="number"
+            step="0.01"
+            min="0"
+            max="100"
+            defaultValue={proposta?.pagamento_adjudicacao_pct ?? ""}
+            placeholder="Ex: 30"
+            autoComplete="off"
+            className={INPUT}
+          />
+        </div>
+        <div>
+          <label className={LABEL}>Data</label>
+          <input
+            name="pagamento_adjudicacao_data"
+            type="date"
+            defaultValue={proposta?.pagamento_adjudicacao_data ?? ""}
+            autoComplete="off"
+            className={INPUT}
+          />
+        </div>
+        <div>
+          <label className={LABEL}>Restante pagamento (%)</label>
+          <input
+            name="pagamento_segunda_pct"
+            type="number"
+            step="0.01"
+            min="0"
+            max="100"
+            defaultValue={proposta?.pagamento_segunda_pct ?? ""}
+            placeholder="Ex: 70"
+            autoComplete="off"
+            className={INPUT}
+          />
+        </div>
+        <div>
+          <label className={LABEL}>Data</label>
+          <input
+            name="pagamento_segunda_data"
+            type="date"
+            defaultValue={proposta?.pagamento_segunda_data ?? ""}
+            autoComplete="off"
+            className={INPUT}
+          />
+        </div>
+        <div className="col-span-2">
+          <label className={LABEL}>IBAN para pagamento</label>
+          <input
+            name="iban"
+            defaultValue={proposta ? (proposta.iban ?? "") : (ibanSugerido ?? "")}
+            placeholder="PT50 0000 0000 0000 0000 0000 0"
+            autoComplete="off"
+            className={`${INPUT} font-mono uppercase`}
+          />
+          <p className="text-[11px] text-[#8A8578] mt-1">Aparece a negrito no PDF da proposta.</p>
+        </div>
+      </div>
+    </div>
+  );
+}

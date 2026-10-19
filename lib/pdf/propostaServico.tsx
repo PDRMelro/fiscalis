@@ -98,6 +98,15 @@ function formatarEuro(valor: number | null) {
   return valor.toLocaleString("pt-PT", { style: "currency", currency: "EUR" });
 }
 
+function formatarPercentagem(valor: number | null) {
+  return `${(valor ?? 0).toLocaleString("pt-PT", { maximumFractionDigits: 2 })}%`;
+}
+
+/** IBAN em grupos de 4 caracteres, como aparece nos documentos bancários. */
+function formatarIban(iban: string) {
+  return iban.replace(/(.{4})/g, "$1 ").trim();
+}
+
 function plural(n: number, singular: string, pluralTexto: string) {
   return `${n} ${n === 1 ? singular : pluralTexto}`;
 }
@@ -118,6 +127,20 @@ export function PropostaServicoDoc({
   logoEmpresaUrl?: string | null;
 }) {
   const empresa = proposta.cliente_tipo === "empresa";
+  const textoIva = proposta.com_iva ? "+ IVA à taxa legal em vigor" : "Sem IVA";
+  const valorBase =
+    proposta.tipo_servico === "consultoria"
+      ? proposta.valor_servico
+      : proposta.modalidade_visitas === "pack"
+        ? proposta.valor_pack
+        : proposta.valor_anual;
+  const prestacoes = [
+    { pct: proposta.pagamento_adjudicacao_pct, data: proposta.pagamento_adjudicacao_data, quando: "Na adjudicação" },
+    { pct: proposta.pagamento_segunda_pct, data: proposta.pagamento_segunda_data, quando: "Restante pagamento" },
+  ].filter((p) => p.pct !== null);
+  const temPagamento = prestacoes.length > 0 || !!proposta.iban;
+  // As secções depois das condições comerciais mudam de número consoante haja ou não condições de pagamento.
+  let numeroSeccao = temPagamento ? 5 : 4;
 
   return (
     <Document>
@@ -199,7 +222,7 @@ export function PropostaServicoDoc({
               <View style={{ alignItems: "flex-end" }}>
                 <Text style={styles.precoLabel}>Valor do serviço</Text>
                 <Text style={styles.precoValor}>{formatarEuro(proposta.valor_servico)}</Text>
-                <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
+                <Text style={styles.precoIva}>{textoIva}</Text>
               </View>
             </View>
           </View>
@@ -218,7 +241,7 @@ export function PropostaServicoDoc({
               <View style={{ alignItems: "flex-end" }}>
                 <Text style={styles.precoLabel}>Valor do pack</Text>
                 <Text style={styles.precoValor}>{formatarEuro(proposta.valor_pack)}</Text>
-                <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
+                <Text style={styles.precoIva}>{textoIva}</Text>
               </View>
             </View>
             <View style={styles.precoExtra}>
@@ -229,7 +252,7 @@ export function PropostaServicoDoc({
               </Text>
               <View style={{ alignItems: "flex-end" }}>
                 <Text style={styles.precoExtraValor}>{formatarEuro(proposta.valor_visita_extra)}</Text>
-                <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
+                <Text style={styles.precoIva}>{textoIva}</Text>
               </View>
             </View>
           </View>
@@ -245,25 +268,56 @@ export function PropostaServicoDoc({
               <View style={{ alignItems: "flex-end" }}>
                 <Text style={styles.precoLabel}>Valor fixo anual</Text>
                 <Text style={styles.precoValor}>{formatarEuro(proposta.valor_anual)}</Text>
-                <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
+                <Text style={styles.precoIva}>{textoIva}</Text>
               </View>
             </View>
             <View style={styles.precoExtra}>
               <Text style={styles.precoExtraTexto}>Valor por cada visita adicional, fora da periodicidade acima</Text>
               <View style={{ alignItems: "flex-end" }}>
                 <Text style={styles.precoExtraValor}>{formatarEuro(proposta.valor_visita_extra)}</Text>
-                <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
+                <Text style={styles.precoIva}>{textoIva}</Text>
               </View>
             </View>
           </View>
         )}
 
-        <Text style={styles.seccao}>5. Validade</Text>
+        {temPagamento && (
+          <>
+            <Text style={styles.seccao}>5. Condições de pagamento</Text>
+            {prestacoes.length > 0 && (
+              <View style={styles.tabela}>
+                {prestacoes.map((p, i) => (
+                  <View key={p.quando} style={i === prestacoes.length - 1 ? styles.linhaUltima : styles.linha}>
+                    <View style={styles.celula}>
+                      <Text style={styles.celulaRotulo}>{p.quando}</Text>
+                      <Text style={styles.celulaValor}>
+                        {formatarPercentagem(p.pct)}
+                        {valorBase !== null ? ` — ${formatarEuro((valorBase * (p.pct ?? 0)) / 100)} (${textoIva})` : ""}
+                      </Text>
+                    </View>
+                    <View style={styles.celulaUltima}>
+                      <Text style={styles.celulaRotulo}>Data</Text>
+                      <Text style={styles.celulaValor}>{formatarDataPdf(p.data)}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+            {proposta.iban && (
+              <Text style={[styles.texto, { marginTop: 6 }]}>
+                Pagamento por transferência bancária para o IBAN{" "}
+                <Text style={{ fontFamily: "Helvetica-Bold" }}>{formatarIban(proposta.iban)}</Text>
+              </Text>
+            )}
+          </>
+        )}
+
+        <Text style={styles.seccao}>{++numeroSeccao}. Validade</Text>
         <Text style={styles.texto}>
           Salvo indicação em contrário, esta proposta é válida por 30 dias a contar da data indicada acima.
         </Text>
 
-        <Text style={styles.seccao}>6. Aceitação</Text>
+        <Text style={styles.seccao}>{++numeroSeccao}. Aceitação</Text>
         <View style={styles.assinaturas}>
           <View style={styles.assinatura}>
             <Text style={styles.assinaturaTitulo}>Fiscalização</Text>

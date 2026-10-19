@@ -218,6 +218,12 @@ export type PropostaRow = {
   pack_num_visitas: number | null;
   prazo_obra_meses: number | null;
   valor_pack: number | null;
+  pagamento_adjudicacao_pct: number | null;
+  pagamento_adjudicacao_data: string | null;
+  pagamento_segunda_pct: number | null;
+  pagamento_segunda_data: string | null;
+  iban: string | null;
+  com_iva: boolean;
   valor_visita_extra: number | null;
   valor_servico: number | null;
   descricao_servico: string | null;
