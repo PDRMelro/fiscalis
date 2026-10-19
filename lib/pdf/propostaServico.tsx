@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   subtitulo: { fontSize: 9, color: GOLD, fontFamily: "Helvetica-Bold", letterSpacing: 0.5 },
   codigo: { fontSize: 8, color: GRAY, marginTop: 2 },
 
-  seccao: { fontSize: 10, fontFamily: "Helvetica-Bold", color: NAVY, marginTop: 12, marginBottom: 4 },
+  seccao: { fontSize: 10, fontFamily: "Helvetica-Bold", color: NAVY, marginTop: 15, marginBottom: 5 },
 
   tabela: { borderWidth: 1, borderColor: BORDER, borderRadius: 2 },
   linha: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: BORDER },
@@ -34,15 +34,28 @@ const styles = StyleSheet.create({
   celulaRotulo: { fontSize: 7, color: GRAY, textTransform: "uppercase", marginBottom: 1 },
   celulaValor: { fontSize: 9.5 },
 
-  texto: { fontSize: 9, lineHeight: 1.4 },
-  nota: { fontSize: 8, color: GRAY, marginTop: 5 },
+  texto: { fontSize: 9, lineHeight: 1.45 },
+  nota: { fontSize: 8, color: GRAY, marginTop: 8 },
+
+  pagamentoCelula: { flex: 1, paddingVertical: 8, paddingHorizontal: 8, borderRightWidth: 1, borderRightColor: BORDER },
+  pagamentoCelulaUltima: { flex: 1, paddingVertical: 8, paddingHorizontal: 8 },
+  pagamentoValor: { fontSize: 10.5, marginTop: 2 },
+  ibanLinha: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    backgroundColor: "#FBF7EE",
+  },
+  ibanValor: { fontSize: 11, fontFamily: "Helvetica-Bold", color: NAVY, letterSpacing: 0.5 },
 
   precoBox: {
     borderWidth: 1.5,
     borderColor: GOLD,
     borderRadius: 3,
     backgroundColor: "#FBF7EE",
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 12,
   },
   precoLinha: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
@@ -65,22 +78,22 @@ const styles = StyleSheet.create({
     borderLeftWidth: 2,
     borderLeftColor: GOLD,
     backgroundColor: "#FBF7EE",
-    paddingVertical: 5,
-    paddingHorizontal: 8,
+    paddingVertical: 7,
+    paddingHorizontal: 9,
   },
-  declaracaoTexto: { fontSize: 8.5, lineHeight: 1.4 },
-  assinaturas: { flexDirection: "row", gap: 12, marginTop: 12 },
+  declaracaoTexto: { fontSize: 8.5, lineHeight: 1.45 },
+  assinaturas: { flexDirection: "row", gap: 12, marginTop: 16 },
   assinatura: {
     flex: 1,
     borderWidth: 1,
     borderColor: BORDER,
     borderRadius: 2,
     padding: 8,
-    minHeight: 70,
+    minHeight: 80,
     justifyContent: "space-between",
   },
   assinaturaTitulo: { fontSize: 7.5, fontFamily: "Helvetica-Bold", color: NAVY, textTransform: "uppercase" },
-  assinaturaLinha: { borderTopWidth: 1, borderTopColor: "#1F1D19", marginTop: 34 },
+  assinaturaLinha: { borderTopWidth: 1, borderTopColor: "#1F1D19", marginTop: 40 },
   assinaturaData: { fontSize: 7, color: GRAY, marginTop: 4 },
 
   rodape: { position: "absolute", bottom: 14, left: 36, right: 36, fontSize: 7, color: GRAY, textAlign: "center" },
@@ -295,15 +308,18 @@ export function PropostaServicoDoc({
         {temPagamento && (
           <>
             <Text style={styles.seccao}>5. Condições de pagamento</Text>
-            {prestacoes.length > 0 && (
-              <View style={styles.tabela}>
-                <View style={styles.linhaUltima}>
+            <View style={styles.tabela}>
+              {prestacoes.length > 0 && (
+                <View style={proposta.iban ? styles.linha : styles.linhaUltima}>
                   {prestacoes.map((p, i) => (
-                    <View key={p.quando} style={i === prestacoes.length - 1 ? styles.celulaUltima : styles.celula}>
+                    <View
+                      key={p.quando}
+                      style={i === prestacoes.length - 1 ? styles.pagamentoCelulaUltima : styles.pagamentoCelula}
+                    >
                       <Text style={styles.celulaRotulo}>
                         {p.quando} · {formatarDataPdf(p.data)}
                       </Text>
-                      <Text style={styles.celulaValor}>
+                      <Text style={styles.pagamentoValor}>
                         {formatarPercentagem(p.pct)}
                         {valorBase !== null
                           ? ` — ${formatarEuro((valorBase * (p.pct ?? 0)) / 100)} ${proposta.com_iva ? "+ IVA" : "(sem IVA)"}`
@@ -312,14 +328,17 @@ export function PropostaServicoDoc({
                     </View>
                   ))}
                 </View>
-              </View>
-            )}
-            {proposta.iban && (
-              <Text style={[styles.texto, { marginTop: 5 }]}>
-                Pagamento por transferência bancária para o IBAN{" "}
-                <Text style={{ fontFamily: "Helvetica-Bold" }}>{formatarIban(proposta.iban)}</Text>
-              </Text>
-            )}
+              )}
+              {proposta.iban && (
+                <View style={styles.ibanLinha}>
+                  <View>
+                    <Text style={styles.celulaRotulo}>Pagamento por transferência bancária</Text>
+                    <Text style={{ fontSize: 9 }}>IBAN</Text>
+                  </View>
+                  <Text style={styles.ibanValor}>{formatarIban(proposta.iban)}</Text>
+                </View>
+              )}
+            </View>
           </>
         )}
 
