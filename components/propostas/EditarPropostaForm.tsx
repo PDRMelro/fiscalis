@@ -2,19 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { atualizarProposta } from "@/lib/actions/propostas";
+import { CondicoesPropostaCampos, DadosClienteCampos } from "@/components/propostas/CamposProposta";
 import { GerarPdfPropostaButton } from "@/components/propostas/GerarPdfPropostaButton";
-import type { FrequenciaVisitas, PropostaRow, TipoServicoProposta } from "@/lib/supabase/types";
-
-const FREQUENCIAS: { valor: FrequenciaVisitas; label: string }[] = [
-  { valor: "semanal", label: "Semanal — 1 visita por semana" },
-  { valor: "quinzenal", label: "Quinzenal — 1 visita a cada 15 dias" },
-  { valor: "mensal", label: "Mensal — 1 visita por mês" },
-];
-
-const TIPOS_SERVICO: { valor: TipoServicoProposta; label: string }[] = [
-  { valor: "fiscalizacao", label: "Fiscalização de obra" },
-  { valor: "consultoria", label: "Consultoria de construção civil" },
-];
+import type { PropostaRow } from "@/lib/supabase/types";
 
 export function EditarPropostaForm({
   proposta,
@@ -26,7 +16,6 @@ export function EditarPropostaForm({
   const [pending, startTransition] = useTransition();
   const [erro, setErro] = useState<string | null>(null);
   const [guardado, setGuardado] = useState(false);
-  const [tipoServico, setTipoServico] = useState<TipoServicoProposta>(proposta.tipo_servico);
 
   function guardar(formData: FormData) {
     setErro(null);
@@ -44,41 +33,7 @@ export function EditarPropostaForm({
   return (
     <div className="max-w-2xl space-y-4">
       <form action={guardar} className="bg-white border border-[#E4E1D6] rounded-xl p-5 space-y-4">
-        <div>
-          <p className="text-[12px] font-semibold text-[#14283A] mb-2">Dados do cliente</p>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">
-                Cliente<span className="text-[#B0402F]"> *</span>
-              </label>
-              <input
-                name="cliente_nome"
-                defaultValue={proposta.cliente_nome}
-                required
-                autoComplete="off"
-                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
-              />
-            </div>
-            <div>
-              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">NIF / Contribuinte</label>
-              <input
-                name="cliente_nif"
-                defaultValue={proposta.cliente_nif ?? ""}
-                autoComplete="off"
-                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
-              />
-            </div>
-            <div className="col-span-2">
-              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Morada fiscal do cliente</label>
-              <input
-                name="cliente_morada_fiscal"
-                defaultValue={proposta.cliente_morada_fiscal ?? ""}
-                autoComplete="off"
-                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
-              />
-            </div>
-          </div>
-        </div>
+        <DadosClienteCampos proposta={proposta} />
 
         <div className="border-t border-[#F2F0E8] pt-4">
           <p className="text-[12px] font-semibold text-[#14283A] mb-2">Dados da obra</p>
@@ -139,99 +94,7 @@ export function EditarPropostaForm({
           </p>
         </div>
 
-        <div className="border-t border-[#F2F0E8] pt-4">
-          <label className="text-[12px] font-medium text-[#4A4740] block mb-2">Tipo de proposta</label>
-          <div className="flex gap-4">
-            {TIPOS_SERVICO.map((t) => (
-              <label key={t.valor} className="flex items-center gap-2 text-[13px] text-[#1F1D19]">
-                <input
-                  type="radio"
-                  name="tipo_servico"
-                  value={t.valor}
-                  checked={tipoServico === t.valor}
-                  onChange={() => setTipoServico(t.valor)}
-                  className="accent-[#14283A]"
-                />
-                {t.label}
-              </label>
-            ))}
-          </div>
-        </div>
-
-        {tipoServico === "fiscalizacao" ? (
-          <>
-            <div>
-              <label className="text-[12px] font-medium text-[#4A4740] block mb-2">Periodicidade das visitas</label>
-              <div className="space-y-2">
-                {FREQUENCIAS.map((f) => (
-                  <label key={f.valor} className="flex items-center gap-2 text-[13px] text-[#1F1D19]">
-                    <input
-                      type="radio"
-                      name="frequencia_visitas"
-                      value={f.valor}
-                      defaultChecked={proposta.frequencia_visitas === f.valor}
-                      className="accent-[#14283A]"
-                    />
-                    {f.label}
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Valor fixo anual (€)</label>
-                <input
-                  name="valor_anual"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  defaultValue={proposta.valor_anual ?? ""}
-                  autoComplete="off"
-                  className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
-                />
-              </div>
-              <div>
-                <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Valor por visita extra (€)</label>
-                <input
-                  name="valor_visita_extra"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  defaultValue={proposta.valor_visita_extra ?? ""}
-                  autoComplete="off"
-                  className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
-                />
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="space-y-3">
-            <div>
-              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Descrição do serviço de consultoria</label>
-              <textarea
-                name="descricao_servico"
-                rows={3}
-                defaultValue={proposta.descricao_servico ?? ""}
-                placeholder="Ex: Análise e parecer técnico ao projeto de estabilidade, acompanhamento do processo de licenciamento..."
-                autoComplete="off"
-                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
-              />
-            </div>
-            <div className="w-1/2 pr-1.5">
-              <label className="text-[12px] font-medium text-[#4A4740] block mb-1">Valor fixo do serviço (€)</label>
-              <input
-                name="valor_servico"
-                type="number"
-                step="0.01"
-                min="0"
-                defaultValue={proposta.valor_servico ?? ""}
-                autoComplete="off"
-                className="w-full px-3 py-2 rounded-lg border border-[#DEDBD2] text-[13px] bg-white"
-              />
-            </div>
-          </div>
-        )}
+        <CondicoesPropostaCampos proposta={proposta} />
 
         {erro && <p className="text-[12px] text-[#B0402F]">{erro}</p>}
         {guardado && !erro && <p className="text-[12px] text-[#2C6B45]">Alterações guardadas.</p>}

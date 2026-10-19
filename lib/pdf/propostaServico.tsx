@@ -98,6 +98,10 @@ function formatarEuro(valor: number | null) {
   return valor.toLocaleString("pt-PT", { style: "currency", currency: "EUR" });
 }
 
+function plural(n: number, singular: string, pluralTexto: string) {
+  return `${n} ${n === 1 ? singular : pluralTexto}`;
+}
+
 function formatarDataPdf(data: string | null) {
   if (!data) return "—";
   const d = new Date(data + (data.length === 10 ? "T00:00:00" : ""));
@@ -113,6 +117,8 @@ export function PropostaServicoDoc({
   perfil: PerfilFiscalRow;
   logoEmpresaUrl?: string | null;
 }) {
+  const empresa = proposta.cliente_tipo === "empresa";
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -129,17 +135,29 @@ export function PropostaServicoDoc({
         <View style={styles.tabela}>
           <View style={styles.linha}>
             <View style={styles.celula}>
-              <Text style={styles.celulaRotulo}>Nome</Text>
+              <Text style={styles.celulaRotulo}>{empresa ? "Empresa" : "Nome"}</Text>
               <Text style={styles.celulaValor}>{proposta.cliente_nome}</Text>
             </View>
             <View style={styles.celulaUltima}>
-              <Text style={styles.celulaRotulo}>NIF / Contribuinte</Text>
+              <Text style={styles.celulaRotulo}>{empresa ? "NIPC" : "NIF / Contribuinte"}</Text>
               <Text style={styles.celulaValor}>{proposta.cliente_nif || "—"}</Text>
             </View>
           </View>
+          {empresa && (
+            <View style={styles.linha}>
+              <View style={styles.celula}>
+                <Text style={styles.celulaRotulo}>Tipo de cliente</Text>
+                <Text style={styles.celulaValor}>Empresa</Text>
+              </View>
+              <View style={styles.celulaUltima}>
+                <Text style={styles.celulaRotulo}>Alvará n.º</Text>
+                <Text style={styles.celulaValor}>{proposta.cliente_alvara || "—"}</Text>
+              </View>
+            </View>
+          )}
           <View style={styles.linhaUltima}>
             <View style={styles.celula}>
-              <Text style={styles.celulaRotulo}>Morada fiscal</Text>
+              <Text style={styles.celulaRotulo}>{empresa ? "Sede / morada fiscal" : "Morada fiscal"}</Text>
               <Text style={styles.celulaValor}>{proposta.cliente_morada_fiscal || "—"}</Text>
             </View>
             <View style={styles.celulaUltima}>
@@ -181,6 +199,36 @@ export function PropostaServicoDoc({
               <View style={{ alignItems: "flex-end" }}>
                 <Text style={styles.precoLabel}>Valor do serviço</Text>
                 <Text style={styles.precoValor}>{formatarEuro(proposta.valor_servico)}</Text>
+                <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
+              </View>
+            </View>
+          </View>
+        ) : proposta.modalidade_visitas === "pack" ? (
+          <View style={styles.precoBox}>
+            <View style={styles.precoLinha}>
+              <View style={{ flex: 1, paddingRight: 12 }}>
+                <Text style={styles.precoLabel}>Pack de visitas</Text>
+                <Text style={styles.precoFrequencia}>
+                  {plural(proposta.pack_num_visitas ?? 0, "visita", "visitas")} durante o prazo da obra
+                </Text>
+                <Text style={{ fontSize: 8.5, color: GRAY, marginTop: 3 }}>
+                  Prazo estimado da obra: {plural(proposta.prazo_obra_meses ?? 0, "mês", "meses")}
+                </Text>
+              </View>
+              <View style={{ alignItems: "flex-end" }}>
+                <Text style={styles.precoLabel}>Valor do pack</Text>
+                <Text style={styles.precoValor}>{formatarEuro(proposta.valor_pack)}</Text>
+                <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
+              </View>
+            </View>
+            <View style={styles.precoExtra}>
+              <Text style={[styles.precoExtraTexto, { flex: 1, paddingRight: 12 }]}>
+                Valor por cada visita adicional, para além das{" "}
+                {plural(proposta.pack_num_visitas ?? 0, "visita incluída", "visitas incluídas")} no pack, quando
+                solicitada pelo cliente
+              </Text>
+              <View style={{ alignItems: "flex-end" }}>
+                <Text style={styles.precoExtraValor}>{formatarEuro(proposta.valor_visita_extra)}</Text>
                 <Text style={styles.precoIva}>+ IVA à taxa legal em vigor</Text>
               </View>
             </View>

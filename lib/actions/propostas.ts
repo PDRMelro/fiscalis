@@ -6,42 +6,65 @@ import { getUserSafe } from "@/lib/supabase/getUserSafe";
 import { gerarPdfPropostaServico } from "@/lib/pdf/propostaServico";
 import { obterLogoEmpresaUrl } from "@/lib/tenantLogo";
 import { copiarParaDocumentosEnviados } from "@/lib/actions/documentos";
-import type { EstadoProposta, FrequenciaVisitas, TipoServicoProposta } from "@/lib/supabase/types";
+import type {
+  EstadoProposta,
+  FrequenciaVisitas,
+  ModalidadeVisitas,
+  PropostaRow,
+  TipoClienteProposta,
+  TipoServicoProposta,
+} from "@/lib/supabase/types";
 
 export type ResultadoAcao = { error: string | null };
 
+function numeroOuNull(formData: FormData, campo: string) {
+  const raw = String(formData.get(campo) ?? "");
+  return raw ? Number(raw) : null;
+}
+
+function textoOuNull(formData: FormData, campo: string) {
+  return String(formData.get(campo) ?? "").trim() || null;
+}
+
+/**
+ * Lê os campos comuns ao criar e ao editar uma proposta. Os campos que não
+ * se aplicam ao tipo escolhido (ex.: alvará num particular, periodicidade
+ * num pack) não vêm no formulário e ficam a null.
+ */
+function lerCamposProposta(formData: FormData) {
+  const tipo_servico = String(formData.get("tipo_servico") ?? "fiscalizacao") as TipoServicoProposta;
+  const cliente_tipo = String(formData.get("cliente_tipo") ?? "particular") as TipoClienteProposta;
+  const modalidade_visitas = String(formData.get("modalidade_visitas") ?? "periodica") as ModalidadeVisitas;
+
+  return {
+    cliente_nome: String(formData.get("cliente_nome") ?? "").trim(),
+    cliente_tipo,
+    cliente_nif: textoOuNull(formData, "cliente_nif"),
+    cliente_alvara: cliente_tipo === "empresa" ? textoOuNull(formData, "cliente_alvara") : null,
+    cliente_morada_fiscal: textoOuNull(formData, "cliente_morada_fiscal"),
+    local: String(formData.get("local") ?? "").trim(),
+    tipo_obra: String(formData.get("tipo_obra") ?? "").trim(),
+    enviada_em: String(formData.get("enviada_em") ?? "") || undefined,
+    obra_id: String(formData.get("obra_id") ?? "") || null,
+    tipo_servico,
+    modalidade_visitas,
+    frequencia_visitas: (String(formData.get("frequencia_visitas") ?? "") || null) as FrequenciaVisitas | null,
+    valor_anual: numeroOuNull(formData, "valor_anual"),
+    pack_num_visitas: numeroOuNull(formData, "pack_num_visitas"),
+    prazo_obra_meses: numeroOuNull(formData, "prazo_obra_meses"),
+    valor_pack: numeroOuNull(formData, "valor_pack"),
+    valor_visita_extra: numeroOuNull(formData, "valor_visita_extra"),
+    valor_servico: numeroOuNull(formData, "valor_servico"),
+    descricao_servico: textoOuNull(formData, "descricao_servico"),
+  };
+}
+
 export async function criarProposta(formData: FormData) {
   const supabase = await createClient();
-  const cliente_nome = String(formData.get("cliente_nome") ?? "").trim();
-  const local = String(formData.get("local") ?? "").trim();
-  const tipo_obra = String(formData.get("tipo_obra") ?? "").trim();
-  if (!cliente_nome || !local || !tipo_obra) throw new Error("Preenche todos os campos.");
+  const campos = lerCamposProposta(formData);
+  if (!campos.cliente_nome || !campos.local || !campos.tipo_obra) throw new Error("Preenche todos os campos.");
 
-  const obraIdRaw = String(formData.get("obra_id") ?? "");
-  const tipoServicoRaw = String(formData.get("tipo_servico") ?? "fiscalizacao") as TipoServicoProposta;
-  const frequenciaRaw = String(formData.get("frequencia_visitas") ?? "");
-  const valorAnualRaw = String(formData.get("valor_anual") ?? "");
-  const valorExtraRaw = String(formData.get("valor_visita_extra") ?? "");
-  const valorServicoRaw = String(formData.get("valor_servico") ?? "");
-  const descricao_servico = String(formData.get("descricao_servico") ?? "").trim();
-  const cliente_nif = String(formData.get("cliente_nif") ?? "").trim();
-  const cliente_morada_fiscal = String(formData.get("cliente_morada_fiscal") ?? "").trim();
-
-  const { error } = await supabase.from("propostas").insert({
-    cliente_nome,
-    cliente_nif: cliente_nif || null,
-    cliente_morada_fiscal: cliente_morada_fiscal || null,
-    local,
-    tipo_obra,
-    enviada_em: String(formData.get("enviada_em") ?? "") || undefined,
-    obra_id: obraIdRaw || null,
-    tipo_servico: tipoServicoRaw,
-    frequencia_visitas: (frequenciaRaw || null) as FrequenciaVisitas | null,
-    valor_anual: valorAnualRaw ? Number(valorAnualRaw) : null,
-    valor_visita_extra: valorExtraRaw ? Number(valorExtraRaw) : null,
-    valor_servico: valorServicoRaw ? Number(valorServicoRaw) : null,
-    descricao_servico: descricao_servico || null,
-  });
+  const { error } = await supabase.from("propostas").insert(campos);
   if (error) throw new Error(error.message);
   revalidatePath("/propostas");
 }
@@ -64,39 +87,12 @@ export async function atualizarProposta(id: string, formData: FormData): Promise
   try {
     const supabase = await createClient();
 
-    const cliente_nome = String(formData.get("cliente_nome") ?? "").trim();
-    const local = String(formData.get("local") ?? "").trim();
-    const tipo_obra = String(formData.get("tipo_obra") ?? "").trim();
-    if (!cliente_nome || !local || !tipo_obra) return { error: "Preenche cliente, local e tipo de obra." };
+    const campos = lerCamposProposta(formData);
+    if (!campos.cliente_nome || !campos.local || !campos.tipo_obra) {
+      return { error: "Preenche cliente, local e tipo de obra." };
+    }
 
-    const obraIdRaw = String(formData.get("obra_id") ?? "");
-    const tipoServicoRaw = String(formData.get("tipo_servico") ?? "fiscalizacao") as TipoServicoProposta;
-    const frequenciaRaw = String(formData.get("frequencia_visitas") ?? "");
-    const valorAnualRaw = String(formData.get("valor_anual") ?? "");
-    const valorExtraRaw = String(formData.get("valor_visita_extra") ?? "");
-    const valorServicoRaw = String(formData.get("valor_servico") ?? "");
-    const descricao_servico = String(formData.get("descricao_servico") ?? "").trim();
-    const cliente_nif = String(formData.get("cliente_nif") ?? "").trim();
-    const cliente_morada_fiscal = String(formData.get("cliente_morada_fiscal") ?? "").trim();
-
-    const { error } = await supabase
-      .from("propostas")
-      .update({
-        cliente_nome,
-        cliente_nif: cliente_nif || null,
-        cliente_morada_fiscal: cliente_morada_fiscal || null,
-        local,
-        tipo_obra,
-        enviada_em: String(formData.get("enviada_em") ?? "") || undefined,
-        obra_id: obraIdRaw || null,
-        tipo_servico: tipoServicoRaw,
-        frequencia_visitas: (frequenciaRaw || null) as FrequenciaVisitas | null,
-        valor_anual: valorAnualRaw ? Number(valorAnualRaw) : null,
-        valor_visita_extra: valorExtraRaw ? Number(valorExtraRaw) : null,
-        valor_servico: valorServicoRaw ? Number(valorServicoRaw) : null,
-        descricao_servico: descricao_servico || null,
-      })
-      .eq("id", id);
+    const { error } = await supabase.from("propostas").update(campos).eq("id", id);
     if (error) return { error: error.message };
 
     revalidatePath("/propostas");
@@ -106,6 +102,23 @@ export async function atualizarProposta(id: string, formData: FormData): Promise
     console.error("atualizarProposta falhou", err);
     return { error: "Não foi possível guardar as alterações. Tenta outra vez." };
   }
+}
+
+function camposEmFaltaParaPdf(proposta: PropostaRow): string | null {
+  if (proposta.tipo_servico === "consultoria") {
+    return proposta.valor_servico === null ? "Preenche o valor do serviço antes de gerar o PDF." : null;
+  }
+  if (proposta.modalidade_visitas === "pack") {
+    return !proposta.pack_num_visitas ||
+      !proposta.prazo_obra_meses ||
+      proposta.valor_pack === null ||
+      proposta.valor_visita_extra === null
+      ? "Preenche o n.º de visitas, o prazo da obra, o valor do pack e o valor da visita extra antes de gerar o PDF."
+      : null;
+  }
+  return !proposta.frequencia_visitas || proposta.valor_anual === null || proposta.valor_visita_extra === null
+    ? "Preenche a frequência de visitas e os valores antes de gerar o PDF."
+    : null;
 }
 
 export async function gerarPdfProposta(propostaId: string, enviarCliente: boolean): Promise<ResultadoAcao> {
@@ -119,18 +132,8 @@ export async function gerarPdfProposta(propostaId: string, enviarCliente: boolea
       .single();
     if (propostaError || !proposta) return { error: "Proposta não encontrada." };
 
-    if (
-      proposta.tipo_servico === "consultoria"
-        ? proposta.valor_servico === null
-        : !proposta.frequencia_visitas || proposta.valor_anual === null || proposta.valor_visita_extra === null
-    ) {
-      return {
-        error:
-          proposta.tipo_servico === "consultoria"
-            ? "Preenche o valor do serviço antes de gerar o PDF."
-            : "Preenche a frequência de visitas e os valores antes de gerar o PDF.",
-      };
-    }
+    const emFalta = camposEmFaltaParaPdf(proposta);
+    if (emFalta) return { error: emFalta };
     if (enviarCliente && !proposta.obra_id) {
       return { error: "Associa esta proposta a uma obra para a poderes enviar ao cliente." };
     }
