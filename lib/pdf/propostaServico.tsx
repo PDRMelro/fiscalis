@@ -8,19 +8,19 @@ const GRAY = "#8A8578";
 const BORDER = "#DEDBD2";
 
 const styles = StyleSheet.create({
-  page: { padding: 36, fontSize: 9, fontFamily: "Helvetica", color: "#1F1D19" },
+  page: { paddingTop: 28, paddingBottom: 34, paddingHorizontal: 36, fontSize: 9, fontFamily: "Helvetica", color: "#1F1D19" },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
-    marginBottom: 14,
+    marginBottom: 6,
     borderBottomWidth: 2,
     borderBottomColor: GOLD,
-    paddingBottom: 10,
+    paddingBottom: 8,
   },
-  logo: { height: 34 },
+  logo: { height: 30 },
   tituloBox: { alignItems: "flex-end" },
-  titulo: { fontSize: 20, fontFamily: "Helvetica-Bold", color: NAVY, letterSpacing: 1 },
+  titulo: { fontSize: 18, fontFamily: "Helvetica-Bold", color: NAVY, letterSpacing: 1 },
   subtitulo: { fontSize: 9, color: GOLD, fontFamily: "Helvetica-Bold", letterSpacing: 0.5 },
   codigo: { fontSize: 8, color: GRAY, marginTop: 2 },
 
@@ -29,29 +29,31 @@ const styles = StyleSheet.create({
   tabela: { borderWidth: 1, borderColor: BORDER, borderRadius: 2 },
   linha: { flexDirection: "row", borderBottomWidth: 1, borderBottomColor: BORDER },
   linhaUltima: { flexDirection: "row" },
-  celula: { flex: 1, padding: 6, borderRightWidth: 1, borderRightColor: BORDER },
-  celulaUltima: { flex: 1, padding: 6 },
+  celula: { flex: 1, paddingVertical: 4, paddingHorizontal: 6, borderRightWidth: 1, borderRightColor: BORDER },
+  celulaUltima: { flex: 1, paddingVertical: 4, paddingHorizontal: 6 },
   celulaRotulo: { fontSize: 7, color: GRAY, textTransform: "uppercase", marginBottom: 1 },
   celulaValor: { fontSize: 9.5 },
 
-  texto: { fontSize: 9.5, lineHeight: 1.5 },
+  texto: { fontSize: 9, lineHeight: 1.4 },
+  nota: { fontSize: 8, color: GRAY, marginTop: 5 },
 
   precoBox: {
     borderWidth: 1.5,
     borderColor: GOLD,
     borderRadius: 3,
     backgroundColor: "#FBF7EE",
-    padding: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
   },
   precoLinha: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
   precoLabel: { fontSize: 8, color: GRAY, textTransform: "uppercase", letterSpacing: 0.5 },
   precoFrequencia: { fontSize: 12, fontFamily: "Helvetica-Bold", color: NAVY, marginTop: 2 },
-  precoValor: { fontSize: 22, fontFamily: "Helvetica-Bold", color: NAVY },
+  precoValor: { fontSize: 19, fontFamily: "Helvetica-Bold", color: NAVY },
   precoExtra: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 10,
-    paddingTop: 10,
+    marginTop: 6,
+    paddingTop: 6,
     borderTopWidth: 1,
     borderTopColor: "#E8D9B5",
   },
@@ -63,24 +65,25 @@ const styles = StyleSheet.create({
     borderLeftWidth: 2,
     borderLeftColor: GOLD,
     backgroundColor: "#FBF7EE",
-    paddingVertical: 6,
+    paddingVertical: 5,
     paddingHorizontal: 8,
   },
-  assinaturas: { flexDirection: "row", gap: 12, marginTop: 14 },
+  declaracaoTexto: { fontSize: 8.5, lineHeight: 1.4 },
+  assinaturas: { flexDirection: "row", gap: 12, marginTop: 12 },
   assinatura: {
     flex: 1,
     borderWidth: 1,
     borderColor: BORDER,
     borderRadius: 2,
     padding: 8,
-    minHeight: 60,
+    minHeight: 70,
     justifyContent: "space-between",
   },
   assinaturaTitulo: { fontSize: 7.5, fontFamily: "Helvetica-Bold", color: NAVY, textTransform: "uppercase" },
-  assinaturaLinha: { borderTopWidth: 1, borderTopColor: "#1F1D19", marginTop: 28 },
+  assinaturaLinha: { borderTopWidth: 1, borderTopColor: "#1F1D19", marginTop: 34 },
   assinaturaData: { fontSize: 7, color: GRAY, marginTop: 4 },
 
-  rodape: { position: "absolute", bottom: 18, left: 36, right: 36, fontSize: 7, color: GRAY, textAlign: "center" },
+  rodape: { position: "absolute", bottom: 14, left: 36, right: 36, fontSize: 7, color: GRAY, textAlign: "center" },
 });
 
 const FREQUENCIA_LABEL: Record<string, string> = {
@@ -133,7 +136,7 @@ function textoDeclaracaoAceitacao(proposta: PropostaRow, perfil: PerfilFiscalRow
   const identificacao = proposta.cliente_nif
     ? `${proposta.cliente_nome}, ${empresa ? "NIPC" : "NIF"} ${proposta.cliente_nif}`
     : proposta.cliente_nome;
-  const representacao = empresa ? ", aqui representada pelo signatário," : "";
+  const representacao = empresa ? ", aqui representada pelo signatário," : proposta.cliente_nif ? "," : "";
   const proposta_ = proposta.codigo ? `a proposta ${proposta.codigo}` : "a presente proposta";
   const condicoes = temPagamento ? "nas condições comerciais e de pagamento" : "nas condições comerciais";
   const visitasExtra =
@@ -171,8 +174,8 @@ export function PropostaServicoDoc({
     { pct: proposta.pagamento_segunda_pct, data: proposta.pagamento_segunda_data, quando: "Restante pagamento" },
   ].filter((p) => p.pct !== null);
   const temPagamento = prestacoes.length > 0 || !!proposta.iban;
-  // As secções depois das condições comerciais mudam de número consoante haja ou não condições de pagamento.
-  let numeroSeccao = temPagamento ? 5 : 4;
+  // A aceitação muda de número consoante haja ou não a secção de condições de pagamento.
+  const numeroAceitacao = temPagamento ? 6 : 5;
 
   return (
     <Document>
@@ -189,36 +192,30 @@ export function PropostaServicoDoc({
         <Text style={styles.seccao}>1. Cliente</Text>
         <View style={styles.tabela}>
           <View style={styles.linha}>
-            <View style={styles.celula}>
+            <View style={[styles.celula, { flex: 2 }]}>
               <Text style={styles.celulaRotulo}>{empresa ? "Empresa" : "Nome"}</Text>
               <Text style={styles.celulaValor}>{proposta.cliente_nome}</Text>
             </View>
-            <View style={styles.celulaUltima}>
+            <View style={styles.celula}>
               <Text style={styles.celulaRotulo}>{empresa ? "NIPC" : "NIF / Contribuinte"}</Text>
               <Text style={styles.celulaValor}>{proposta.cliente_nif || "—"}</Text>
-            </View>
-          </View>
-          {empresa && (
-            <View style={styles.linha}>
-              <View style={styles.celula}>
-                <Text style={styles.celulaRotulo}>Tipo de cliente</Text>
-                <Text style={styles.celulaValor}>Empresa</Text>
-              </View>
-              <View style={styles.celulaUltima}>
-                <Text style={styles.celulaRotulo}>Alvará n.º</Text>
-                <Text style={styles.celulaValor}>{proposta.cliente_alvara || "—"}</Text>
-              </View>
-            </View>
-          )}
-          <View style={styles.linhaUltima}>
-            <View style={styles.celula}>
-              <Text style={styles.celulaRotulo}>{empresa ? "Sede / morada fiscal" : "Morada fiscal"}</Text>
-              <Text style={styles.celulaValor}>{proposta.cliente_morada_fiscal || "—"}</Text>
             </View>
             <View style={styles.celulaUltima}>
               <Text style={styles.celulaRotulo}>Data da proposta</Text>
               <Text style={styles.celulaValor}>{formatarDataPdf(proposta.enviada_em)}</Text>
             </View>
+          </View>
+          <View style={styles.linhaUltima}>
+            <View style={empresa ? [styles.celula, { flex: 2 }] : [styles.celulaUltima, { flex: 2 }]}>
+              <Text style={styles.celulaRotulo}>{empresa ? "Sede / morada fiscal" : "Morada fiscal"}</Text>
+              <Text style={styles.celulaValor}>{proposta.cliente_morada_fiscal || "—"}</Text>
+            </View>
+            {empresa && (
+              <View style={[styles.celulaUltima, { flex: 2 }]}>
+                <Text style={styles.celulaRotulo}>Alvará n.º</Text>
+                <Text style={styles.celulaValor}>{proposta.cliente_alvara || "—"}</Text>
+              </View>
+            )}
           </View>
         </View>
 
@@ -318,25 +315,25 @@ export function PropostaServicoDoc({
             <Text style={styles.seccao}>5. Condições de pagamento</Text>
             {prestacoes.length > 0 && (
               <View style={styles.tabela}>
-                {prestacoes.map((p, i) => (
-                  <View key={p.quando} style={i === prestacoes.length - 1 ? styles.linhaUltima : styles.linha}>
-                    <View style={styles.celula}>
-                      <Text style={styles.celulaRotulo}>{p.quando}</Text>
+                <View style={styles.linhaUltima}>
+                  {prestacoes.map((p, i) => (
+                    <View key={p.quando} style={i === prestacoes.length - 1 ? styles.celulaUltima : styles.celula}>
+                      <Text style={styles.celulaRotulo}>
+                        {p.quando} · {formatarDataPdf(p.data)}
+                      </Text>
                       <Text style={styles.celulaValor}>
                         {formatarPercentagem(p.pct)}
-                        {valorBase !== null ? ` — ${formatarEuro((valorBase * (p.pct ?? 0)) / 100)} (${textoIva})` : ""}
+                        {valorBase !== null
+                          ? ` — ${formatarEuro((valorBase * (p.pct ?? 0)) / 100)} ${proposta.com_iva ? "+ IVA" : "(sem IVA)"}`
+                          : ""}
                       </Text>
                     </View>
-                    <View style={styles.celulaUltima}>
-                      <Text style={styles.celulaRotulo}>Data</Text>
-                      <Text style={styles.celulaValor}>{formatarDataPdf(p.data)}</Text>
-                    </View>
-                  </View>
-                ))}
+                  ))}
+                </View>
               </View>
             )}
             {proposta.iban && (
-              <Text style={[styles.texto, { marginTop: 6 }]}>
+              <Text style={[styles.texto, { marginTop: 5 }]}>
                 Pagamento por transferência bancária para o IBAN{" "}
                 <Text style={{ fontFamily: "Helvetica-Bold" }}>{formatarIban(proposta.iban)}</Text>
               </Text>
@@ -344,15 +341,14 @@ export function PropostaServicoDoc({
           </>
         )}
 
-        <Text style={styles.seccao}>{++numeroSeccao}. Validade</Text>
-        <Text style={styles.texto}>
-          Salvo indicação em contrário, esta proposta é válida por 30 dias a contar da data indicada acima.
+        <Text style={styles.nota}>
+          Salvo indicação em contrário, esta proposta é válida por 30 dias a contar da data da proposta.
         </Text>
 
         <View wrap={false}>
-        <Text style={styles.seccao}>{++numeroSeccao}. Aceitação</Text>
+        <Text style={styles.seccao}>{numeroAceitacao}. Aceitação</Text>
         <View style={styles.declaracao}>
-          <Text style={styles.texto}>{textoDeclaracaoAceitacao(proposta, perfil, temPagamento)}</Text>
+          <Text style={styles.declaracaoTexto}>{textoDeclaracaoAceitacao(proposta, perfil, temPagamento)}</Text>
         </View>
         <View style={styles.assinaturas}>
           <View style={styles.assinatura}>

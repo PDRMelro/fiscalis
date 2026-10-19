@@ -164,7 +164,8 @@ export async function gerarPdfProposta(propostaId: string, enviarCliente: boolea
 
     const { error: uploadError } = await supabase.storage
       .from("propostas")
-      .upload(path, buffer, { contentType: "application/pdf", upsert: true });
+      // Sem cache: o PDF pode ser regenerado com o mesmo nome e tem de aparecer logo a versão nova.
+      .upload(path, buffer, { contentType: "application/pdf", upsert: true, cacheControl: "0" });
     if (uploadError) return { error: uploadError.message };
 
     const { error: updateError } = await supabase.from("propostas").update({ pdf_path: path }).eq("id", propostaId);
