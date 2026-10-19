@@ -1,10 +1,9 @@
-import { Document, Page, Text, StyleSheet, renderToBuffer, Image } from "@react-pdf/renderer";
+import { Document, Page, Text, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
 import type { ObraRow, PerfilFiscalRow } from "@/lib/supabase/types";
-import { LOGO_SRC } from "@/lib/branding";
+import { LogoCabecalho } from "@/lib/pdf/LogoCabecalho";
 
 const styles = StyleSheet.create({
   page: { padding: 48, fontSize: 11, fontFamily: "Helvetica", color: "#1F1D19" },
-  logo: { height: 28, marginBottom: 16 },
   titulo: { fontSize: 12, fontFamily: "Helvetica-Bold", textAlign: "center", textDecoration: "underline" },
   subtitulo: { fontSize: 12, fontFamily: "Helvetica-Bold", textAlign: "center", marginBottom: 18 },
   paragrafo: { lineHeight: 1.6, marginBottom: 10, textAlign: "justify" },
@@ -28,7 +27,7 @@ export function TermoResponsabilidadeDoc({
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <Image src={logoEmpresaUrl || LOGO_SRC} style={styles.logo} />
+        <LogoCabecalho logoEmpresaUrl={logoEmpresaUrl} altura={28} style={{ marginBottom: 16 }} />
         <Text style={styles.titulo}>TERMO DE RESPONSABILIDADE</Text>
         <Text style={styles.subtitulo}>DO DIRETOR DE FISCALIZAÇÃO DE OBRA</Text>
 

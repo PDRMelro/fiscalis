@@ -1,6 +1,6 @@
-import { Document, Page, Text, View, StyleSheet, renderToBuffer, Image } from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet, renderToBuffer } from "@react-pdf/renderer";
 import type { PropostaRow, PerfilFiscalRow } from "@/lib/supabase/types";
-import { LOGO_SRC } from "@/lib/branding";
+import { LogoCabecalho } from "@/lib/pdf/LogoCabecalho";
 
 const NAVY = "#14283A";
 const GOLD = "#C9A050";
@@ -18,7 +18,6 @@ const styles = StyleSheet.create({
     borderBottomColor: GOLD,
     paddingBottom: 8,
   },
-  logo: { height: 30 },
   tituloBox: { alignItems: "flex-end" },
   titulo: { fontSize: 18, fontFamily: "Helvetica-Bold", color: NAVY, letterSpacing: 1 },
   subtitulo: { fontSize: 9, color: GOLD, fontFamily: "Helvetica-Bold", letterSpacing: 0.5 },
@@ -176,7 +175,7 @@ export function PropostaServicoDoc({
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Image src={logoEmpresaUrl || LOGO_SRC} style={styles.logo} />
+          <LogoCabecalho logoEmpresaUrl={logoEmpresaUrl} altura={30} />
           <View style={styles.tituloBox}>
             <Text style={styles.titulo}>PROPOSTA DE SERVIÇO</Text>
             <Text style={styles.subtitulo}>{SUBTITULO_TIPO[proposta.tipo_servico]}</Text>

@@ -1,6 +1,6 @@
 import { Document, Page, Text, View, StyleSheet, renderToBuffer, Image } from "@react-pdf/renderer";
 import type { NaoConformidadeRow, ObraRow, VisitaRow } from "@/lib/supabase/types";
-import { LOGO_SRC } from "@/lib/branding";
+import { LogoCabecalho } from "@/lib/pdf/LogoCabecalho";
 
 const NAVY = "#14283A";
 const GOLD = "#C9A050";
@@ -18,7 +18,6 @@ const styles = StyleSheet.create({
     borderBottomColor: GOLD,
     paddingBottom: 10,
   },
-  logo: { height: 34 },
   tituloBox: { alignItems: "flex-end" },
   titulo: { fontSize: 20, fontFamily: "Helvetica-Bold", color: NAVY, letterSpacing: 1 },
   subtitulo: { fontSize: 9, color: GOLD, fontFamily: "Helvetica-Bold", letterSpacing: 0.5 },
@@ -87,7 +86,7 @@ export function RelatorioVisitaDoc({
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
-          <Image src={logoEmpresaUrl || LOGO_SRC} style={styles.logo} />
+          <LogoCabecalho logoEmpresaUrl={logoEmpresaUrl} altura={34} />
           <View style={styles.tituloBox}>
             <Text style={styles.titulo}>RELATÓRIO DE FISCALIZAÇÃO</Text>
             <Text style={styles.subtitulo}>VISITA DE OBRA</Text>
