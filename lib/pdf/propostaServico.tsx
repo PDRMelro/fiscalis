@@ -59,7 +59,14 @@ const styles = StyleSheet.create({
   precoExtraValor: { fontSize: 11, fontFamily: "Helvetica-Bold", color: NAVY },
   precoIva: { fontSize: 7, color: GRAY, marginTop: 2 },
 
-  assinaturas: { flexDirection: "row", gap: 12, marginTop: 22 },
+  declaracao: {
+    borderLeftWidth: 2,
+    borderLeftColor: GOLD,
+    backgroundColor: "#FBF7EE",
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+  },
+  assinaturas: { flexDirection: "row", gap: 12, marginTop: 14 },
   assinatura: {
     flex: 1,
     borderWidth: 1,
@@ -115,6 +122,31 @@ function formatarDataPdf(data: string | null) {
   if (!data) return "—";
   const d = new Date(data + (data.length === 10 ? "T00:00:00" : ""));
   return d.toLocaleDateString("pt-PT");
+}
+
+/**
+ * Texto que o cliente assina na aceitação, para a proposta assinada valer
+ * como compromisso de contratação entre as partes.
+ */
+function textoDeclaracaoAceitacao(proposta: PropostaRow, perfil: PerfilFiscalRow, temPagamento: boolean) {
+  const empresa = proposta.cliente_tipo === "empresa";
+  const identificacao = proposta.cliente_nif
+    ? `${proposta.cliente_nome}, ${empresa ? "NIPC" : "NIF"} ${proposta.cliente_nif}`
+    : proposta.cliente_nome;
+  const representacao = empresa ? ", aqui representada pelo signatário," : "";
+  const proposta_ = proposta.codigo ? `a proposta ${proposta.codigo}` : "a presente proposta";
+  const condicoes = temPagamento ? "nas condições comerciais e de pagamento" : "nas condições comerciais";
+  const visitasExtra =
+    proposta.tipo_servico === "fiscalizacao"
+      ? ", incluindo o pagamento de cada visita adicional que venha a solicitar, ao valor previsto"
+      : "";
+
+  return (
+    `${identificacao}${representacao} declara ter lido e aceitar integralmente ${proposta_}, adjudicando a ` +
+    `${perfil.nome} a prestação dos serviços nela descritos, ${condicoes} acima indicadas${visitasExtra}. ` +
+    "Com a assinatura deste documento, ambas as partes comprometem-se a cumprir o aqui acordado, valendo o " +
+    "mesmo como contrato de prestação de serviços entre as partes."
+  );
 }
 
 export function PropostaServicoDoc({
@@ -317,7 +349,11 @@ export function PropostaServicoDoc({
           Salvo indicação em contrário, esta proposta é válida por 30 dias a contar da data indicada acima.
         </Text>
 
+        <View wrap={false}>
         <Text style={styles.seccao}>{++numeroSeccao}. Aceitação</Text>
+        <View style={styles.declaracao}>
+          <Text style={styles.texto}>{textoDeclaracaoAceitacao(proposta, perfil, temPagamento)}</Text>
+        </View>
         <View style={styles.assinaturas}>
           <View style={styles.assinatura}>
             <Text style={styles.assinaturaTitulo}>Fiscalização</Text>
@@ -336,8 +372,9 @@ export function PropostaServicoDoc({
             </View>
           </View>
         </View>
+        </View>
 
-        <Text style={styles.rodape}>
+        <Text style={styles.rodape} fixed>
           Proposta gerada automaticamente pela plataforma Fiscalis em {new Date().toLocaleDateString("pt-PT")}.
         </Text>
       </Page>
