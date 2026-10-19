@@ -93,6 +93,42 @@ export function DadosClienteCampos({ proposta }: { proposta?: PropostaRow }) {
           />
         </div>
       </div>
+
+      {empresa && (
+        <div className="mt-3 rounded-lg bg-[#F5F4EF] border border-[#E4E1D6] p-3">
+          <p className="text-[12px] font-semibold text-[#14283A]">Dono de obra</p>
+          <p className="text-[11px] text-[#8A8578] mb-2">
+            Quem vai acompanhar a obra no portal. Depois de associares a proposta a uma obra, aparece um link de
+            registo pronto a enviar-lhe.
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2">
+              <label className={LABEL}>Nome</label>
+              <input name="dono_obra_nome" defaultValue={proposta?.dono_obra_nome ?? ""} autoComplete="off" className={INPUT} />
+            </div>
+            <div>
+              <label className={LABEL}>Email</label>
+              <input
+                name="dono_obra_email"
+                type="email"
+                defaultValue={proposta?.dono_obra_email ?? ""}
+                autoComplete="off"
+                className={INPUT}
+              />
+            </div>
+            <div>
+              <label className={LABEL}>Telefone</label>
+              <input
+                name="dono_obra_telefone"
+                type="tel"
+                defaultValue={proposta?.dono_obra_telefone ?? ""}
+                autoComplete="off"
+                className={INPUT}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -203,6 +203,9 @@ export type PropostaRow = {
   cliente_morada_fiscal: string | null;
   cliente_tipo: TipoClienteProposta;
   cliente_alvara: string | null;
+  dono_obra_nome: string | null;
+  dono_obra_email: string | null;
+  dono_obra_telefone: string | null;
   local: string;
   tipo_obra: string;
   estado: EstadoProposta;
