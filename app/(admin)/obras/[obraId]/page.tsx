@@ -7,6 +7,8 @@ import { ConfirmSubmitButton } from "@/components/ui/ConfirmSubmitButton";
 import { EditarObraModal } from "@/components/obras/EditarObraModal";
 import { eliminarObra } from "@/lib/actions/obras";
 import { formatarData, formatarTempoRelativo } from "@/lib/format";
+import { construirLinkRegistoCliente } from "@/lib/inviteLink";
+import { LinkCopiavel } from "@/components/ui/LinkCopiavel";
 import { GeralTab } from "@/components/obras/tabs/GeralTab";
 import { FiscaisObraCard } from "@/components/obras/tabs/FiscaisObraCard";
 import { getMeuTenantId } from "@/lib/tenant";
@@ -72,10 +74,24 @@ export default async function ObraDetalhePage({
         }
       />
 
-      <div className="flex items-center gap-1.5 text-[12px] text-[#8A8578] bg-[#F5F4EF] border border-[#E4E1D6] rounded-lg px-3 py-2 mb-2 max-w-xl">
-        <KeyRound size={13} />
-        Código de acesso do cliente ao portal:
-        <span className="font-mono font-medium text-[#14283A]">{obra.codigo_acesso}</span>
+      <div className="text-[12px] text-[#8A8578] bg-[#F5F4EF] border border-[#E4E1D6] rounded-lg px-3 py-2 mb-2 max-w-xl">
+        <div className="flex items-center gap-1.5">
+          <KeyRound size={13} />
+          Código de acesso do cliente ao portal:
+          <span className="font-mono font-medium text-[#14283A]">{obra.codigo_acesso}</span>
+        </div>
+        {!isFiscal && (
+          <>
+            <p className="mt-1.5">
+              Link de registo para {obra.dono_obra_nome ? <span className="text-[#14283A]">{obra.dono_obra_nome}</span> : "o dono de obra"}
+              {obra.dono_obra_telefone ? ` (${obra.dono_obra_telefone})` : ""}
+              {obra.dono_obra_email ? ", com o código, o nome e o email já preenchidos:" : ", com o código já preenchido:"}
+            </p>
+            <LinkCopiavel
+              link={construirLinkRegistoCliente(obra.codigo_acesso, obra.dono_obra_nome, obra.dono_obra_email)}
+            />
+          </>
+        )}
       </div>
 
       {clientes && clientes.length > 0 && (

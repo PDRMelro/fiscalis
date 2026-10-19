@@ -55,6 +55,9 @@ export type ObraRow = {
   longitude: number | null;
   codigo: string | null;
   codigo_acesso: string;
+  dono_obra_nome: string | null;
+  dono_obra_email: string | null;
+  dono_obra_telefone: string | null;
   termo_descricao_obra: string | null;
   termo_freguesia: string | null;
   termo_processo: string | null;
@@ -203,9 +206,6 @@ export type PropostaRow = {
   cliente_morada_fiscal: string | null;
   cliente_tipo: TipoClienteProposta;
   cliente_alvara: string | null;
-  dono_obra_nome: string | null;
-  dono_obra_email: string | null;
-  dono_obra_telefone: string | null;
   local: string;
   tipo_obra: string;
   estado: EstadoProposta;

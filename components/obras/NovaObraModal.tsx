@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import dynamic from "next/dynamic";
 import { Plus } from "lucide-react";
 import { ModalTrigger } from "@/components/ui/Modal";
+import { DonoObraCampos } from "@/components/obras/DonoObraCampos";
 import { criarObra, type ResultadoObra } from "@/lib/actions/obras";
 
 const LocalizacaoObraPicker = dynamic(
@@ -73,6 +74,7 @@ export function NovaObraModal() {
               />
             </div>
           </div>
+          <DonoObraCampos />
           {state.error && <p className="text-[12px] text-[#B0402F]">{state.error}</p>}
           <button
             type="submit"

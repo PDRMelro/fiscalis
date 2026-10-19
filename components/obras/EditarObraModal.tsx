@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import dynamic from "next/dynamic";
 import { Pencil } from "lucide-react";
 import { ModalTrigger } from "@/components/ui/Modal";
+import { DonoObraCampos } from "@/components/obras/DonoObraCampos";
 import { atualizarObra, type ResultadoObra } from "@/lib/actions/obras";
 import { paraInputDate } from "@/lib/format";
 import type { ObraRow } from "@/lib/supabase/types";
@@ -57,6 +58,8 @@ export function EditarObraModal({ obra }: { obra: ObraRow }) {
               </select>
             </div>
           </div>
+
+          <DonoObraCampos obra={obra} />
 
           <div className="pt-2 border-t border-[#EDEBE2]">
             <p className="text-[12px] font-medium text-[#4A4740] mb-2">Dados para o Termo de Responsabilidade</p>

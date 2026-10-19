@@ -4,17 +4,14 @@ import { useState, useTransition } from "react";
 import { atualizarProposta } from "@/lib/actions/propostas";
 import { CondicoesPropostaCampos, DadosClienteCampos } from "@/components/propostas/CamposProposta";
 import { GerarPdfPropostaButton } from "@/components/propostas/GerarPdfPropostaButton";
-import { LinkCopiavel } from "@/components/ui/LinkCopiavel";
 import type { PropostaRow } from "@/lib/supabase/types";
 
 export function EditarPropostaForm({
   proposta,
   obras,
-  linkRegistoDonoObra,
 }: {
   proposta: PropostaRow;
   obras: { id: string; nome: string }[];
-  linkRegistoDonoObra: string | null;
 }) {
   const [pending, startTransition] = useTransition();
   const [erro, setErro] = useState<string | null>(null);
@@ -115,26 +112,6 @@ export function EditarPropostaForm({
           </a>
         </div>
       </form>
-
-      {proposta.cliente_tipo === "empresa" && (
-        <div className="bg-white border border-[#E4E1D6] rounded-xl p-5">
-          <p className="text-[13px] font-medium text-[#14283A]">Acesso do dono de obra ao portal</p>
-          {linkRegistoDonoObra ? (
-            <>
-              <p className="text-[12px] text-[#8A8578]">
-                Envia este link {proposta.dono_obra_nome ? `a ${proposta.dono_obra_nome}` : "ao dono de obra"}
-                {proposta.dono_obra_telefone ? ` (${proposta.dono_obra_telefone})` : ""}. Abre o registo com o código
-                da obra{proposta.dono_obra_email ? ", o nome e o email" : ""} já preenchidos.
-              </p>
-              <LinkCopiavel link={linkRegistoDonoObra} />
-            </>
-          ) : (
-            <p className="text-[12px] text-[#8A8578]">
-              Associa esta proposta a uma obra e guarda para gerar o link de registo do dono de obra.
-            </p>
-          )}
-        </div>
-      )}
 
       <div className="bg-white border border-[#E4E1D6] rounded-xl p-5 flex items-center justify-between gap-3">
         <div>

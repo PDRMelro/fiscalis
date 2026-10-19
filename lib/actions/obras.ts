@@ -22,6 +22,14 @@ function numOuNull(formData: FormData, key: string) {
 
 export type ResultadoObra = { error: string | null };
 
+function lerDonoObra(formData: FormData) {
+  return {
+    dono_obra_nome: str(formData, "dono_obra_nome") || null,
+    dono_obra_email: str(formData, "dono_obra_email") || null,
+    dono_obra_telefone: str(formData, "dono_obra_telefone") || null,
+  };
+}
+
 export async function criarObra(_prev: ResultadoObra, formData: FormData): Promise<ResultadoObra> {
   const supabase = await createClient();
   const nome = str(formData, "nome");
@@ -40,6 +48,7 @@ export async function criarObra(_prev: ResultadoObra, formData: FormData): Promi
       honorario_mensal: honorario ? Number(honorario) : null,
       latitude: numOuNull(formData, "latitude"),
       longitude: numOuNull(formData, "longitude"),
+      ...lerDonoObra(formData),
     })
     .select("id")
     .single();
@@ -70,6 +79,7 @@ export async function atualizarObra(obraId: string, _prev: ResultadoObra, formDa
       estado: str(formData, "estado") as EstadoObra,
       latitude: numOuNull(formData, "latitude"),
       longitude: numOuNull(formData, "longitude"),
+      ...lerDonoObra(formData),
       termo_descricao_obra: str(formData, "termo_descricao_obra") || null,
       termo_freguesia: str(formData, "termo_freguesia") || null,
       termo_processo: str(formData, "termo_processo") || null,
